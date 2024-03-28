@@ -1,5 +1,5 @@
-import ResourceUrl from "../../src/resourceUrl";
+import ResourceUrl from '@module/url'
 
 export default function fakeResourceUrl(): ResourceUrl {
-  return new ResourceUrl("https://my-api.com/v2");
+  return new ResourceUrl('https://my-api.com/v2')
 }

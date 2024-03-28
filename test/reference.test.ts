@@ -28,13 +28,12 @@ test('using get on a Ref fetches the value if necessary', () => {
   expect(get).not.toHaveBeenCalled()
 
   const refFromKey = Ref.fromKey(res, 2)
-  expect(refFromValue.get()).resolves.toEqual({ id: 2, name: 'Pear' })
+  expect(refFromKey.get()).resolves.toEqual({ id: 2, name: 'Pear' })
   expect(get).toHaveBeenCalledWith(2)
 })
 
 test('using set on a Ref changes the key invalidates the value', () => {
   const res = fakeResource()
-  const get = jest.spyOn(res, 'get')
 
   const ref = Ref.fromValue(res, { id: 2, name: 'Pear' })
 
@@ -55,12 +54,16 @@ test('using change on a Ref changes the key and fetches the new value', async ()
   expect(get).toHaveBeenCalledWith(3)
 })
 
-test('using change on a Ref does not fetch if the id is the same', async () => {
+test('setting the key on a Ref does not fetch anything if it is the same', async () => {
   const res = fakeResource()
   const get = jest.spyOn(res, 'get')
 
   const ref = Ref.fromValue(res, { id: 2, name: 'Pear' })
 
   await ref.change(2)
+  expect(get).not.toHaveBeenCalled()
+
+  ref.set(2)
+  await ref.get()
   expect(get).not.toHaveBeenCalled()
 })

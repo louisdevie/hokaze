@@ -1,4 +1,4 @@
-import { Field } from './fields'
+import { Field } from '../fields'
 
 /**
  * Describes a collection of model objects.
@@ -50,7 +50,7 @@ export type ResourceItemType<Descriptor extends ResourceDescriptor> =
 
 export type Key = string | number
 
-export interface Resource<ItemType> {
+interface SendAndReceive<ItemType> {
   /**
    * Reads one item from the resource.
    * @param key The primary key of the item.
@@ -65,11 +65,6 @@ export interface Resource<ItemType> {
    * @see get
    */
   getAll(args?: Record<string, any>): ItemType[]
-
-  /**
-   * Creates a new blank item to be added to the resource. This method does not request anything.
-   */
-  create(): ItemType
 
   /**
    * Sends an item to the resource. This method will always try to create a new items, use {@link save} instead if you
@@ -143,6 +138,13 @@ export interface Resource<ItemType> {
    * @see deleteMany
    */
   deleteAll(args?: Record<string, any>): void
+}
+
+export interface Resource<ItemType> extends SendAndReceive<ItemType> {
+  /**
+   * Creates a new blank item to be added to the resource. This method does not request anything.
+   */
+  create(): ItemType
 
   /**
    * The name of the primary key used to index this resource.
@@ -150,4 +152,39 @@ export interface Resource<ItemType> {
   key: keyof ItemType
 }
 
-export class CachedResourceImpl<ItemType> implements Resource<ItemType> {}
+export abstract class ResourceChain<ItemType> implements SendAndReceive<ItemType> {
+  private readonly _keyName: keyof ItemType
+  private _next?: ResourceChain<ItemType>
+
+  public constructor(keyName: keyof ItemType) {
+    this._keyName = keyName
+  }
+
+  public addNext(next: ResourceChain<ItemType>): void {
+    this._next = next
+  }
+
+  protected get keyName(): keyof ItemType {
+    return this._keyName
+  }
+
+  public abstract get(key: Key, args?: Record<string, any> | undefined): ItemType
+
+  public abstract getAll(args?: Record<string, any> | undefined): ItemType[]
+
+  public abstract send(item: ItemType, args?: Record<string, any> | undefined): void
+
+  public abstract sendMany(items: ItemType[], args?: Record<string, any> | undefined): void
+
+  public abstract save(item: ItemType, args?: Record<string, any> | undefined): void
+
+  public abstract saveMany(items: ItemType[], args?: Record<string, any> | undefined): void
+
+  public abstract delete(item: ItemType, args?: Record<string, any> | undefined): void
+
+  public abstract deleteKey(key: Key, args?: Record<string, any> | undefined): void
+
+  public abstract deleteMany(items: ItemType[], args?: Record<string, any> | undefined): void
+
+  public abstract deleteAll(args?: Record<string, any> | undefined): void
+}

@@ -1,13 +1,5 @@
-import _defaultEnglishLocale from './en'
+import { elz } from './gen'
 
-export interface LocaleData {}
+export { default, elz } from './gen'
 
-export class Locale {
-  public static get current(): LocaleData {
-    return _defaultEnglishLocale
-  }
-
-  public static format(key: keyof LocaleData, data: any) {
-    return
-  }
-}
+await elz.requireLocale()
