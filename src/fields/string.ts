@@ -1,41 +1,16 @@
-import { invalid, ValidationResult } from '@module/validation'
-import { AnyField, AnyFieldOpts, Checks, explicitBlankValue, SingleCheck } from './any'
-import { Locale } from '@module/locale'
+import { AnyField, FieldOpts, explicitBlankValue } from './any'
+import { MaximumLengthCheck } from '@module/fields/checks/string/maximumLength'
+import { NotEmptyCheck } from '@module/fields/checks/string/notEmpty'
 
-/**
- * Options specific to string fields.
- */
-interface StringFieldOpts<N> extends AnyFieldOpts<string | N> {
-  isEmptyAllowed?: boolean
-  maxLength?: number
-}
-
-class LengthCheck<N> extends SingleCheck<string | N> {
-  private _maxLength: number
-
-  public constructor(otherChecks: Checks<string | N>, maxLength: number) {
-    super(otherChecks)
-    this._maxLength = maxLength
-  }
-
-  protected check(value: string | N): ValidationResult {
-    return typeof value === 'string' && value.length > this._maxLength ?
-      invalid(Locale.format())
-  }
-}
+type StringFieldOpts<N> = FieldOpts<string | N>
 
 /**
  * Describes a field with values of type `string`.
  * @template N The nullability of the field.
  */
 export class StringField<N> extends AnyField<string | N, StringField<N>> {
-  private readonly _isEmptyAllowed: boolean
-  private readonly _maxLength?: number
-
   public constructor(copyFrom?: StringField<N>, options?: StringFieldOpts<N>) {
     super(copyFrom, options)
-    this._isEmptyAllowed = options?.isEmptyAllowed ?? copyFrom?._isEmptyAllowed ?? true
-    this._maxLength = options?.maxLength ?? copyFrom?._maxLength
   }
 
   protected get defaultBlankValue(): string | N {
@@ -52,7 +27,7 @@ export class StringField<N> extends AnyField<string | N, StringField<N>> {
    * Disallows empty strings or strings containing only whitespace characters
    */
   public get notEmpty(): StringField<N> {
-    return this.cloneAsSelf({ isEmptyAllowed: false })
+    return this.cloneAsSelf({ checks: new NotEmptyCheck(this.currentChecks) })
   }
 
   /**
@@ -60,7 +35,7 @@ export class StringField<N> extends AnyField<string | N, StringField<N>> {
    * @param length The maximum number of characters (as returned by {@link String.length}).
    */
   public maxLength(length: number): StringField<N> {
-    return this.cloneAsSelf({ maxLength: length })
+    return this.cloneAsSelf({ checks: new MaximumLengthCheck(this.currentChecks, length) })
   }
 
   public override get optional(): StringField<N | undefined> {

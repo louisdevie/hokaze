@@ -1,12 +1,13 @@
 import { Field, FieldRoleHints } from '.'
-import { Infer, Likelihood } from '../inference'
-import { valid, ValidationResult } from '../validation'
+import { Infer, Likelihood } from '@module/inference'
+import { ValidationResult } from '@module/validation'
+import { Checks, NoChecks } from './checks'
 
 /**
  * Options shared by all fields.
  * @internal
  */
-export interface AnyFieldOpts<T> {
+export interface FieldOpts<T> {
   blankValue?: BlankValue<T>
   isReadable?: boolean
   isWritable?: boolean
@@ -15,35 +16,11 @@ export interface AnyFieldOpts<T> {
   checks?: Checks<T>
 }
 
+// we use a union because undefined or null can be valid values.
 type BlankValue<T> = { variant: 'unspecified' } | { variant: 'explicit'; value: T }
 
 export function explicitBlankValue<T>(value: T): BlankValue<T> {
   return { variant: 'explicit', value }
-}
-
-export interface Checks<T> {
-  validate(value: T): ValidationResult
-}
-
-class NoChecks implements Checks<any> {
-  validate(value: any): ValidationResult {
-    return valid()
-  }
-}
-
-export abstract class SingleCheck<T> implements Checks<T> {
-  private _otherChecks: Checks<T>
-
-  public constructor(otherChecks: Checks<T>) {
-    this._otherChecks = otherChecks
-  }
-
-  public validate(value: T): ValidationResult {
-    let thisCheckResult = this.check(value)
-    return !thisCheckResult.isValid ? thisCheckResult : this._otherChecks.validate(value)
-  }
-
-  protected abstract check(value: T): ValidationResult
 }
 
 /**
@@ -57,7 +34,7 @@ export abstract class AnyField<T, Self> implements Field<T> {
   private readonly _isWritable: boolean
   private readonly _isOptional: boolean
   private readonly _useAsId: boolean
-  private _checks: Checks<T>
+  private readonly _checks: Checks<T>
 
   /**
    * Creates a base field descriptor.
@@ -65,7 +42,7 @@ export abstract class AnyField<T, Self> implements Field<T> {
    * @param options Options that will override the descriptor copied.
    * @protected
    */
-  protected constructor(copyFrom?: AnyField<T, unknown>, options?: AnyFieldOpts<T>) {
+  protected constructor(copyFrom?: AnyField<T, unknown>, options?: FieldOpts<T>) {
     this._blankValue = options?.blankValue ?? copyFrom?._blankValue ?? { variant: 'unspecified' }
     this._isReadable = options?.isReadable ?? copyFrom?._isReadable ?? true
     this._isWritable = options?.isWritable ?? copyFrom?._isWritable ?? true
@@ -81,11 +58,19 @@ export abstract class AnyField<T, Self> implements Field<T> {
   protected abstract get defaultBlankValue(): T
 
   /**
+   * The checks currently applied.
+   * @protected
+   */
+  protected get currentChecks(): Checks<T> {
+    return this._checks
+  }
+
+  /**
    * Clones this object and return it as the Self type.
    * @param options Options to pass to the parent constructor.
    * @protected
    */
-  protected abstract cloneAsSelf(options: AnyFieldOpts<T>): Self
+  protected abstract cloneAsSelf(options: FieldOpts<T>): Self
 
   //region Field<T> implementation
 
@@ -106,7 +91,7 @@ export abstract class AnyField<T, Self> implements Field<T> {
   }
 
   public isTheId(hints: FieldRoleHints): Likelihood {
-    return this._useAsId ? { explicit: true } : Infer.isImplicitId(hints)
+    return this._useAsId ? Likelihood.explicit() : Infer.isImplicitId(hints)
   }
 
   public validate(value: T): ValidationResult {
@@ -122,24 +107,25 @@ export abstract class AnyField<T, Self> implements Field<T> {
    * @param value The new value to use.
    */
   public withBlankValue(value: T): Self {
-    if (this._blankValue.variant !== 'unspecified')
-      console?.warn('withBlankValue modifier used twice on the same field')
+    if (this._blankValue.variant !== 'unspecified') console.warn('withBlankValue modifier used twice on the same field')
     return this.cloneAsSelf({ blankValue: explicitBlankValue(value) })
   }
 
   /**
-   * Makes this field read-only (i.e. it will never be sent, only received).
+   * Makes this field read-only (i.e. it will never be sent, only received). This and {@link writeOnly} are mutually
+   * exclusive.
    */
   public get readOnly(): Self {
-    if (!this._isReadable) console?.warn('readOnly modifier used on non-readable field')
+    if (!this._isReadable) console.warn('readOnly modifier used on non-readable field')
     return this.cloneAsSelf({ isWritable: false, isReadable: true })
   }
 
   /**
-   * Makes this field write-only (i.e. it will never be received, only sent).
+   * Makes this field write-only (i.e. it will never be received, only sent). This and {@link readOnly} are mutually
+   * exclusive.
    */
   public get writeOnly(): Self {
-    if (!this._isWritable) console?.warn('writeOnly modifier used on non-writable field')
+    if (!this._isWritable) console.warn('writeOnly modifier used on non-writable field')
     return this.cloneAsSelf({ isWritable: true, isReadable: false })
   }
 
@@ -147,19 +133,18 @@ export abstract class AnyField<T, Self> implements Field<T> {
    * Makes this field the ID of the resource.
    */
   public get asId(): Self {
-    if (this._useAsId) console?.warn('useAsId modifier used twice on the same field')
+    if (this._useAsId) console.warn('asId modifier used twice on the same field')
     return this.cloneAsSelf({ useAsId: true })
   }
 
   /**
-   * Makes this field optional. While a *nullable* field is always received/sent with an explicit value,
-   * *optional* means that it will not be included in the data received/sent when it is undefined.
+   * Makes this field optional, i.e. it will not be included in the data received/sent when it is undefined. This can be
+   * used alongside {@link nullable}.
    */
   public abstract get optional(): AnyField<T | undefined, unknown>
 
   /**
-   * Makes this field Nullable. While an *optional* field is not included in the data received/sent when
-   * it is undefined, *nullable* means it is always received and sent with an explicit value.
+   * Makes this field nullable and sets the blank value to null. This can be used alongside {@link optional}.
    */
   public abstract get nullable(): AnyField<T | null, unknown>
 

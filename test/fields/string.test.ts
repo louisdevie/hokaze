@@ -1,31 +1,26 @@
 import { string } from '@module'
+import { valid } from '@module/validation'
+import { Checks } from '@module/fields/checks'
 
-test('String field builder methods', () => {
-  let notEmpty = string.notEmpty
-  expect(notEmpty).not.toBe(string)
-  expect(notEmpty.validate('')).toBe(testData.customBlankValue)
+function isValid(value: string | null | undefined, checks: Checks<string | null | undefined>): boolean {
+  return checks.validate(value).isValid
+}
 
-  let readOnly = testData.field.readOnly
-  expect(readOnly).not.toBe(testData.field)
-  expect(readOnly.isReadable).toBeTruthy()
-  expect(readOnly.isWritable).toBeFalsy()
+test('the notEmpty option rejects empty strings', () => {
+  const notEmpty = string.nullable.optional.notEmpty
+  expect(isValid('', notEmpty)).toBeFalse()
+  expect(isValid('   \t \n ', notEmpty)).toBeFalse()
+  expect(isValid('abcdef', notEmpty)).toBeTrue()
+  expect(isValid(null, notEmpty)).toBeTrue()
+  expect(isValid(undefined, notEmpty)).toBeTrue()
+})
 
-  let writeOnly = testData.field.writeOnly
-  expect(writeOnly).not.toBe(testData.field)
-  expect(writeOnly.isReadable).toBeFalsy()
-  expect(writeOnly.isWritable).toBeTruthy()
-
-  let asId = testData.field.asId
-  expect(asId).not.toBe(testData.field)
-  expect(asId.isTheId({ fieldName: '', resourceName: '' })).toMatchObject({ explicit: true })
-
-  let optional = testData.field.optional
-  expect(optional).not.toBe(testData.field)
-  expect(optional.isOptional).toBeTruthy()
-  expect(optional.blankValue).toEqual(testData.defaultBlankValue)
-
-  let nullable = testData.field.nullable
-  expect(nullable).not.toBe(testData.field)
-  expect(nullable.isOptional).toBeFalsy()
-  expect(nullable.blankValue).toEqual(null)
+test('the maxLength option rejects strings strictly longer than the length parameter', () => {
+  const maxLength = string.nullable.optional.maxLength(10)
+  expect(isValid('', maxLength)).toBeTrue()
+  expect(isValid('abcdef', maxLength)).toBeTrue()
+  expect(isValid('abcdefghij', maxLength)).toBeTrue()
+  expect(isValid('abcdefghijklm', maxLength)).toBeFalse()
+  expect(isValid(null, maxLength)).toBeTrue()
+  expect(isValid(undefined, maxLength)).toBeTrue()
 })

@@ -1,4 +1,6 @@
 import { StringField } from './string'
+import { NumberField } from './number'
+import { BooleanField } from './boolean'
 import { Likelihood } from '@module/inference'
 import { ValidationResult } from '@module/validation'
 
@@ -46,4 +48,23 @@ export interface Field<T> {
   validate(value: T): ValidationResult
 }
 
+/**
+ * Describes a boolean field.
+ */
+export const boolean = new BooleanField<never>()
+
+/**
+ * Describes a number field.
+ */
+export const number = new NumberField<never>()
+
+/**
+ * Describes a string field.
+ */
 export const string = new StringField<never>()
+
+// generic fields
+export { arrayFieldFactory as array } from './array'
+export { enumFieldFactory as enumeration } from './enum'
+export { objectFieldFactory as object } from './object'
+export { refFieldFactory as ref } from './ref'
