@@ -50,21 +50,21 @@ export type ResourceItemType<Descriptor extends ResourceDescriptor> =
 
 export type Key = string | number
 
-interface SendAndReceive<ItemType> {
+export interface SendAndReceive<ItemType> {
   /**
    * Reads one item from the resource.
    * @param key The primary key of the item.
    * @param args Arguments to pass to the query parameters.
    * @see getAll
    */
-  get(key: Key, args?: Record<string, any>): ItemType
+  get(key: Key, args?: Record<string, any>): Promise<ItemType>
 
   /**
    * Reads all the items from the resource.
    * @param args Arguments to pass to the query parameters.
    * @see get
    */
-  getAll(args?: Record<string, any>): ItemType[]
+  getAll(args?: Record<string, any>): Promise<ItemType[]>
 
   /**
    * Sends an item to the resource. This method will always try to create a new items, use {@link save} instead if you
@@ -73,7 +73,7 @@ interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see sendMany
    */
-  send(item: ItemType, args?: Record<string, any>): void
+  send(item: ItemType, args?: Record<string, any>): Promise<void>
 
   /**
    * Sends a list of items to the resource. This method will always try to create new items, use {@link saveMany}
@@ -82,7 +82,7 @@ interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see send
    */
-  sendMany(items: ItemType[], args?: Record<string, any>): void
+  sendMany(items: ItemType[], args?: Record<string, any>): Promise<void>
 
   /**
    * Updates an item (or creates it if it's new).
@@ -90,7 +90,7 @@ interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see saveMany
    */
-  save(item: ItemType, args?: Record<string, any>): void
+  save(item: ItemType, args?: Record<string, any>): Promise<void>
 
   /**
    * Updates a list of items.
@@ -98,7 +98,7 @@ interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see save
    */
-  saveMany(items: ItemType[], args?: Record<string, any>): void
+  saveMany(items: ItemType[], args?: Record<string, any>): Promise<void>
 
   /**
    * Deletes an item. If the item hasn't been saved yet, this does nothing.
@@ -108,7 +108,7 @@ interface SendAndReceive<ItemType> {
    * @see deleteMany
    * @see deleteAll
    */
-  delete(item: ItemType, args?: Record<string, any>): void
+  delete(item: ItemType, args?: Record<string, any>): Promise<void>
 
   /**
    * Deletes the item corresponding to a key.
@@ -118,7 +118,7 @@ interface SendAndReceive<ItemType> {
    * @see deleteMany
    * @see deleteAll
    */
-  deleteKey(key: Key, args?: Record<string, any>): void
+  deleteKey(key: Key, args?: Record<string, any>): Promise<void>
 
   /**
    * Deletes a list of items. If no item has been saved yet, this does nothing.
@@ -128,7 +128,7 @@ interface SendAndReceive<ItemType> {
    * @see deleteKey
    * @see deleteAll
    */
-  deleteMany(items: ItemType[], args?: Record<string, any>): void
+  deleteMany(items: ItemType[], args?: Record<string, any>): Promise<void>
 
   /**
    * Deletes all the items from the resource.
@@ -137,7 +137,7 @@ interface SendAndReceive<ItemType> {
    * @see deleteKey
    * @see deleteMany
    */
-  deleteAll(args?: Record<string, any>): void
+  deleteAll(args?: Record<string, any>): Promise<void>
 }
 
 export interface Resource<ItemType> extends SendAndReceive<ItemType> {
@@ -152,39 +152,16 @@ export interface Resource<ItemType> extends SendAndReceive<ItemType> {
   key: keyof ItemType
 }
 
-export abstract class ResourceChain<ItemType> implements SendAndReceive<ItemType> {
-  private readonly _keyName: keyof ItemType
-  private _next?: ResourceChain<ItemType>
+export interface Manager<ItemType> {
+  /**
+   * The name of the primary key used to index this resource.
+   */
+  key: keyof ItemType
 
-  public constructor(keyName: keyof ItemType) {
-    this._keyName = keyName
-  }
-
-  public addNext(next: ResourceChain<ItemType>): void {
-    this._next = next
-  }
-
-  protected get keyName(): keyof ItemType {
-    return this._keyName
-  }
-
-  public abstract get(key: Key, args?: Record<string, any> | undefined): ItemType
-
-  public abstract getAll(args?: Record<string, any> | undefined): ItemType[]
-
-  public abstract send(item: ItemType, args?: Record<string, any> | undefined): void
-
-  public abstract sendMany(items: ItemType[], args?: Record<string, any> | undefined): void
-
-  public abstract save(item: ItemType, args?: Record<string, any> | undefined): void
-
-  public abstract saveMany(items: ItemType[], args?: Record<string, any> | undefined): void
-
-  public abstract delete(item: ItemType, args?: Record<string, any> | undefined): void
-
-  public abstract deleteKey(key: Key, args?: Record<string, any> | undefined): void
-
-  public abstract deleteMany(items: ItemType[], args?: Record<string, any> | undefined): void
-
-  public abstract deleteAll(args?: Record<string, any> | undefined): void
+  /**
+   * Checks if an item was just created.
+   * @param item The item to check.
+   * @returns `true` if the item has never been sent nor saved, `false` otherwise.
+   */
+  isNew(item: ItemType): boolean
 }

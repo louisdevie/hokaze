@@ -1,6 +1,6 @@
-import { MappedField } from '.'
 import { Field } from '@module/fields'
-import __ from '@module/locale'
+import { Result } from '@module/result'
+import { MappedField } from './base'
 
 export class AnyMappedField<T> extends MappedField {
   private readonly _descriptor: Field<T>
@@ -15,21 +15,19 @@ export class AnyMappedField<T> extends MappedField {
     return this._descriptor
   }
 
-  public packValue(value: any): any {
+  public packValue(value: any): Result<any> {
+    let result
+
     if (!this.descriptor.isWritable) {
-      value = undefined
+      result = Result.ok(undefined)
+    } else {
+      result = Result.withValidation(value, this.descriptor.validate(value))
     }
 
-    if (!this.descriptor.isOptional) {
-      throw new Error
-    }
-
-    if (this.descriptor.)
-
-    return value
+    return result
   }
 
-  public unpackValue(value: any): any {
-    throw new Error('Method not implemented.')
+  public unpackValue(value: any): Result<any> {
+    return Result.ok(this.descriptor.isReadable ? value : undefined)
   }
 }

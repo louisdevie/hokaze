@@ -12,7 +12,8 @@
   "scripts": {
     "build-translations": "elzii-release",
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write src/** test/**"
   },
   "keywords": [],
   "author": "Louis DEVIE",

@@ -62,7 +62,7 @@ test.each(allTestData)('any field can be made write-only', (testData: TestData<u
 test.each(allTestData)('any field can be flagged as the id', (testData: TestData<unknown>) => {
   let asId = testData.field.asId
   expect(asId).not.toBe(testData.field)
-  expect(asId.isTheId({ fieldName: '', resourceName: '' })).toEqual(Likelihood.explicit())
+  expect(asId.isKey({ fieldName: '', resourceName: '' })).toEqual(Likelihood.explicit())
 })
 
 test.each(allTestData)('any field can be made optional', (testData: TestData<unknown>) => {

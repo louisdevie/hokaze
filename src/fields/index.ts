@@ -3,7 +3,7 @@ import { NumberField } from './number'
 import { BooleanField } from './boolean'
 import { Likelihood } from '@module/inference'
 import { ValidationResult } from '@module/validation'
-import { MappedField } from '@module/resources/mappers'
+import { MappedField } from '@module/resources/mappers/base'
 import { MappingFactory } from '@module/resources/mappers/factory'
 
 /**
@@ -41,7 +41,7 @@ export interface Field<T> {
   /**
    * Check how likely it is for this field to be the id of the resource.
    */
-  isTheId(hints: FieldRoleHints): Likelihood
+  isKey(hints: FieldRoleHints): Likelihood
 
   /**
    * Check if a value meets the different requirements of the field before being sent.

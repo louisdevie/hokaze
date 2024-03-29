@@ -1,8 +1,10 @@
-import { ResourceDescriptor, ResourceFields, ResourceItemType } from '@module/resources'
+import { Key, ResourceDescriptor, ResourceFields, ResourceItemType } from '@module/resources'
 import { AutoMappedField } from './auto'
 import { MappingFactoryImpl } from '@module/resources/mappers/factory'
+import { Result } from '@module/result'
+import { MappedField } from './base'
 
-export class Mapper<Descriptor extends ResourceDescriptor> {
+export class Mapper<Descriptor extends ResourceDescriptor, ItemType extends ResourceItemType<Descriptor>> {
   private readonly _send: Map<string, MappedField>
   private readonly _receive: Map<string, MappedField>
 
@@ -16,9 +18,79 @@ export class Mapper<Descriptor extends ResourceDescriptor> {
     }
   }
 
-  public packItem(item: ResourceItemType<Descriptor>): any {}
+  public packItem(item: ItemType): Result<any> {
+    const dto: any = {}
+    const errors = []
 
-  public unpackItem(dto: any): ResourceItemType<Descriptor> {}
+    for (const property in item) {
+      const mapping = this._send.get(property)
+      if (mapping !== undefined) {
+        const mapped = mapping.packValue(item[property])
+        if (mapped.success) {
+          dto[mapping.transferProperty] = mapped.value
+        } else {
+          errors.push(`[${property}] ${mapped.error}`)
+        }
+      }
+    }
+
+    let result
+    if (errors.length > 0) {
+      result = Result.error('Errors when packing item: ' + errors.join(', '))
+    } else {
+      result = Result.ok(dto)
+    }
+
+    return result
+  }
+
+  public packItemsArray(items: ItemType[]): Result<any[]> {
+    return Result.mapArray(items, item => this.packItem(item), Mapper.joinArrayErrors)
+  }
+
+  public unpackItem(dto: any): Result<ItemType> {
+    const item: any = {}
+    const errors = []
+
+    for (const property in dto) {
+      const mapping = this._receive.get(property)
+      if (mapping !== undefined) {
+        const mapped = mapping.unpackValue(dto[property])
+        if (mapped.success) {
+          item[mapping.modelProperty] = mapped.value
+        } else {
+          errors.push(`[${property}] ${mapped.error}`)
+        }
+      }
+    }
+
+    let result: Result<ItemType>
+    if (errors.length > 0) {
+      result = Result.error('Errors when unpacking item: ' + errors.join(', '))
+    } else {
+      result = Result.ok(item as ItemType)
+    }
+
+    return result
+  }
+
+  public unpackItemsArray(dtos: any[]): Result<ItemType[]> {
+    return Result.mapArray(dtos, dto => this.unpackItem(dto), Mapper.joinArrayErrors)
+  }
+
+  public tryToUnpackKey(dto: any, keyProperty: string): Result<Key | undefined> {
+    let idFound = undefined
+
+    const mapping = this._send.get(keyProperty)
+    if (mapping !== undefined) {
+      const mapped = mapping.unpackValue(dto[mapping.transferProperty])
+      if (mapped.success) {
+        idFound = mapped.value
+      }
+    }
+
+    return idFound
+  }
 
   private static mapFields(fields: ResourceFields): MappedField[] {
     const mapped = []
@@ -36,26 +108,8 @@ export class Mapper<Descriptor extends ResourceDescriptor> {
 
     return mapped
   }
-}
 
-export abstract class MappedField {
-  private readonly _modelProperty: string
-  private readonly _transferProperty: string
-
-  protected constructor(modelProperty: string, transferProperty: string) {
-    this._modelProperty = modelProperty
-    this._transferProperty = transferProperty
+  private static joinArrayErrors(errors: string[]): string {
+  return errors.map((error, i) => `[${i}] ${error}`).join('; ')
   }
-
-  public get modelProperty(): string {
-    return this._modelProperty
-  }
-
-  public get transferProperty(): string {
-    return this._transferProperty
-  }
-
-  public abstract packValue(value: any): any
-
-  public abstract unpackValue(value: any): any
 }

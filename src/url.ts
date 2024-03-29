@@ -1,3 +1,5 @@
+import { Key } from './resources'
+
 export interface UrlTemplateOptions {}
 
 export type UrlSearchArgs = Record<string, any>
@@ -32,15 +34,24 @@ export class UrlTemplate {
   public getUrlForResource(path: string, args: UrlSearchArgs): URL {
     const resourceUrl = new URL(path, this._base)
     UrlTemplate.stripTrailingSeparator(resourceUrl)
+    UrlTemplate.addSearchArgs(resourceUrl, args)
+    return resourceUrl
+  }
 
+  public getUrlForItem(path: string, key: Key, args: UrlSearchArgs): URL {
+    const itemUrl = this.getUrlForResource(path, {})
+    itemUrl.pathname += '/' + key
+    UrlTemplate.addSearchArgs(itemUrl, args)
+    return itemUrl
+  }
+
+  private static addSearchArgs(url: URL, args: UrlSearchArgs): void {
     for (const name in args) {
       if (args[name] === null) {
-        resourceUrl.searchParams.append(name, 'null')
+        url.searchParams.append(name, 'null')
       } else if (args[name] !== undefined) {
-        resourceUrl.searchParams.append(name, args[name].toString())
+        url.searchParams.append(name, args[name].toString())
       }
     }
-
-    return resourceUrl
   }
 }

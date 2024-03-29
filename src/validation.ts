@@ -3,14 +3,12 @@
  */
 export type ValidationResult = { isValid: true } | { isValid: false; reason: string }
 
-
 /**
  * Creates a *valid* result.
  */
 export function valid(): ValidationResult {
   return { isValid: true }
 }
-
 
 /**
  * Creates an *invalid* result.

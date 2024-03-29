@@ -1,5 +1,6 @@
 import { Field } from '@module/fields'
-import { MappedField } from '.'
+import { MappedField } from './base'
+import { AnyMappedField } from './any'
 
 export interface MappingFactory {
   makeGenericMapping(field: Field<unknown>): MappedField
@@ -13,6 +14,6 @@ export class MappingFactoryImpl implements MappingFactory {
   }
 
   public makeGenericMapping(field: Field<unknown>): MappedField {
-    throw new Error('Method not implemented.')
+    return new AnyMappedField(this._name, field)
   }
 }

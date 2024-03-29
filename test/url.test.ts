@@ -19,26 +19,44 @@ test('path separators are added and/or removed to normalize resource URLs', () =
   expect(withoutSeparator.getUrlForResource('fruits/', {})).toEqual(sameExpectedResult)
 })
 
-test('query parameters can be added to a resource URL', () => {
+test('query parameters can be added to resource and item URLs', () => {
   const template = new UrlTemplate('https://my.api.com/v1/', {})
 
-  const url = template.getUrlForResource('fruits', {
+  const args = {
     text: 'hello',
     number: 34,
     enable: true,
     noValue: null,
     notIncluded: undefined,
     'kebab-case-param': 'a: b',
-  })
+  }
 
-  expect(url.origin).toEqual('https://my.api.com')
-  expect(url.pathname).toEqual('/v1/fruits')
-  expect(url.search).toContain('kebab-case-param=a%3A+b') // test if percent encoding is used
-  expect(Array.from(url.searchParams)).toEqual([
+  const resourceUrl = template.getUrlForResource('fruits', args)
+  const itemUrl = template.getUrlForItem('fruits', 2, args)
+
+  expect(resourceUrl.origin).toEqual('https://my.api.com')
+  expect(itemUrl.origin).toEqual('https://my.api.com')
+
+  expect(resourceUrl.pathname).toEqual('/v1/fruits')
+  expect(itemUrl.pathname).toEqual('/v1/fruits/2')
+
+  // test if percent encoding is used
+  expect(resourceUrl.search).toContain('kebab-case-param=a%3A+b')
+  expect(itemUrl.search).toContain('kebab-case-param=a%3A+b')
+
+  const expectedSearchParams = [
     ['text', 'hello'],
     ['number', '34'],
     ['enable', 'true'],
     ['noValue', 'null'],
     ['kebab-case-param', 'a: b'],
-  ])
+  ]
+  expect(Array.from(resourceUrl.searchParams)).toIncludeSameMembers(expectedSearchParams)
+  expect(Array.from(itemUrl.searchParams)).toIncludeSameMembers(expectedSearchParams)
+})
+
+test('an item URL is the base followed by the name of the resource and the key', () => {
+  const template = new UrlTemplate('https://my.api.com/v1/', {})
+
+  expect(template.getUrlForItem('fruits', 2, {})).toEqual(new URL('https://my.api.com/v1/fruits/2'))
 })

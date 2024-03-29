@@ -1,8 +1,8 @@
 import { Field, FieldRoleHints } from '.'
 import { Infer, Likelihood } from '@module/inference'
-import { ValidationResult } from '@module/validation'
+import { ValidationResult, invalid } from '@module/validation'
 import { Checks, NoChecks } from './checks'
-import { MappedField } from '@module/resources/mappers'
+import { MappedField } from '@module/resources/mappers/base'
 import { MappingFactory } from '@module/resources/mappers/factory'
 
 /**
@@ -92,12 +92,18 @@ export abstract class AnyField<T, Self> implements Field<T> {
     return this._isOptional
   }
 
-  public isTheId(hints: FieldRoleHints): Likelihood {
+  public isKey(hints: FieldRoleHints): Likelihood {
     return this._useAsId ? Likelihood.explicit() : Infer.isImplicitId(hints)
   }
 
   public validate(value: T): ValidationResult {
-    return this._checks.validate(value)
+    let result
+    if (this.isOptional || value !== undefined) {
+      result = this._checks.validate(value)
+    } else {
+      result = invalid('Required value missing.')
+    }
+    return result
   }
 
   public makeMapping(factory: MappingFactory): MappedField {
