@@ -2,6 +2,8 @@ import { Field, FieldRoleHints } from '.'
 import { Infer, Likelihood } from '@module/inference'
 import { ValidationResult } from '@module/validation'
 import { Checks, NoChecks } from './checks'
+import { MappedField } from '@module/resources/mappers'
+import { MappingFactory } from '@module/resources/mappers/factory'
 
 /**
  * Options shared by all fields.
@@ -96,6 +98,10 @@ export abstract class AnyField<T, Self> implements Field<T> {
 
   public validate(value: T): ValidationResult {
     return this._checks.validate(value)
+  }
+
+  public makeMapping(factory: MappingFactory): MappedField {
+    return factory.makeGenericMapping(this)
   }
 
   //endregion

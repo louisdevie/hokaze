@@ -3,6 +3,8 @@ import { NumberField } from './number'
 import { BooleanField } from './boolean'
 import { Likelihood } from '@module/inference'
 import { ValidationResult } from '@module/validation'
+import { MappedField } from '@module/resources/mappers'
+import { MappingFactory } from '@module/resources/mappers/factory'
 
 /**
  * Hints used to determine the role of a field.
@@ -46,6 +48,12 @@ export interface Field<T> {
    * @param value The value to check.
    */
   validate(value: T): ValidationResult
+
+  /**
+   * Creates a mapping for this field using the given factory.
+   * @param factory The factory to use to create the mapping.
+   */
+  makeMapping(factory: MappingFactory): MappedField
 }
 
 /**
