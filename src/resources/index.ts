@@ -1,4 +1,5 @@
 import { Field } from '../fields'
+import { UrlSearchArgs } from '@module/url'
 
 /**
  * Describes a collection of model objects.
@@ -57,14 +58,14 @@ export interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see getAll
    */
-  get(key: Key, args?: Record<string, any>): Promise<ItemType>
+  get(key: Key, args?: UrlSearchArgs): Promise<ItemType>
 
   /**
    * Reads all the items from the resource.
    * @param args Arguments to pass to the query parameters.
    * @see get
    */
-  getAll(args?: Record<string, any>): Promise<ItemType[]>
+  getAll(args?: UrlSearchArgs): Promise<ItemType[]>
 
   /**
    * Sends an item to the resource. This method will always try to create a new items, use {@link save} instead if you
@@ -73,7 +74,7 @@ export interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see sendMany
    */
-  send(item: ItemType, args?: Record<string, any>): Promise<void>
+  send(item: ItemType, args?: UrlSearchArgs): Promise<void>
 
   /**
    * Sends a list of items to the resource. This method will always try to create new items, use {@link saveMany}
@@ -82,7 +83,7 @@ export interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see send
    */
-  sendMany(items: ItemType[], args?: Record<string, any>): Promise<void>
+  sendMany(items: ItemType[], args?: UrlSearchArgs): Promise<void>
 
   /**
    * Updates an item (or creates it if it's new).
@@ -90,7 +91,7 @@ export interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see saveMany
    */
-  save(item: ItemType, args?: Record<string, any>): Promise<void>
+  save(item: ItemType, args?: UrlSearchArgs): Promise<void>
 
   /**
    * Updates a list of items.
@@ -98,7 +99,7 @@ export interface SendAndReceive<ItemType> {
    * @param args Arguments to pass to the query parameters.
    * @see save
    */
-  saveMany(items: ItemType[], args?: Record<string, any>): Promise<void>
+  saveMany(items: ItemType[], args?: UrlSearchArgs): Promise<void>
 
   /**
    * Deletes an item. If the item hasn't been saved yet, this does nothing.
@@ -108,7 +109,7 @@ export interface SendAndReceive<ItemType> {
    * @see deleteMany
    * @see deleteAll
    */
-  delete(item: ItemType, args?: Record<string, any>): Promise<void>
+  delete(item: ItemType, args?: UrlSearchArgs): Promise<void>
 
   /**
    * Deletes the item corresponding to a key.
@@ -118,7 +119,7 @@ export interface SendAndReceive<ItemType> {
    * @see deleteMany
    * @see deleteAll
    */
-  deleteKey(key: Key, args?: Record<string, any>): Promise<void>
+  deleteKey(key: Key, args?: UrlSearchArgs): Promise<void>
 
   /**
    * Deletes a list of items. If no item has been saved yet, this does nothing.
@@ -128,7 +129,7 @@ export interface SendAndReceive<ItemType> {
    * @see deleteKey
    * @see deleteAll
    */
-  deleteMany(items: ItemType[], args?: Record<string, any>): Promise<void>
+  deleteMany(items: ItemType[], args?: UrlSearchArgs): Promise<void>
 
   /**
    * Deletes all the items from the resource.
@@ -137,7 +138,7 @@ export interface SendAndReceive<ItemType> {
    * @see deleteKey
    * @see deleteMany
    */
-  deleteAll(args?: Record<string, any>): Promise<void>
+  deleteAll(args?: UrlSearchArgs): Promise<void>
 }
 
 export interface Resource<ItemType> extends SendAndReceive<ItemType> {
@@ -159,9 +160,27 @@ export interface Manager<ItemType> {
   key: keyof ItemType
 
   /**
+   * The type to expect for the primary key.
+   */
+  keyTypeHint: 'string' | 'number'
+
+  /**
    * Checks if an item was just created.
    * @param item The item to check.
    * @returns `true` if the item has never been sent nor saved, `false` otherwise.
    */
   isNew(item: ItemType): boolean
+
+  /**
+   * Gets the value of the {@link key} property.
+   * @param item The item to get the key of.
+   */
+  getKeyOf(item: ItemType): Key
+
+  /**
+   * Sets the value of the {@link key} property.
+   * @param item The item to set the key of.
+   * @param key The value to set for the property.
+   */
+  setKeyOf(item: ItemType, key: string | number): void
 }

@@ -1,4 +1,4 @@
-import { Key } from './resources'
+import type { Key } from './resources'
 
 export interface UrlTemplateOptions {}
 

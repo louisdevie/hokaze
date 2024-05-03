@@ -21,16 +21,20 @@ export class Result<T> {
     return validation.isValid ? Result.ok(value) : Result.error(validation.reason)
   }
 
-  public static mapArray<T, U>(array: T[], mapFn: (item: T) => Result<U>, concatErrsFn: (errors: string[]) => string): Result<U[]> {
+  public static mapArray<T, U>(
+    array: T[],
+    mapFn: (item: T) => Result<U>,
+    concatErrsFn: (errors: [string, number][]) => string,
+  ): Result<U[]> {
     const mappedValues: U[] = []
-    const errors: string[] = []
+    const errors: [string, number][] = []
 
-    for (const item of array) {
-      const mapped = mapFn(item)
+    for (let i = 0; i < array.length; i++) {
+      const mapped = mapFn(array[i])
       if (mapped.success) {
         mappedValues.push(mapped.value!)
       } else {
-        errors.push(mapped.error!)
+        errors.push([mapped.error!, i])
       }
     }
 

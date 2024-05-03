@@ -1,11 +1,11 @@
-import { Key, Resource } from '@module/resources'
+import { Key, Manager, Resource } from '@module/resources'
 
 export interface Fruit {
   id: number
   name: string
 }
 
-class FruitsResourceImpl implements Resource<Fruit> {
+class FruitsResourceImpl implements Resource<Fruit>, Manager<Fruit> {
   private _fruits: Map<number, Fruit>
 
   public constructor() {
@@ -17,17 +17,23 @@ class FruitsResourceImpl implements Resource<Fruit> {
     ])
   }
 
+  public isNew(item: Fruit): boolean {
+    return !this._fruits.has(item.id)
+  }
+
   public readonly key = 'id'
+
+  public readonly keyTypeHint = 'number'
 
   private notFound(key: Key): never {
     throw new Error(`Item not found for key '${key}'`)
   }
 
-  public get(key: Key): Fruit {
+  public async get(key: Key): Promise<Fruit> {
     return this._fruits.get(typeof key === 'number' ? key : this.notFound(key)) ?? this.notFound(key)
   }
 
-  public getAll(): Fruit[] {
+  public async getAll(): Promise<Fruit[]> {
     return Array.from(this._fruits.values())
   }
 
@@ -35,39 +41,43 @@ class FruitsResourceImpl implements Resource<Fruit> {
     return { id: 0, name: '' }
   }
 
-  public send(item: Fruit): void {
+  public async send(item: Fruit): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public sendMany(items: Fruit[]): void {
+  public async sendMany(items: Fruit[]): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public save(item: Fruit): void {
+  public async save(item: Fruit): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public saveMany(items: Fruit[]): void {
+  public async saveMany(items: Fruit[]): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public delete(item: Fruit): void {
+  public async delete(item: Fruit): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public deleteKey(key: Key): void {
+  public async deleteKey(key: Key): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public deleteMany(items: Fruit[]): void {
+  public async deleteMany(items: Fruit[]): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public deleteAll(): void {
+  public async deleteAll(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 }
 
-export default function fakeResource(): Resource<Fruit> {
+export function fakeResource(): Resource<Fruit> {
+  return new FruitsResourceImpl()
+}
+
+export function fakeManager(): Manager<Fruit> {
   return new FruitsResourceImpl()
 }

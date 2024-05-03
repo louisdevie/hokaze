@@ -1,5 +1,5 @@
 import { UrlTemplate } from './url'
-import { FetchHttpClient, HttpClient } from './backend/http'
+import { FetchHttpClient, HttpClient } from './backend/fetch'
 import { Resource, ResourceItemType, ResourceDescriptor } from './resources'
 
 export interface Service {}

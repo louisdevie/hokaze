@@ -45,7 +45,7 @@ export class Mapper<Descriptor extends ResourceDescriptor, ItemType extends Reso
   }
 
   public packItemsArray(items: ItemType[]): Result<any[]> {
-    return Result.mapArray(items, item => this.packItem(item), Mapper.joinArrayErrors)
+    return Result.mapArray(items, (item) => this.packItem(item), Mapper.joinArrayErrors)
   }
 
   public unpackItem(dto: any): Result<ItemType> {
@@ -75,17 +75,17 @@ export class Mapper<Descriptor extends ResourceDescriptor, ItemType extends Reso
   }
 
   public unpackItemsArray(dtos: any[]): Result<ItemType[]> {
-    return Result.mapArray(dtos, dto => this.unpackItem(dto), Mapper.joinArrayErrors)
+    return Result.mapArray(dtos, (dto) => this.unpackItem(dto), Mapper.joinArrayErrors)
   }
 
-  public tryToUnpackKey(dto: any, keyProperty: string): Result<Key | undefined> {
-    let idFound = undefined
+  public tryToUnpackKey(dto: any, keyProperty: string): Result<Key> {
+    let idFound: Result<Key> = Result.error('')
 
     const mapping = this._send.get(keyProperty)
     if (mapping !== undefined) {
       const mapped = mapping.unpackValue(dto[mapping.transferProperty])
       if (mapped.success) {
-        idFound = mapped.value
+        idFound = Result.ok(mapped.value)
       }
     }
 
@@ -109,7 +109,7 @@ export class Mapper<Descriptor extends ResourceDescriptor, ItemType extends Reso
     return mapped
   }
 
-  private static joinArrayErrors(errors: string[]): string {
-  return errors.map((error, i) => `[${i}] ${error}`).join('; ')
+  private static joinArrayErrors(errors: [string, number][]): string {
+    return errors.map(([error, i]) => `[${i}] ${error}`).join('; ')
   }
 }
