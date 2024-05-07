@@ -1,11 +1,12 @@
-import { Key, Manager, Resource } from '@module/resources'
+import { Key, CollectionResource } from '@module/resources'
+import { Manager } from '@module/resources/managers'
 
 export interface Fruit {
   id: number
   name: string
 }
 
-class FruitsResourceImpl implements Resource<Fruit>, Manager<Fruit> {
+class FruitsResourceImpl implements CollectionResource<Fruit>, Manager<Fruit> {
   private _fruits: Map<number, Fruit>
 
   public constructor() {
@@ -23,7 +24,7 @@ class FruitsResourceImpl implements Resource<Fruit>, Manager<Fruit> {
 
   public readonly key = 'id'
 
-  public readonly keyTypeHint = 'number'
+  public readonly keyKind = 'number'
 
   private notFound(key: Key): never {
     throw new Error(`Item not found for key '${key}'`)
@@ -74,7 +75,7 @@ class FruitsResourceImpl implements Resource<Fruit>, Manager<Fruit> {
   }
 }
 
-export function fakeResource(): Resource<Fruit> {
+export function fakeResource(): CollectionResource<Fruit> {
   return new FruitsResourceImpl()
 }
 

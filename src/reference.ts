@@ -1,24 +1,24 @@
-import { Key, Resource } from '@module/resources'
+import { Key, CollectionResource } from '@module/resources'
 import It = jest.It
 
 type RefState<ItemType> = { loaded: false } | { loaded: true; value: ItemType }
 
 export class Ref<ItemType> {
-  private readonly _resource: Resource<ItemType>
+  private readonly _resource: CollectionResource<ItemType>
   private _key: Key
   private _state: RefState<ItemType>
 
-  private constructor(resource: Resource<ItemType>, key: Key, state: RefState<ItemType>) {
+  private constructor(resource: CollectionResource<ItemType>, key: Key, state: RefState<ItemType>) {
     this._resource = resource
     this._key = key
     this._state = state
   }
 
-  public static fromKey<ItemType>(resource: Resource<ItemType>, key: Key): Ref<ItemType> {
+  public static fromKey<ItemType>(resource: CollectionResource<ItemType>, key: Key): Ref<ItemType> {
     return new Ref(resource, key, { loaded: false })
   }
 
-  public static fromValue<ItemType>(resource: Resource<ItemType>, value: ItemType): Ref<ItemType> {
+  public static fromValue<ItemType>(resource: CollectionResource<ItemType>, value: ItemType): Ref<ItemType> {
     return new Ref(resource, value[resource.key] as any, { loaded: true, value })
   }
 
@@ -68,6 +68,6 @@ export class Ref<ItemType> {
   }
 
   private async reload(): Promise<void> {
-    this.value = this._resource.get(this.key)
+    this.value = await this._resource.get(this.key)
   }
 }

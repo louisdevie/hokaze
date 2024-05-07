@@ -40,7 +40,7 @@ export class DatetimeField<N> extends AnyField<number | N, DatetimeField<N>> {
   }
 
   public override get nullable(): DatetimeField<N | null> {
-    return new DatetimeField<N | null>(this, { blankValue: explicitBlankValue(null) })
+    return new DatetimeField<N | null>(this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion

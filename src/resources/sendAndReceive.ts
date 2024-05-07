@@ -1,37 +1,37 @@
-import { Key, Manager, SendAndReceive } from '.'
-import { HttpClient, PostResult } from '@module/backend'
+import { Key, SendAndReceive } from '.'
+import { HttpClient, CreationResult } from '@module/backend'
 import { UrlSearchArgs, UrlTemplate } from '@module/url'
 import { Mapper } from './mappers'
 import { ResourceCache } from './cache'
 import __ from '@module/locale'
+import { Manager } from '@module/resources/managers'
+
+export interface Layers<ItemType extends object> {
+  readonly manager: Manager<ItemType>
+  readonly mapper: Mapper<any, ItemType>
+  readonly cache: ResourceCache<ItemType>
+  readonly client: HttpClient
+}
 
 export class SendAndReceiveImpl<ItemType extends object> implements SendAndReceive<ItemType> {
-  private readonly _manager: Manager<ItemType>
-  private readonly _client: HttpClient
-  private readonly _cache: ResourceCache<ItemType>
+  private readonly _layers: Layers<ItemType>
   private readonly _urlTemplate: UrlTemplate
   private readonly _urlPath: string
-  private readonly _mapper: Mapper<any, ItemType>
   private _keyExtractionMethods: KeyExtractionMethod[]
   private _foundBestMethod: boolean
 
   public constructor(
-    manager: Manager<ItemType>,
-    cache: ResourceCache<ItemType>,
-    client: HttpClient,
+    layers: Layers<ItemType>,
     baseUrl: UrlTemplate,
     path: string,
     mapper: Mapper<any, ItemType>,
   ) {
-    this._manager = manager
-    this._cache = cache
-    this._client = client
+    this._layers = layers
     this._urlTemplate = baseUrl
     this._urlPath = path
-    this._mapper = mapper
 
     this._keyExtractionMethods = [
-      new ExtractFromObjectBody(mapper, manager.key as string),
+      new ExtractFromObjectBody(mapper, this._layers.manager.key as string),
       new ExtractFromKeyBody(),
       new ExtractFromLocationUrl(baseUrl.getUrlForResource(path, {}), manager.keyTypeHint),
     ]
@@ -157,7 +157,7 @@ export class SendAndReceiveImpl<ItemType extends object> implements SendAndRecei
     await this._client.delete(url)
   }
 
-  private tryToExtractId(postResult: PostResult): Key | undefined {
+  private tryToExtractId(postResult: CreationResult): Key | undefined {
     let keyFound = undefined
     let i
     for (i = 0; i < this._keyExtractionMethods.length && keyFound === undefined; i++) {
@@ -174,74 +174,3 @@ export class SendAndReceiveImpl<ItemType extends object> implements SendAndRecei
   }
 }
 
-interface KeyExtractionMethod {
-  tryToExtractKey(postResult: PostResult): Key | undefined
-}
-
-class ExtractFromObjectBody implements KeyExtractionMethod {
-  private readonly _mapper: Mapper<any, any>
-  private readonly _key: string
-
-  public constructor(mapper: Mapper<any, any>, key: string) {
-    this._mapper = mapper
-    this._key = key
-  }
-
-  public tryToExtractKey(postResult: PostResult): Key | undefined {
-    let keyFound = undefined
-
-    if (typeof postResult.responseBody === 'object') {
-      keyFound = this._mapper.tryToUnpackKey(postResult.responseBody, this._key).value
-    }
-
-    return keyFound
-  }
-}
-
-class ExtractFromKeyBody implements KeyExtractionMethod {
-  public tryToExtractKey(postResult: PostResult): Key | undefined {
-    let keyFound = undefined
-
-    if (typeof postResult.responseBody === 'string' || typeof postResult.responseBody === 'number') {
-      keyFound = postResult.responseBody
-    }
-
-    return keyFound
-  }
-}
-
-class ExtractFromLocationUrl implements KeyExtractionMethod {
-  private readonly _plainResourceUrl: URL
-  private readonly _keyTypeHint: 'string' | 'number'
-
-  public constructor(plainResourceUrl: URL, keyTypeHint: 'string' | 'number') {
-    this._plainResourceUrl = plainResourceUrl
-    this._keyTypeHint = keyTypeHint
-  }
-
-  public tryToExtractKey(postResult: PostResult): Key | undefined {
-    let keyFound = undefined
-
-    if (postResult.location !== null) {
-      try {
-        const locationPath = new URL(postResult.location).pathname
-        const resourcePath = this._plainResourceUrl.pathname + '/'
-
-        if (locationPath.startsWith(resourcePath)) {
-          const stringKey = locationPath.substring(resourcePath.length)
-          const intKey = parseInt(stringKey)
-
-          if (!isNaN(intKey) && this._keyTypeHint === 'number') {
-            keyFound = intKey
-          } else {
-            keyFound = stringKey
-          }
-        }
-      } catch {
-        /* ignore TypeErrors when creating the location URL */
-      }
-    }
-
-    return keyFound
-  }
-}

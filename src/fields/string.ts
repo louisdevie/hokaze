@@ -1,6 +1,7 @@
 import { AnyField, FieldOpts, explicitBlankValue } from './any'
 import { MaximumLengthCheck } from '@module/fields/checks/string/maximumLength'
 import { NotEmptyCheck } from '@module/fields/checks/string/notEmpty'
+import { KeyKind } from '@module/fields/index'
 
 type StringFieldOpts<N> = FieldOpts<string | N>
 
@@ -15,6 +16,10 @@ export class StringField<N> extends AnyField<string | N, StringField<N>> {
 
   protected get defaultBlankValue(): string | N {
     return ''
+  }
+
+  public get keyKind(): KeyKind {
+    return 'literal'
   }
 
   protected cloneAsSelf(options: StringFieldOpts<N>): StringField<N> {
@@ -43,7 +48,7 @@ export class StringField<N> extends AnyField<string | N, StringField<N>> {
   }
 
   public override get nullable(): StringField<N | null> {
-    return new StringField<N | null>(this, { blankValue: explicitBlankValue(null) })
+    return new StringField<N | null>(this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion

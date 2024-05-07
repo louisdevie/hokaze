@@ -41,7 +41,7 @@ export class ObjectField<O extends object, N> extends AnyField<O | N, ObjectFiel
   }
 
   public override get nullable(): ObjectField<O, N | null> {
-    return new ObjectField<O, N | null>(this._fields, this, { blankValue: explicitBlankValue(null) })
+    return new ObjectField<O, N | null>(this._fields, this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion

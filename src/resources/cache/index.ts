@@ -1,13 +1,26 @@
 import type { Key } from '@module/resources'
+import { UrlSearchArgs } from '@module/url'
+import { OptionalSearchArgs } from '@module/resources/helpers'
 
-export interface ResourceCache<T> {
+export enum OperationFailureReason {
+  /**
+   * No response was received.
+   */
+  Offline,
+  /**
+   * A negative response was received.
+   */
+  Rejected,
+}
+
+export interface ResourceCache {
   /**
    * Triggered when a single item is about to be queried. If this method returns something other than `undefined`, the
    * request is interrupted and that value is returned instead.
    * @param key The primary key of the item.
    * @param search Additional arguments in the request.
    */
-  beforeGet(key: Key, search: SearchArgs | undefined): Promise<T | undefined>
+  beforeGettingOne(key: Key, search: OptionalSearchArgs): Promise<any | undefined>
 
   /**
    * Triggered when a single item has been received.
@@ -15,52 +28,89 @@ export interface ResourceCache<T> {
    * @param search Additional arguments in the request.
    * @param result The result of the request.
    */
-  afterGet(key: Key, search: SearchArgs | undefined, result: T): Promise<void>
+  afterGettingOne(key: Key, search: OptionalSearchArgs, result: any): Promise<void>
 
   /**
    * Triggered when all the items are about to be queried. If this method returns something other than `undefined`, the
    * request is interrupted and that value is returned instead.
    * @param search Additional arguments in the request.
    */
-  beforeGetAll(search: SearchArgs | undefined): Promise<T[] | undefined>
+  beforeGettingAll(search: OptionalSearchArgs): Promise<any[] | undefined>
 
   /**
    * Triggered when all the items have been received.
    * @param search Additional arguments in the request.
    * @param result The result of the request.
    */
-  afterGetAll(search: SearchArgs | undefined, result: T[]): Promise<void>
+  afterGettingAll(search: OptionalSearchArgs, result: any[]): Promise<void>
 
   /**
-   * Triggered when an item is about to be sent.
+   * Triggered when an item is about to be saved.
+   * @param dto The item that is being saved.
+   * @param key The key of the item, or `null` if the item is new.
+   * @param search Additional arguments in the request.
+   */
+  beforeSavingOne(dto: any, key: Key | null, search: OptionalSearchArgs): Promise<void>
+
+  /**
+   * Triggered when an item was successfully saved.
+   * @param dto The item that was saved.
+   * @param key The key of the item, or `null` if the item is new.
+   * @param search Additional arguments in the request.
+   */
+  afterSavingOne(dto: any, key: Key | null, search: OptionalSearchArgs): Promise<void>
+
+  /**
+   * Triggered when an item failed to be saved.
+   * @param dto The item with which the problem occurred.
+   * @param key The key of the item, or `null` if the item is new.
+   * @param search Additional arguments in the request.
+   * @param reason The reason why the operation failed.
+   */
+  couldNotSaveOne(dto: any, key: Key | null, search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
+
+  /**
+   * Triggered when an item is about to be deleted.
    * @param key The key of the item.
-   * @param item The item that is being sent.
    * @param search Additional arguments in the request.
-   * @param result A promise representing the sending operation.
    */
-  onSend(key: Key, item: T, search: SearchArgs | undefined, result: Promise<void>): Promise<void>
+  beforeDeletingOne(key: Key, search: OptionalSearchArgs): Promise<void>
 
   /**
-   * Triggered when multiple items are about to be sent.
-   * @param keyAndItems The items that are being sent and their respective keys.
+   * Triggered when an item was successfully deleted.
+   * @param key The key of the item.
    * @param search Additional arguments in the request.
-   * @param result A promise representing the sending operation.
    */
-  onSendMany(keyAndItems: [Key, T][], search: SearchArgs | undefined, result: Promise<void>): Promise<void>
+  afterDeletingOne(key: Key, search: OptionalSearchArgs): Promise<void>
 
-  onSave(key: Key, item: T, search: SearchArgs | undefined, result: Promise<void>): Promise<void>
+  /**
+   * Triggered when an item failed to be deleted.
+   * @param key The key of the item.
+   * @param search Additional arguments in the request.
+   * @param reason The reason why the operation failed.
+   */
+  couldNotDeleteOne(key: Key, search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
 
-  onSaveMany(items: T[], search: SearchArgs | undefined, result: Promise<void>): Promise<void>
+  /**
+   * Triggered when all the items are about to be deleted.
+   * @param search Additional arguments in the request.
+   */
+  beforeDeletingAll(search: OptionalSearchArgs): Promise<void>
 
-  onDelete(item: T, search: SearchArgs | undefined, result: Promise<void>): Promise<void>
+  /**
+   * Triggered when all the items were successfully deleted.
+   * @param search Additional arguments in the request.
+   */
+  afterDeletingAll(search: OptionalSearchArgs): Promise<void>
 
-  onDeleteKey(key: Key, search: SearchArgs | undefined, result: Promise<void>): Promise<void>
-
-  onDeleteMany(items: T[], search: SearchArgs | undefined, result: Promise<void>): Promise<void>
-
-  onDeleteAll(search: SearchArgs | undefined, result: Promise<void>): Promise<void>
+  /**
+   * Triggered when some of the items failed to be deleted.
+   * @param search Additional arguments in the request.
+   * @param reason The reason why the operation failed.
+   */
+  couldNotDeleteAll(search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
 }
 
 export interface ServiceCache {
-  resource<T>(name: string): Promise<ResourceCache<T>>
+  resource(name: string): Promise<ResourceCache>
 }

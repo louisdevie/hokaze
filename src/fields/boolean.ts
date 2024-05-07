@@ -26,7 +26,7 @@ export class BooleanField<N> extends AnyField<boolean | N, BooleanField<N>> {
   }
 
   public override get nullable(): BooleanField<N | null> {
-    return new BooleanField<N | null>(this, { blankValue: explicitBlankValue(null) })
+    return new BooleanField<N | null>(this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion

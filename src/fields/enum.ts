@@ -48,7 +48,7 @@ export class EnumField<E, N> extends AnyField<E | N, EnumField<E, N>> {
   }
 
   public override get nullable(): EnumField<E, N | null> {
-    return new EnumField<E, N | null>(this._adapter, this, { blankValue: explicitBlankValue(null) })
+    return new EnumField<E, N | null>(this._adapter, this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion

@@ -7,7 +7,7 @@ export interface MappingFactory {
 }
 
 export class MappingFactoryImpl implements MappingFactory {
-  private _name: string
+  private readonly _name: string
 
   public constructor(name: string) {
     this._name = name

@@ -1,7 +1,6 @@
 import { AnyField, FieldOpts, explicitBlankValue } from './any'
-import { Field } from '@module/fields/index'
 import { Ref } from '@module/reference'
-import { Resource } from '@module/resources'
+import { CollectionResource } from '@module/resources'
 
 type ReferenceForm = 'id' | 'idObject' | 'fullObject'
 
@@ -16,10 +15,10 @@ interface RefFieldOpts<R, N> extends FieldOpts<Ref<R> | N> {
  * @template N The nullability of the field.
  */
 export class RefField<R, N> extends AnyField<Ref<R> | N, RefField<R, N>> {
-  private readonly _resource: Resource<R>
+  private readonly _resource: CollectionResource<R>
   private readonly _serializeAs: ReferenceForm
 
-  public constructor(resource: Resource<R>, copyFrom?: RefField<R, N>, options?: RefFieldOpts<R, N>) {
+  public constructor(resource: CollectionResource<R>, copyFrom?: RefField<R, N>, options?: RefFieldOpts<R, N>) {
     super(copyFrom, options)
 
     this._resource = resource
@@ -58,7 +57,7 @@ export class RefField<R, N> extends AnyField<Ref<R> | N, RefField<R, N>> {
   }
 
   public override get nullable(): RefField<R, N | null> {
-    return new RefField<R, N | null>(this._resource, this, { blankValue: explicitBlankValue(null) })
+    return new RefField<R, N | null>(this._resource, this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion
@@ -67,6 +66,6 @@ export class RefField<R, N> extends AnyField<Ref<R> | N, RefField<R, N>> {
 /**
  * Describes a field that references another resource.
  */
-export function refFieldFactory<R>(resource: Resource<R>): RefField<R, never> {
+export function refFieldFactory<R>(resource: CollectionResource<R>): RefField<R, never> {
   return new RefField<R, never>(resource)
 }

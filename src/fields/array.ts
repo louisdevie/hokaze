@@ -33,7 +33,7 @@ export class ArrayField<E, N> extends AnyField<E[] | N, ArrayField<E, N>> {
   }
 
   public override get nullable(): ArrayField<E, N | null> {
-    return new ArrayField<E, N | null>(this._element, this, { blankValue: explicitBlankValue(null) })
+    return new ArrayField<E, N | null>(this._element, this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion

@@ -1,6 +1,6 @@
 import { UrlTemplate } from './url'
 import { FetchHttpClient, HttpClient } from './backend/fetch'
-import { Resource, ResourceItemType, ResourceDescriptor } from './resources'
+import { CollectionResource, ResourceItemType, ResourceDescriptor } from './resources'
 
 export interface Service {}
 
@@ -18,7 +18,7 @@ export class RestServiceImpl implements Service {
     this._client = client
   }
 
-  public resource<Opts extends ResourceDescriptor>(options: Opts): Resource<ResourceItemType<Opts>> {
+  public resource<Opts extends ResourceDescriptor>(options: Opts): CollectionResource<ResourceItemType<Opts>> {
     return {}
   }
 }

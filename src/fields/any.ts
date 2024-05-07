@@ -1,4 +1,4 @@
-import { Field, FieldRoleHints } from '.'
+import { Field, FieldRoleHints, KeyKind } from '.'
 import { Infer, Likelihood } from '@module/inference'
 import { ValidationResult, invalid } from '@module/validation'
 import { Checks, NoChecks } from './checks'
@@ -13,7 +13,8 @@ export interface FieldOpts<T> {
   blankValue?: BlankValue<T>
   isReadable?: boolean
   isWritable?: boolean
-  useAsId?: boolean
+  useAsKey?: boolean
+  isNullable?: boolean
   isOptional?: boolean
   checks?: Checks<T>
 }
@@ -34,8 +35,9 @@ export abstract class AnyField<T, Self> implements Field<T> {
   private readonly _blankValue: BlankValue<T>
   private readonly _isReadable: boolean
   private readonly _isWritable: boolean
+  private readonly _isNullable: boolean
   private readonly _isOptional: boolean
-  private readonly _useAsId: boolean
+  private readonly _useAsKey: boolean
   private readonly _checks: Checks<T>
 
   /**
@@ -48,8 +50,9 @@ export abstract class AnyField<T, Self> implements Field<T> {
     this._blankValue = options?.blankValue ?? copyFrom?._blankValue ?? { variant: 'unspecified' }
     this._isReadable = options?.isReadable ?? copyFrom?._isReadable ?? true
     this._isWritable = options?.isWritable ?? copyFrom?._isWritable ?? true
+    this._isNullable = options?.isNullable ?? copyFrom?._isNullable ?? false
     this._isOptional = options?.isOptional ?? copyFrom?._isOptional ?? false
-    this._useAsId = options?.useAsId ?? copyFrom?._useAsId ?? false
+    this._useAsKey = options?.useAsKey ?? copyFrom?._useAsKey ?? false
     this._checks = options?.checks ?? copyFrom?._checks ?? new NoChecks()
   }
 
@@ -88,12 +91,28 @@ export abstract class AnyField<T, Self> implements Field<T> {
     return this._isWritable
   }
 
+  public get isNullable(): boolean {
+    return this._isNullable
+  }
+
   public get isOptional(): boolean {
     return this._isOptional
   }
 
+  public get keyKind(): KeyKind | null {
+    return null
+  }
+
   public isKey(hints: FieldRoleHints): Likelihood {
-    return this._useAsId ? Likelihood.explicit() : Infer.isImplicitId(hints)
+    let likelihood
+    if (this._useAsKey) {
+      likelihood = Likelihood.explicit()
+    } else if (this.keyKind == null) {
+      likelihood = Likelihood.implicit(0)
+    } else {
+      likelihood = Infer.isImplicitId(hints)
+    }
+    return likelihood
   }
 
   public validate(value: T): ValidationResult {
@@ -144,9 +163,9 @@ export abstract class AnyField<T, Self> implements Field<T> {
   /**
    * Makes this field the ID of the resource.
    */
-  public get asId(): Self {
-    if (this._useAsId) console.warn('asId modifier used twice on the same field')
-    return this.cloneAsSelf({ useAsId: true })
+  public get asKey(): Self {
+    if (this._useAsKey) console.warn('asKey modifier used twice on the same field')
+    return this.cloneAsSelf({ useAsKey: true })
   }
 
   /**

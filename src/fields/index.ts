@@ -14,6 +14,10 @@ export interface FieldRoleHints {
   resourceName: string
 }
 
+export type KeyKind =
+  | 'literal' // treat the key as it is
+  | 'integer' // treat the key as an integer
+
 /**
  * An object describing a field of type `FieldType`.
  */
@@ -34,9 +38,19 @@ export interface Field<T> {
   readonly isWritable: boolean
 
   /**
+   * Indicates whether that field allows null as a value.
+   */
+  readonly isNullable: boolean
+
+  /**
    * Indicates whether that field may be omitted when sending/receiving it from the API.
    */
   readonly isOptional: boolean
+
+  /**
+   * The kind of id this field is.
+   */
+  readonly keyKind: KeyKind | null
 
   /**
    * Check how likely it is for this field to be the id of the resource.

@@ -33,7 +33,7 @@ export class Likelihood {
     let result = (this._isExplicit ? 1 : 0) - (other._isExplicit ? 1 : 0)
 
     if (result === 0) {
-      // both are as explicit
+      // they are both explicit or both not
       result = this._level - other._level
     }
 
@@ -73,24 +73,46 @@ export class Infer {
    * @param hints Hints about the role of the field.
    */
   public static isImplicitId(hints: FieldRoleHints): Likelihood {
-    let cleanFieldName = this.cleanUpIdentifier(hints.fieldName)
-    let cleanResourceName = this.cleanUpIdentifier(hints.resourceName)
-    let resourceNamePlusId = cleanResourceName + this.IDENTIFIER_KEYWORD
+    let looksLike: number
 
-    let likelihoodLevel =
-      // "somethingId" -> very likely
-      cleanFieldName === resourceNamePlusId ? 8
-        // "id" -> maybe
-      : cleanFieldName === this.IDENTIFIER_KEYWORD ? 5
-        // "blabla_Id_blabla" -> not likely at all
-      : cleanFieldName.includes(this.IDENTIFIER_KEYWORD) ? 1
-        // otherwise it's surely not and id
-      : 0
+    let likelihoodLevel
+    if ((looksLike = this.looksLike(hints.fieldName, this.IDENTIFIER_KEYWORD + hints.resourceName)) > 0) {
+      // "idSomething" -> very likely, 8 to 10
+      likelihoodLevel = 7 + looksLike
+    } else if ((looksLike = this.looksLike(hints.fieldName, hints.resourceName + this.IDENTIFIER_KEYWORD)) > 0) {
+      // "somethingId" -> same
+      likelihoodLevel = 7 + looksLike
+    } else if ((looksLike = this.looksLike(hints.fieldName, this.IDENTIFIER_KEYWORD)) > 0) {
+      // "id" -> maybe, 5 to 7
+      likelihoodLevel = 4 + looksLike
+    } else {
+      // otherwise it's surely not and id
+      likelihoodLevel = 0
+    }
 
     return Likelihood.implicit(likelihoodLevel)
   }
 
-  private static cleanUpIdentifier(identifier: string): string {
-    return identifier.toLowerCase().replace(/[^a-z]/gi, '')
+  private static looksLike(identifier1: string, identifier2: string): number {
+    // exact same
+    if (identifier1 === identifier2) {
+      return 3
+    }
+
+    // ignore case
+    identifier1 = identifier1.toLowerCase()
+    identifier2 = identifier2.toLowerCase()
+    if (identifier1 === identifier2) {
+      return 2
+    }
+
+    // ignore non-alphanumeric characters
+    identifier1 = identifier1.replace(/[^a-z0-9]/g, '')
+    identifier2 = identifier2.replace(/[^a-z0-9]/g, '')
+    if (identifier1 === identifier2) {
+      return 1
+    }
+
+    return 0
   }
 }

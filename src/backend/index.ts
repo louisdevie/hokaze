@@ -1,6 +1,6 @@
 import { Key } from '@module/resources'
 
-export interface PostResult {
+export interface CreationResult {
   location: string | null
   responseBody: any
 }
@@ -8,7 +8,7 @@ export interface PostResult {
 export interface HttpClient {
   getJson(url: URL): Promise<any>
 
-  postJson(url: URL, payload: any): Promise<PostResult>
+  postJson(url: URL, payload: any): Promise<CreationResult>
 
   putJson(url: URL, payload: any): Promise<void>
 

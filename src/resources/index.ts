@@ -2,7 +2,7 @@ import { Field } from '../fields'
 import { UrlSearchArgs } from '@module/url'
 
 /**
- * Describes a collection of model objects.
+ * Describes a model object or a collection of such objects.
  */
 export interface ResourceDescriptor {
   /**
@@ -141,7 +141,10 @@ export interface SendAndReceive<ItemType> {
   deleteAll(args?: UrlSearchArgs): Promise<void>
 }
 
-export interface Resource<ItemType> extends SendAndReceive<ItemType> {
+/**
+ * Represents an REST resource as a list of items.
+ */
+export interface CollectionResource<ItemType> extends SendAndReceive<ItemType> {
   /**
    * Creates a new blank item to be added to the resource. This method does not request anything.
    */
@@ -153,34 +156,33 @@ export interface Resource<ItemType> extends SendAndReceive<ItemType> {
   key: keyof ItemType
 }
 
-export interface Manager<ItemType> {
+/**
+ * Represents an REST resource as a single items.
+ */
+export interface SingleResource<ItemType> {
   /**
-   * The name of the primary key used to index this resource.
+   * Reads the value of resource.
+   * @param args Arguments to pass to the query parameters.
    */
-  key: keyof ItemType
+  get(args?: UrlSearchArgs): Promise<ItemType>
 
   /**
-   * The type to expect for the primary key.
+   * Sends a value to the resource.
+   * @param value The item to send.
+   * @param args Arguments to pass to the query parameters.
    */
-  keyTypeHint: 'string' | 'number'
+  send(value: ItemType, args?: UrlSearchArgs): Promise<void>
 
   /**
-   * Checks if an item was just created.
-   * @param item The item to check.
-   * @returns `true` if the item has never been sent nor saved, `false` otherwise.
+   * Updates the value of the resource.
+   * @param value The object obtained using the {@link get} method after it has been modified.
+   * @param args Arguments to pass to the query parameters.
    */
-  isNew(item: ItemType): boolean
+  save(value: ItemType, args?: UrlSearchArgs): Promise<void>
 
   /**
-   * Gets the value of the {@link key} property.
-   * @param item The item to get the key of.
+   * Clears the value of the resource.
+   * @param args Arguments to pass to the query parameters.
    */
-  getKeyOf(item: ItemType): Key
-
-  /**
-   * Sets the value of the {@link key} property.
-   * @param item The item to set the key of.
-   * @param key The value to set for the property.
-   */
-  setKeyOf(item: ItemType, key: string | number): void
+  delete(args?: UrlSearchArgs): Promise<void>
 }

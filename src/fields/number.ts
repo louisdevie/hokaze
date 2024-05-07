@@ -1,4 +1,5 @@
 import { AnyField, FieldOpts, explicitBlankValue } from './any'
+import { KeyKind } from '@module/fields/index'
 
 interface NumberFieldOpts<N> extends FieldOpts<number | N> {
   integer?: boolean
@@ -21,11 +22,22 @@ export class NumberField<N> extends AnyField<number | N, NumberField<N>> {
     return 0
   }
 
+  public get keyKind(): KeyKind {
+    return 'integer'
+  }
+
   protected cloneAsSelf(options: NumberFieldOpts<N>): NumberField<N> {
     return new NumberField<N>(this, options)
   }
 
   //region Builder methods
+
+  /**
+   * Makes this field the ID of the resource as an {@link integer}.
+   */
+  public get asKey(): NumberField<N> {
+    return super.asKey.integer
+  }
 
   /**
    * Always floor the number to the nearest integer before sending it.
@@ -40,7 +52,7 @@ export class NumberField<N> extends AnyField<number | N, NumberField<N>> {
   }
 
   public override get nullable(): NumberField<N | null> {
-    return new NumberField<N | null>(this, { blankValue: explicitBlankValue(null) })
+    return new NumberField<N | null>(this, { isNullable: true, blankValue: explicitBlankValue(null) })
   }
 
   //endregion

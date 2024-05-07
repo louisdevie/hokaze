@@ -2,11 +2,11 @@ import { ResourceHttpLayer } from '@module/resources/sendAndReceive'
 import { fakeHttpClient, fakeManager, fakeResource, Fruit } from '@fake'
 import { UrlTemplate } from '@module/url'
 import { Mapper } from '@module/resources/mappers'
-import { Manager } from '@module/resources'
 import { HttpClient } from '@module/backend'
 import { jest } from '@jest/globals'
 import { Result } from '@module/result'
 import assert from 'node:assert'
+import { Manager } from '@module/resources/managers'
 
 function makeHttpLayer(
   manager: Manager<Fruit>,

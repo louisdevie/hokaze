@@ -1,4 +1,4 @@
-import type { HttpClient, PostResult } from '.'
+import type { HttpClient, CreationResult } from '.'
 
 /**
  * @internal
@@ -14,7 +14,7 @@ export class FetchHttpClient implements HttpClient {
     return await response.json()
   }
 
-  public async postJson(url: URL, payload: any): Promise<PostResult> {
+  public async postJson(url: URL, payload: any): Promise<CreationResult> {
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(payload),
