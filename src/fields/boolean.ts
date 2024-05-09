@@ -4,7 +4,7 @@ type BooleanFieldOpts<N> = FieldOpts<boolean | N>
 
 /**
  * Describes a field with values of type `boolean`.
- * @template N The nullability of the field.
+ * @template N Additional values the field can hold.
  */
 export class BooleanField<N> extends AnyField<boolean | N, BooleanField<N>> {
   public constructor(copyFrom?: BooleanField<N>, options?: BooleanFieldOpts<N>) {

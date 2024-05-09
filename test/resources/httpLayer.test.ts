@@ -1,4 +1,3 @@
-import { ResourceHttpLayer } from '@module/resources/sendAndReceive'
 import { fakeHttpClient, fakeManager, fakeResource, Fruit } from '@fake'
 import { UrlTemplate } from '@module/url'
 import { Mapper } from '@module/resources/mappers'

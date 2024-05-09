@@ -4,7 +4,7 @@ import { Throw } from '@module/errors'
 
 export type OptionalSearchArgs = UrlSearchArgs | undefined
 
-export function noArgs(search: OptionalSearchArgs): boolean {
+export function noSearch(search: OptionalSearchArgs): boolean {
   return search === undefined || Object.keys(search).length === 0
 }
 

@@ -1,6 +1,6 @@
 import { AnyField, FieldOpts, explicitBlankValue } from './any'
 import { Ref } from '@module/reference'
-import { CollectionResource } from '@module/resources'
+import type { CollectionResource } from '@module/resources'
 
 type ReferenceForm = 'id' | 'idObject' | 'fullObject'
 
@@ -12,7 +12,7 @@ interface RefFieldOpts<R, N> extends FieldOpts<Ref<R> | N> {
  * Describes a field that is a reference to another resource.
  *
  * @template R The type of the resource referenced.
- * @template N The nullability of the field.
+ * @template N Additional values the field can hold.
  */
 export class RefField<R, N> extends AnyField<Ref<R> | N, RefField<R, N>> {
   private readonly _resource: CollectionResource<R>

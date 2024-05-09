@@ -1,8 +1,10 @@
-import { Key, ResourceDescriptor, ResourceFields, ResourceItemType } from '@module/resources'
+import type { Key, ResourceDescriptor, ResourceFields, ResourceItemType } from '@module/resources'
 import { AutoMappedField } from './auto'
 import { MappingFactoryImpl } from '@module/resources/mappers/factory'
 import { Result } from '@module/result'
 import { MappedField } from './base'
+
+export { KeyExtractionMethod } from './keyExtraction'
 
 export class Mapper<Descriptor extends ResourceDescriptor, ItemType extends ResourceItemType<Descriptor>> {
   private readonly _send: Map<string, MappedField>
@@ -74,8 +76,8 @@ export class Mapper<Descriptor extends ResourceDescriptor, ItemType extends Reso
     return result
   }
 
-  public unpackItemsArray(dtos: any[]): Result<ItemType[]> {
-    return Result.mapArray(dtos, (dto) => this.unpackItem(dto), Mapper.joinArrayErrors)
+  public unpackItemsArray(dto: any[]): Result<ItemType[]> {
+    return Result.mapArray(dto, (itemDto) => this.unpackItem(itemDto), Mapper.joinArrayErrors)
   }
 
   public tryToUnpackKey(dto: any, keyProperty: string): Result<Key> {

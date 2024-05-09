@@ -12,7 +12,7 @@ interface EnumAdapter<E> {
  * Describes a field with values of user-defined enum types.
  *
  * @template E The type of the enumeration.
- * @template N The nullability of the field.
+ * @template N Additional values the field can hold.
  */
 export class EnumField<E, N> extends AnyField<E | N, EnumField<E, N>> {
   private readonly _adapter: EnumAdapter<E>

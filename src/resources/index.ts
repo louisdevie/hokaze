@@ -1,5 +1,6 @@
 import { Field } from '../fields'
 import { UrlSearchArgs } from '@module/url'
+import { LayeredResourceFactory } from '@module/resources/layered/factory'
 
 /**
  * Describes a model object or a collection of such objects.
@@ -51,138 +52,102 @@ export type ResourceItemType<Descriptor extends ResourceDescriptor> =
 
 export type Key = string | number
 
-export interface SendAndReceive<ItemType> {
+/**
+ * Represents a REST resource as a list of items.
+ */
+export interface CollectionResource<ItemType> {
+  readonly key: keyof ItemType
+
   /**
    * Reads one item from the resource.
    * @param key The primary key of the item.
-   * @param args Arguments to pass to the query parameters.
    * @see getAll
    */
-  get(key: Key, args?: UrlSearchArgs): Promise<ItemType>
+  get(key: Key): Promise<ItemType>
 
   /**
    * Reads all the items from the resource.
-   * @param args Arguments to pass to the query parameters.
+   * @param search Arguments to pass to the query parameters.
    * @see get
    */
-  getAll(args?: UrlSearchArgs): Promise<ItemType[]>
+  getAll(search?: UrlSearchArgs): Promise<ItemType[]>
 
-  /**
-   * Sends an item to the resource. This method will always try to create a new items, use {@link save} instead if you
-   * want to update it when it already exists.
-   * @param item The item to store.
-   * @param args Arguments to pass to the query parameters.
-   * @see sendMany
-   */
-  send(item: ItemType, args?: UrlSearchArgs): Promise<void>
-
-  /**
-   * Sends a list of items to the resource. This method will always try to create new items, use {@link saveMany}
-   * instead if you want to update them when they already exists.
-   * @param items The item to store.
-   * @param args Arguments to pass to the query parameters.
-   * @see send
-   */
-  sendMany(items: ItemType[], args?: UrlSearchArgs): Promise<void>
-
-  /**
-   * Updates an item (or creates it if it's new).
-   * @param item The item to store.
-   * @param args Arguments to pass to the query parameters.
-   * @see saveMany
-   */
-  save(item: ItemType, args?: UrlSearchArgs): Promise<void>
-
-  /**
-   * Updates a list of items.
-   * @param items The items to store.
-   * @param args Arguments to pass to the query parameters.
-   * @see save
-   */
-  saveMany(items: ItemType[], args?: UrlSearchArgs): Promise<void>
-
-  /**
-   * Deletes an item. If the item hasn't been saved yet, this does nothing.
-   * @param item The item to delete.
-   * @param args Arguments to pass to the query parameters.
-   * @see deleteKey
-   * @see deleteMany
-   * @see deleteAll
-   */
-  delete(item: ItemType, args?: UrlSearchArgs): Promise<void>
-
-  /**
-   * Deletes the item corresponding to a key.
-   * @param key The key of the item to delete.
-   * @param args Arguments to pass to the query parameters.
-   * @see delete
-   * @see deleteMany
-   * @see deleteAll
-   */
-  deleteKey(key: Key, args?: UrlSearchArgs): Promise<void>
-
-  /**
-   * Deletes a list of items. If no item has been saved yet, this does nothing.
-   * @param items The items to delete.
-   * @param args Arguments to pass to the query parameters.
-   * @see delete
-   * @see deleteKey
-   * @see deleteAll
-   */
-  deleteMany(items: ItemType[], args?: UrlSearchArgs): Promise<void>
-
-  /**
-   * Deletes all the items from the resource.
-   * @param args Arguments to pass to the query parameters.
-   * @see delete
-   * @see deleteKey
-   * @see deleteMany
-   */
-  deleteAll(args?: UrlSearchArgs): Promise<void>
-}
-
-/**
- * Represents an REST resource as a list of items.
- */
-export interface CollectionResource<ItemType> extends SendAndReceive<ItemType> {
   /**
    * Creates a new blank item to be added to the resource. This method does not request anything.
    */
   create(): ItemType
 
   /**
-   * The name of the primary key used to index this resource.
+   * Sends an item to the resource. This method will always try to create a new items, use {@link save} instead if you
+   * want to update it when it already exists.
+   * @param item The item to store.
+   * @see sendMany
    */
-  key: keyof ItemType
+  send(item: ItemType): Promise<void>
+
+  /**
+   * Updates an item (or creates it if it's new).
+   * @param item The item to store.
+   * @see saveMany
+   */
+  save(item: ItemType): Promise<void>
+
+  /**
+   * Deletes an item. If the item hasn't been saved yet, this does nothing.
+   * @param item The item to delete.
+   * @see deleteKey
+   * @see deleteMany
+   * @see deleteAll
+   */
+  delete(item: ItemType): Promise<void>
+
+  /**
+   * Deletes the item corresponding to a key.
+   * @param key The key of the item to delete.
+   * @see delete
+   * @see deleteMany
+   * @see deleteAll
+   */
+  deleteKey(key: Key): Promise<void>
+
+  /**
+   * Deletes all the items from the resource.
+   * @param search Arguments to pass to the query parameters.
+   * @see delete
+   * @see deleteKey
+   * @see deleteMany
+   */
+  deleteAll(search?: UrlSearchArgs): Promise<void>
 }
 
 /**
- * Represents an REST resource as a single items.
+ * Represents a REST resource as a single item.
  */
 export interface SingleResource<ItemType> {
   /**
    * Reads the value of resource.
-   * @param args Arguments to pass to the query parameters.
    */
-  get(args?: UrlSearchArgs): Promise<ItemType>
+  get(): Promise<ItemType>
+
+  /**
+   * Creates a new blank item to be added to the resource. This method does not request anything.
+   */
+  create(): ItemType
 
   /**
    * Sends a value to the resource.
    * @param value The item to send.
-   * @param args Arguments to pass to the query parameters.
    */
-  send(value: ItemType, args?: UrlSearchArgs): Promise<void>
+  send(value: ItemType): Promise<void>
 
   /**
    * Updates the value of the resource.
-   * @param value The object obtained using the {@link get} method after it has been modified.
-   * @param args Arguments to pass to the query parameters.
+   * @param value The object obtained using the {@link get} or {@link create} methods.
    */
-  save(value: ItemType, args?: UrlSearchArgs): Promise<void>
+  save(value: ItemType): Promise<void>
 
   /**
    * Clears the value of the resource.
-   * @param args Arguments to pass to the query parameters.
    */
-  delete(args?: UrlSearchArgs): Promise<void>
+  delete(): Promise<void>
 }

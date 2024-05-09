@@ -1,20 +1,9 @@
-import { Key } from '../index'
+import type { Key } from '../index'
 import { OptionalSearchArgs } from '../helpers'
-import { HttpClient, CreationResult } from '@module/backend'
+import { CreationResult, HttpClient } from '@module/backend'
 import { UrlTemplate } from '@module/url'
 import { AsyncFeedback } from '@module/feedback'
-
-/**
- * A lower-level version of {@link SendAndReceive} that deals directly with DTOs.
- */
-export interface RawSendAndReceive {
-  get(key: Key, search: OptionalSearchArgs): Promise<AsyncFeedback<any>>
-  getAll(search: OptionalSearchArgs): Promise<AsyncFeedback<any[]>>
-  saveNew(dto: any, search: OptionalSearchArgs): Promise<AsyncFeedback<CreationResult>>
-  saveExisting(dto: any, key: Key, search: OptionalSearchArgs): Promise<void>
-  deleteKey(key: Key, search: OptionalSearchArgs): Promise<void>
-  deleteAll(search: OptionalSearchArgs): Promise<void>
-}
+import { RawSendAndReceive } from './abstractLayers'
 
 export class HttpLayer implements RawSendAndReceive {
   private readonly _client: HttpClient
@@ -27,19 +16,19 @@ export class HttpLayer implements RawSendAndReceive {
     this._urlPath = path
   }
 
-  public async get(key: Key, search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
+  public async getOne(key: Key, search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
     const url = this._urlTemplate.getUrlForItem(this._urlPath, key, search ?? {})
     return new AsyncFeedback(await this._client.getJson(url))
   }
 
-  public async getAll(search: OptionalSearchArgs): Promise<AsyncFeedback<any[]>> {
+  public async getAll(search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
     const url = this._urlTemplate.getUrlForResource(this._urlPath, search ?? {})
     return new AsyncFeedback(await this._client.getJson(url))
   }
 
-  public async saveNew(dto: any, search: OptionalSearchArgs): Promise<AsyncFeedback<CreationResult>> {
+  public async saveNew(dto: any, search: OptionalSearchArgs): Promise<CreationResult> {
     const url = this._urlTemplate.getUrlForResource(this._urlPath, search ?? {})
-    return new AsyncFeedback(await this._client.postJson(url, dto))
+    return await this._client.postJson(url, dto)
   }
 
   public async saveExisting(dto: any, key: Key, search: OptionalSearchArgs): Promise<void> {
@@ -47,7 +36,12 @@ export class HttpLayer implements RawSendAndReceive {
     await this._client.putJson(url, dto)
   }
 
-  public async deleteKey(key: Key, search: OptionalSearchArgs): Promise<void> {
+  public async saveAll(dto: any, search: OptionalSearchArgs): Promise<void> {
+    const url = this._urlTemplate.getUrlForResource(this._urlPath, search ?? {})
+    await this._client.putJson(url, dto)
+  }
+
+  public async deleteOne(key: Key, search: OptionalSearchArgs): Promise<void> {
     const url = this._urlTemplate.getUrlForItem(this._urlPath, key, search ?? {})
     await this._client.delete(url)
   }

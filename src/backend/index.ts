@@ -1,4 +1,4 @@
-import { Key } from '@module/resources'
+import type { Key } from '@module/resources'
 
 export interface CreationResult {
   location: string | null

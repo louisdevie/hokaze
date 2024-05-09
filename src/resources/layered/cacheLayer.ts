@@ -1,9 +1,9 @@
-import { Key } from '../index'
-import { OperationFailureReason, ResourceCache } from '../cache'
-import { RawSendAndReceive } from './httpLayer'
+import type { Key } from '../index'
+import { ResourceCache } from '../cache'
 import { CreationResult } from '@module/backend'
-import { OptionalSearchArgs } from '@module/resources/helpers'
+import { OptionalSearchArgs } from '../helpers'
 import { AsyncFeedback } from '@module/feedback'
+import { RawSendAndReceive } from './abstractLayers'
 
 export class CacheLayer implements RawSendAndReceive {
   private readonly _cache: ResourceCache
@@ -14,19 +14,19 @@ export class CacheLayer implements RawSendAndReceive {
     this._wrapped = wrappedLayer
   }
 
-  public async get(key: Key, search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
+  public async getOne(key: Key, search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
     const cachedResponse = await this._cache.beforeGettingOne(key, search)
 
     if (cachedResponse !== undefined) {
       return new AsyncFeedback(cachedResponse)
     } else {
-      const result = await this._wrapped.get(key, search)
+      const result = await this._wrapped.getOne(key, search)
       result.onAccepted(() => this._cache.afterGettingOne(key, search, result.value))
       return result
     }
   }
 
-  public async getAll(search: OptionalSearchArgs): Promise<AsyncFeedback<any[]>> {
+  public async getAll(search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
     const cachedResponse = await this._cache.beforeGettingAll(search)
 
     if (cachedResponse !== undefined) {
@@ -38,10 +38,10 @@ export class CacheLayer implements RawSendAndReceive {
     }
   }
 
-  public async saveNew(dto: any, search: OptionalSearchArgs): Promise<AsyncFeedback<CreationResult>> {
+  public async saveNew(dto: any, search: OptionalSearchArgs): Promise<CreationResult> {
     await this._cache.beforeSavingOne(dto, null, search)
     const result = await this._wrapped.saveNew(dto, search)
-    result.onAccepted(() => this._cache.afterSavingOne(dto, null, search))
+    await this._cache.afterSavingOne(dto, null, search)
     return result
   }
 
@@ -51,9 +51,15 @@ export class CacheLayer implements RawSendAndReceive {
     await this._cache.afterSavingOne(dto, key, search)
   }
 
-  public async deleteKey(key: Key, search: OptionalSearchArgs): Promise<void> {
+  public async saveAll(dto: any, search: OptionalSearchArgs): Promise<void> {
+    await this._cache.beforeSavingAll(dto, search)
+    await this._wrapped.saveAll(dto, search)
+    await this._cache.afterSavingAll(dto, search)
+  }
+
+  public async deleteOne(key: Key, search: OptionalSearchArgs): Promise<void> {
     await this._cache.beforeDeletingOne(key, search)
-    await this._wrapped.deleteKey(key, search)
+    await this._wrapped.deleteOne(key, search)
     await this._cache.afterDeletingOne(key, search)
   }
 

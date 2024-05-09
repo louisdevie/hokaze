@@ -7,7 +7,7 @@ type ArrayFieldOpts<E, N> = FieldOpts<E[] | N>
  * Describes a field with values of type `Array`.
  *
  * @template E The type of the elements in the array.
- * @template N The nullability of the field.
+ * @template N Additional values the field can hold.
  */
 export class ArrayField<E, N> extends AnyField<E[] | N, ArrayField<E, N>> {
   private readonly _element: Field<E>

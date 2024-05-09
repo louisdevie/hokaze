@@ -38,4 +38,12 @@ export class Throw {
   public static unreadableKey(resourceName: string, fieldName: string): never {
     throw new Error(this.resourceKeyBase(resourceName, fieldName) + 'it mut be readable.')
   }
+
+  public static writeOnlyResource(): never {
+    throw new Error('The resource is write-only.')
+  }
+
+  public static readOnlyResource(): never {
+    throw new Error('The resource is read-only.')
+  }
 }

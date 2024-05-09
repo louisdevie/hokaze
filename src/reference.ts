@@ -1,4 +1,4 @@
-import { Key, CollectionResource } from '@module/resources'
+import type { Key, CollectionResource } from '@module/resources'
 import It = jest.It
 
 type RefState<ItemType> = { loaded: false } | { loaded: true; value: ItemType }
@@ -19,7 +19,7 @@ export class Ref<ItemType> {
   }
 
   public static fromValue<ItemType>(resource: CollectionResource<ItemType>, value: ItemType): Ref<ItemType> {
-    return new Ref(resource, value[resource.key] as any, { loaded: true, value })
+    return new Ref(resource, value[resource.key] as Key, { loaded: true, value })
   }
 
   public get key(): Key {

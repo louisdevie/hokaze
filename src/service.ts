@@ -1,6 +1,7 @@
 import { UrlTemplate } from './url'
-import { FetchHttpClient, HttpClient } from './backend/fetch'
-import { CollectionResource, ResourceItemType, ResourceDescriptor } from './resources'
+import type { CollectionResource, ResourceItemType, ResourceDescriptor } from './resources'
+import { DefaultHttpClient, HttpClient } from '@module/backend'
+import { LayeredResourceFactory } from '@module/resources/layered/factory'
 
 export interface Service {}
 
@@ -18,11 +19,15 @@ export class RestServiceImpl implements Service {
     this._client = client
   }
 
-  public resource<Opts extends ResourceDescriptor>(options: Opts): CollectionResource<ResourceItemType<Opts>> {
-    return {}
+  public collection<Opts extends ResourceDescriptor>(options: Opts): CollectionResource<ResourceItemType<Opts>> {
+    return LayeredResourceFactory.makeCollectionResource({
+      baseUrl: this._baseUrl,
+      httpClient: this._client,
+      descriptor: opts,
+    })
   }
 }
 
 export function service(baseUrl: string | URL): Service {
-  return new RestServiceImpl(new UrlTemplate(baseUrl, {}), new FetchHttpClient())
+  return new RestServiceImpl(new UrlTemplate(baseUrl, {}), new DefaultHttpClient())
 }

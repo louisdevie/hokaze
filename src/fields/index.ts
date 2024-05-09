@@ -23,7 +23,7 @@ export type KeyKind =
  */
 export interface Field<T> {
   /**
-   * Gets a "blank" value to create new model objects.
+   * A "blank" value to create new model objects.
    */
   readonly blankValue: T
 

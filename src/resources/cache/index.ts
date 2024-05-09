@@ -1,5 +1,4 @@
 import type { Key } from '@module/resources'
-import { UrlSearchArgs } from '@module/url'
 import { OptionalSearchArgs } from '@module/resources/helpers'
 
 export enum OperationFailureReason {
@@ -68,6 +67,28 @@ export interface ResourceCache {
    * @param reason The reason why the operation failed.
    */
   couldNotSaveOne(dto: any, key: Key | null, search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
+
+  /**
+   * Triggered when all the items are about to be saved.
+   * @param dto The resource that is being saved.
+   * @param search Additional arguments in the request.
+   */
+  beforeSavingAll(dto: any, search: OptionalSearchArgs): Promise<void>
+
+  /**
+   * Triggered when all the items were successfully saved.
+   * @param dto The resource that was saved.
+   * @param search Additional arguments in the request.
+   */
+  afterSavingAll(dto: any, search: OptionalSearchArgs): Promise<void>
+
+  /**
+   * Triggered when some of the items failed to be saved.
+   * @param dto The resource with which the problem occurred.
+   * @param search Additional arguments in the request.
+   * @param reason The reason why the operation failed.
+   */
+  couldNotSaveAll(dto: any, search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
 
   /**
    * Triggered when an item is about to be deleted.

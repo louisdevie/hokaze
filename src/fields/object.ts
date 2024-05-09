@@ -1,6 +1,5 @@
 import { AnyField, FieldOpts, explicitBlankValue } from './any'
 import { Field } from '@module/fields/index'
-import { ResourceItemType } from '@module/resources'
 
 type ObjectFieldOpts<O, N> = FieldOpts<O | N>
 
@@ -11,7 +10,7 @@ type Fields<O> = { [p in keyof O]: Field<O[p]> }
  * Describes a field with values that are objects.
  *
  * @template O The type of the object.
- * @template N The nullability of the field.
+ * @template N Additional values the field can hold.
  */
 export class ObjectField<O extends object, N> extends AnyField<O | N, ObjectField<O, N>> {
   private readonly _fields: Fields<O>

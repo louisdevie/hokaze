@@ -1,4 +1,4 @@
-import { Key, CollectionResource } from '@module/resources'
+import type { Key, CollectionResource } from '@module/resources'
 import { Manager } from '@module/resources/managers'
 
 export interface Fruit {

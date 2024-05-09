@@ -1,6 +1,7 @@
-import { CreationResult } from '@module/backend'
-import { Key } from '@module/resources'
-import { Mapper } from '@module/resources/mappers/index'
+import type { CreationResult } from '@module/backend'
+import type { Key } from '@module/resources'
+import type { Mapper } from '@module/resources/mappers/index'
+import type { KeyKind } from '@module/fields'
 
 export interface KeyExtractionMethod {
   tryToExtractKey(postResult: CreationResult): Key | undefined
@@ -40,11 +41,11 @@ export class ExtractFromKeyBody implements KeyExtractionMethod {
 
 export class ExtractFromLocationUrl implements KeyExtractionMethod {
   private readonly _plainResourceUrl: URL
-  private readonly _keyTypeHint: 'string' | 'number'
+  private readonly _keyKind: KeyKind
 
-  public constructor(plainResourceUrl: URL, keyTypeHint: 'string' | 'number') {
+  public constructor(plainResourceUrl: URL, keyKind: KeyKind) {
     this._plainResourceUrl = plainResourceUrl
-    this._keyTypeHint = keyTypeHint
+    this._keyKind = keyKind
   }
 
   public tryToExtractKey(postResult: CreationResult): Key | undefined {
@@ -59,7 +60,7 @@ export class ExtractFromLocationUrl implements KeyExtractionMethod {
           const stringKey = locationPath.substring(resourcePath.length)
           const intKey = parseInt(stringKey)
 
-          if (!isNaN(intKey) && this._keyTypeHint === 'number') {
+          if (!isNaN(intKey) && this._keyKind === 'integer') {
             keyFound = intKey
           } else {
             keyFound = stringKey

@@ -7,7 +7,7 @@ interface NumberFieldOpts<N> extends FieldOpts<number | N> {
 
 /**
  * Describes a field with values of type `number`.
- * @template N The nullability of the field.
+ * @template N Additional values the field can hold.
  */
 export class NumberField<N> extends AnyField<number | N, NumberField<N>> {
   private readonly _integer: boolean

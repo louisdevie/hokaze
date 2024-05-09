@@ -7,7 +7,7 @@ type StringFieldOpts<N> = FieldOpts<string | N>
 
 /**
  * Describes a field with values of type `string`.
- * @template N The nullability of the field.
+ * @template N Additional values the field can hold.
  */
 export class StringField<N> extends AnyField<string | N, StringField<N>> {
   public constructor(copyFrom?: StringField<N>, options?: StringFieldOpts<N>) {
