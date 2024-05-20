@@ -33,22 +33,27 @@ export interface ResourceDescriptor {
 export type ResourceFields = string[] | Record<string, Field<unknown>>
 
 /**
- * The type of model objects in a resource described by `Descriptor`.
+ * The type of objects described by `Fields`.
  */
-export type ResourceItemType<Descriptor extends ResourceDescriptor> =
+export type ObjectTypeFromFields<Fields extends ResourceFields> =
   // behold the power of typescript's type system
-  Descriptor['fields'] extends string[] ?
+  Fields extends string[] ?
     // if the descriptor is a simple list, we have an object with `any` typed properties
     Record<string, any>
   : // if the descriptor is an object, we map each property of that object to the type wrapped by the field descriptors
     {
       // copy each property
-      [Property in keyof Descriptor['fields']]: Descriptor['fields'][Property] extends Field<infer T> ?
+      [Property in keyof Fields]: Fields[Property] extends Field<infer T> ?
         // if that property is a descriptor, we use the type wrapped by it
         T
       : // otherwise its any
         any
     }
+
+/**
+ * The type of model objects in a resource described by `Descriptor`.
+ */
+export type ResourceItemType<Descriptor extends ResourceDescriptor> = ObjectTypeFromFields<Descriptor['fields']>
 
 export type Key = string | number
 

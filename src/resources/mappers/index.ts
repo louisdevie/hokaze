@@ -1,4 +1,4 @@
-import type { Key, ResourceDescriptor, ResourceFields, ResourceItemType } from '@module/resources'
+import type { Key, ObjectTypeFromFields, ResourceDescriptor, ResourceFields, ResourceItemType } from '@module/resources'
 import { AutoMappedField } from './auto'
 import { MappingFactoryImpl } from '@module/resources/mappers/factory'
 import { Result } from '@module/result'
@@ -6,15 +6,15 @@ import { MappedField } from './base'
 
 export { KeyExtractionMethod } from './keyExtraction'
 
-export class Mapper<Descriptor extends ResourceDescriptor, ItemType extends ResourceItemType<Descriptor>> {
+export class Mapper<Descriptor extends ResourceFields, ItemType extends ObjectTypeFromFields<Descriptor>> {
   private readonly _send: Map<string, MappedField>
   private readonly _receive: Map<string, MappedField>
 
-  public constructor(descriptor: Descriptor) {
+  public constructor(fieldDescriptors: Descriptor) {
     this._send = new Map()
     this._receive = new Map()
 
-    for (const field of Mapper.mapFields(descriptor.fields)) {
+    for (const field of Mapper.mapFields(fieldDescriptors)) {
       this._send.set(field.modelProperty, field)
       this._receive.set(field.transferProperty, field)
     }

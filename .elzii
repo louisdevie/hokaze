@@ -1,3 +1,4 @@
 translations: src/locale
 output:
   ts: src/locale/gen
+static: true

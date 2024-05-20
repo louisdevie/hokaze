@@ -1,3 +1,5 @@
+import __ from '@module/locale'
+
 export class Internal {
   public static descriptorNotSupported(): never {
     this.throwInternalError('Unsupported descriptor.')
@@ -45,5 +47,21 @@ export class Throw {
 
   public static readOnlyResource(): never {
     throw new Error('The resource is read-only.')
+  }
+
+  public static bothReadOnlyAndWriteOnly(): never {
+    throw new Error('A resource cannot be both read-only and write-only.')
+  }
+
+  static undefinedRequestBody(method: string): never {
+    throw new Error(`${method} requests require a request body to be defined.`)
+  }
+
+  static undefinedResponseBody(method: string): never {
+    throw new Error(`${method} requests require a response body to be defined.`)
+  }
+
+  static requestBodyRequired(method: string): never {
+    throw new Error(`${method} requests require a request body.`)
   }
 }

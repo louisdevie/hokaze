@@ -10,9 +10,9 @@ export interface HttpClient {
 
   postJson(url: URL, payload: any): Promise<CreationResult>
 
-  putJson(url: URL, payload: any): Promise<void>
+  putJson(url: URL, payload: any, ignoreResponse?: boolean): Promise<any>
 
-  delete(url: URL): Promise<void>
+  delete(url: URL, ignoreResponse?: boolean): Promise<any>
 }
 
 export { FetchHttpClient as DefaultHttpClient } from './fetch'
@@ -138,5 +138,3 @@ export interface ResourceCacheStorage {
    */
   invalidateAll(): Promise<void>
 }
-
-export { DexieCacheStorage as DefaultCacheStorage } from './dexie'

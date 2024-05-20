@@ -20,7 +20,7 @@ export class FetchHttpClient implements HttpClient {
       body: JSON.stringify(payload),
       headers: {
         Accept: '*/*',
-        'Content-Type': 'application/json',
+        ...(payload === undefined ? {} : { 'Content-Type': 'application/json' }),
       },
     })
 
@@ -34,17 +34,45 @@ export class FetchHttpClient implements HttpClient {
     return { responseBody, location: response.headers.get('Location') }
   }
 
-  public async putJson(url: URL, payload: any): Promise<void> {
-    await fetch(url, {
+  public async putJson(url: URL, payload: any, ignoreResponse = true): Promise<any> {
+    const response = await fetch(url, {
       method: 'PUT',
       body: JSON.stringify(payload),
       headers: {
+        Accept: '*/*',
         'Content-Type': 'application/json',
       },
     })
+
+    if (!ignoreResponse) {
+      let responseBody
+      try {
+        responseBody = await response.json()
+      } catch {
+        responseBody = undefined
+      }
+
+      return responseBody
+    }
   }
 
-  public async delete(url: URL): Promise<void> {
-    await fetch(url, { method: 'DELETE' })
+  public async delete(url: URL, ignoreResponse = true): Promise<any> {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        Accept: '*/*',
+      },
+    })
+
+    if (!ignoreResponse) {
+      let responseBody
+      try {
+        responseBody = await response.json()
+      } catch {
+        responseBody = undefined
+      }
+
+      return responseBody
+    }
   }
 }
