@@ -1,4 +1,4 @@
-translations: src/locale
+translations: lang
 output:
   ts: src/locale/gen
 static: true
