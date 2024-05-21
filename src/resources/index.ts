@@ -1,6 +1,6 @@
 import { Field } from '../fields'
 import { UrlSearchArgs } from '@module/url'
-import { LayeredResourceFactory } from '@module/resources/layered/factory'
+import { RequestPath } from '@module/requestPath'
 
 /**
  * Describes a model object or a collection of such objects.
@@ -39,6 +39,7 @@ export type ObjectTypeFromFields<Fields extends ResourceFields> =
   // behold the power of typescript's type system
   Fields extends string[] ?
     // if the descriptor is a simple list, we have an object with `any` typed properties
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Record<string, any>
   : // if the descriptor is an object, we map each property of that object to the type wrapped by the field descriptors
     {
@@ -46,15 +47,45 @@ export type ObjectTypeFromFields<Fields extends ResourceFields> =
       [Property in keyof Fields]: Fields[Property] extends Field<infer T> ?
         // if that property is a descriptor, we use the type wrapped by it
         T
-      : // otherwise its any
-        any
+      : // the fields will always extend Field<something>
+        never
     }
 
 /**
  * The type of model objects in a resource described by `Descriptor`.
  */
-export type ResourceItemType<Descriptor extends ResourceDescriptor> = ObjectTypeFromFields<Descriptor['fields']>
+export type ResourceType<Descriptor extends ResourceDescriptor> = ObjectTypeFromFields<Descriptor['fields']>
 
+/**
+ * A {@link ResourceDescriptor} with specific options for collections.
+ */
+export interface CollectionDescriptor extends ResourceDescriptor {
+  /**
+   * Child resources and requests available for each of the items. This property can also be used to add custom methods
+   * to the items.
+   */
+  forEach?: ResourceChildren
+}
+
+export type ResourceChildren = (requestPath: RequestPath) => Record<string, unknown>
+
+/**
+ * The type of objects described by `Children`.
+ */
+export type ObjectTypeFromChildren<Children extends ResourceChildren | undefined> =
+  Children extends ResourceChildren ? ReturnType<Children> : Record<string, never>
+
+/**
+ * The type of item objects in a collection.
+ */
+export type ResourceItemType<Descriptor extends CollectionDescriptor> =
+  ObjectTypeFromFields<Descriptor['fields']> & ObjectTypeFromChildren<Descriptor['forEach']> extends infer T ?
+    { [Property in keyof T]: T[Property] }
+  : never
+
+/**
+ * The types allowed as resource keys.
+ */
 export type Key = string | number
 
 /**
@@ -62,6 +93,8 @@ export type Key = string | number
  */
 export interface CollectionResource<ItemType> {
   readonly key: keyof ItemType
+
+  readonly asPath: RequestPath
 
   /**
    * Reads one item from the resource.
@@ -129,6 +162,8 @@ export interface CollectionResource<ItemType> {
  * Represents a REST resource as a single item.
  */
 export interface SingleResource<ItemType> {
+  readonly asPath: RequestPath
+
   /**
    * Reads the value of resource.
    */

@@ -7,15 +7,17 @@ import { KeyExtractionMethod, Mapper } from '@module/resources/mappers'
 import type { Key } from '@module/resources'
 import { OptionalSearchArgs } from '@module/resources/helpers'
 import { CreationResult } from '@module/backend'
+import { throwError } from '@module/errors'
+import __ from '@module/locale'
 
 export class CollectionMappingLayer<T extends object> implements SendAndReceiveCollection<T> {
-  private readonly _mapper: Mapper<any, T>
+  private readonly _mapper: Mapper<NonNullable<unknown>, T>
   private readonly _wrapped: RawSendAndReceive
   private _keyExtractionMethods: KeyExtractionMethod[]
   private _foundBestMethod: boolean
 
   public constructor(
-    mapper: Mapper<any, T>,
+    mapper: Mapper<NonNullable<unknown>, T>,
     keyExtractionMethods: KeyExtractionMethod[],
     wrappedLayer: RawSendAndReceive,
   ) {
@@ -32,7 +34,7 @@ export class CollectionMappingLayer<T extends object> implements SendAndReceiveC
 
     if (item.success) {
       await dto.accept()
-      return item.value!
+      return item.unwrap()
     } else {
       await dto.reject()
       throw new Error(item.error)
@@ -40,15 +42,18 @@ export class CollectionMappingLayer<T extends object> implements SendAndReceiveC
   }
 
   public async getAll(search: OptionalSearchArgs): Promise<T[]> {
-    const dto = await this._wrapped.getAll(search)
+    const feedback = await this._wrapped.getAll(search)
 
-    const item = this._mapper.unpackItemsArray(dto.value)
+    const dto = feedback.value === null || feedback.value === undefined ? [] : feedback.value
+    if (!Array.isArray(dto)) throwError(__.collectionExpectsArray)
+
+    const item = this._mapper.unpackItemsArray(dto)
 
     if (item.success) {
-      await dto.accept()
-      return item.value!
+      await feedback.accept()
+      return item.unwrap()
     } else {
-      await dto.reject()
+      await feedback.reject()
       throw new Error(item.error)
     }
   }
@@ -95,10 +100,10 @@ export class CollectionMappingLayer<T extends object> implements SendAndReceiveC
 }
 
 export class SingleMappingLayer<T extends object> implements SendAndReceiveSingle<T> {
-  private readonly _mapper: Mapper<any, T>
+  private readonly _mapper: Mapper<NonNullable<unknown>, T>
   private readonly _wrapped: RawSendAndReceive
 
-  public constructor(mapper: Mapper<any, T>, wrappedLayer: RawSendAndReceive) {
+  public constructor(mapper: Mapper<NonNullable<unknown>, T>, wrappedLayer: RawSendAndReceive) {
     this._mapper = mapper
     this._wrapped = wrappedLayer
   }
@@ -110,7 +115,7 @@ export class SingleMappingLayer<T extends object> implements SendAndReceiveSingl
 
     if (item.success) {
       await dto.accept()
-      return item.value!
+      return item.unwrap()
     } else {
       await dto.reject()
       throw new Error(item.error)

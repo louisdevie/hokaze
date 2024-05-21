@@ -7,7 +7,6 @@ import { MappingFactory } from '@module/resources/mappers/factory'
 
 /**
  * Options shared by all fields.
- * @internal
  */
 export interface FieldOpts<T> {
   blankValue?: BlankValue<T>
@@ -20,6 +19,7 @@ export interface FieldOpts<T> {
 }
 
 // we use a union because undefined or null can be valid values.
+/** @internal */
 type BlankValue<T> = { variant: 'unspecified' } | { variant: 'explicit'; value: T }
 
 export function explicitBlankValue<T>(value: T): BlankValue<T> {

@@ -3,7 +3,7 @@ import { ResourceCache } from '../cache'
 import { CreationResult } from '@module/backend'
 import { OptionalSearchArgs } from '../helpers'
 import { AsyncFeedback } from '@module/feedback'
-import { RawSendAndReceive } from './abstractLayers'
+import { RawSendAndReceive, ResourceRequestPath } from './abstractLayers'
 
 export class CacheLayer implements RawSendAndReceive {
   private readonly _cache: ResourceCache
@@ -14,7 +14,11 @@ export class CacheLayer implements RawSendAndReceive {
     this._wrapped = wrappedLayer
   }
 
-  public async getOne(key: Key, search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
+  public get requestPath(): ResourceRequestPath {
+    return this._wrapped.requestPath
+  }
+
+  public async getOne(key: Key, search: OptionalSearchArgs): Promise<AsyncFeedback<unknown>> {
     const cachedResponse = await this._cache.beforeGettingOne(key, search)
 
     if (cachedResponse !== undefined) {
@@ -26,7 +30,7 @@ export class CacheLayer implements RawSendAndReceive {
     }
   }
 
-  public async getAll(search: OptionalSearchArgs): Promise<AsyncFeedback<any>> {
+  public async getAll(search: OptionalSearchArgs): Promise<AsyncFeedback<unknown>> {
     const cachedResponse = await this._cache.beforeGettingAll(search)
 
     if (cachedResponse !== undefined) {
@@ -38,20 +42,20 @@ export class CacheLayer implements RawSendAndReceive {
     }
   }
 
-  public async saveNew(dto: any, search: OptionalSearchArgs): Promise<CreationResult> {
+  public async saveNew(dto: unknown, search: OptionalSearchArgs): Promise<CreationResult> {
     await this._cache.beforeSavingOne(dto, null, search)
     const result = await this._wrapped.saveNew(dto, search)
     await this._cache.afterSavingOne(dto, null, search)
     return result
   }
 
-  public async saveExisting(dto: any, key: Key, search: OptionalSearchArgs): Promise<void> {
+  public async saveExisting(dto: unknown, key: Key, search: OptionalSearchArgs): Promise<void> {
     await this._cache.beforeSavingOne(dto, key, search)
     await this._wrapped.saveExisting(dto, key, search)
     await this._cache.afterSavingOne(dto, key, search)
   }
 
-  public async saveAll(dto: any, search: OptionalSearchArgs): Promise<void> {
+  public async saveAll(dto: unknown, search: OptionalSearchArgs): Promise<void> {
     await this._cache.beforeSavingAll(dto, search)
     await this._wrapped.saveAll(dto, search)
     await this._cache.afterSavingAll(dto, search)

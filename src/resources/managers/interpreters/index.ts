@@ -5,8 +5,8 @@ import { DescriptorMapInterpreter } from './descriptorMap'
 
 export interface DescriptorInterpreter {
   findKey(): { property: string; kind: KeyKind }
-  createInstance(keyProperty: string | number | symbol | undefined): any
-  copy(from: Record<string, any>, to: Record<string, any>): void
+  createInstance(keyProperty: string | number | symbol | undefined): unknown
+  copy(from: Record<string, unknown>, to: Record<string, unknown>): void
 }
 
 export function getInterpreterFor(descriptor: ResourceDescriptor): DescriptorInterpreter {

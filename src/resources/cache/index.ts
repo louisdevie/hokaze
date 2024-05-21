@@ -19,7 +19,7 @@ export interface ResourceCache {
    * @param key The primary key of the item.
    * @param search Additional arguments in the request.
    */
-  beforeGettingOne(key: Key, search: OptionalSearchArgs): Promise<any | undefined>
+  beforeGettingOne(key: Key, search: OptionalSearchArgs): Promise<unknown | undefined>
 
   /**
    * Triggered when a single item has been received.
@@ -27,21 +27,21 @@ export interface ResourceCache {
    * @param search Additional arguments in the request.
    * @param result The result of the request.
    */
-  afterGettingOne(key: Key, search: OptionalSearchArgs, result: any): Promise<void>
+  afterGettingOne(key: Key, search: OptionalSearchArgs, result: unknown): Promise<void>
 
   /**
    * Triggered when all the items are about to be queried. If this method returns something other than `undefined`, the
    * request is interrupted and that value is returned instead.
    * @param search Additional arguments in the request.
    */
-  beforeGettingAll(search: OptionalSearchArgs): Promise<any[] | undefined>
+  beforeGettingAll(search: OptionalSearchArgs): Promise<unknown | undefined>
 
   /**
    * Triggered when all the items have been received.
    * @param search Additional arguments in the request.
    * @param result The result of the request.
    */
-  afterGettingAll(search: OptionalSearchArgs, result: any[]): Promise<void>
+  afterGettingAll(search: OptionalSearchArgs, result: unknown): Promise<void>
 
   /**
    * Triggered when an item is about to be saved.
@@ -49,7 +49,7 @@ export interface ResourceCache {
    * @param key The key of the item, or `null` if the item is new.
    * @param search Additional arguments in the request.
    */
-  beforeSavingOne(dto: any, key: Key | null, search: OptionalSearchArgs): Promise<void>
+  beforeSavingOne(dto: unknown, key: Key | null, search: OptionalSearchArgs): Promise<void>
 
   /**
    * Triggered when an item was successfully saved.
@@ -57,7 +57,7 @@ export interface ResourceCache {
    * @param key The key of the item, or `null` if the item is new.
    * @param search Additional arguments in the request.
    */
-  afterSavingOne(dto: any, key: Key | null, search: OptionalSearchArgs): Promise<void>
+  afterSavingOne(dto: unknown, key: Key | null, search: OptionalSearchArgs): Promise<void>
 
   /**
    * Triggered when an item failed to be saved.
@@ -66,21 +66,26 @@ export interface ResourceCache {
    * @param search Additional arguments in the request.
    * @param reason The reason why the operation failed.
    */
-  couldNotSaveOne(dto: any, key: Key | null, search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
+  couldNotSaveOne(
+    dto: unknown,
+    key: Key | null,
+    search: OptionalSearchArgs,
+    reason: OperationFailureReason,
+  ): Promise<void>
 
   /**
    * Triggered when all the items are about to be saved.
    * @param dto The resource that is being saved.
    * @param search Additional arguments in the request.
    */
-  beforeSavingAll(dto: any, search: OptionalSearchArgs): Promise<void>
+  beforeSavingAll(dto: unknown, search: OptionalSearchArgs): Promise<void>
 
   /**
    * Triggered when all the items were successfully saved.
    * @param dto The resource that was saved.
    * @param search Additional arguments in the request.
    */
-  afterSavingAll(dto: any, search: OptionalSearchArgs): Promise<void>
+  afterSavingAll(dto: unknown, search: OptionalSearchArgs): Promise<void>
 
   /**
    * Triggered when some of the items failed to be saved.
@@ -88,7 +93,7 @@ export interface ResourceCache {
    * @param search Additional arguments in the request.
    * @param reason The reason why the operation failed.
    */
-  couldNotSaveAll(dto: any, search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
+  couldNotSaveAll(dto: unknown, search: OptionalSearchArgs, reason: OperationFailureReason): Promise<void>
 
   /**
    * Triggered when an item is about to be deleted.

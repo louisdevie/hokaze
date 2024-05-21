@@ -1,12 +1,14 @@
+import { RequestPath } from '@module/requestPath'
 import type { Key, CollectionResource } from '@module/resources'
-import { Manager } from '@module/resources/managers'
+import { UrlSearchArgs } from '@module/url'
+import { fakeRequestPath } from './requestPath'
 
 export interface Fruit {
   id: number
   name: string
 }
 
-class FruitsResourceImpl implements CollectionResource<Fruit>, Manager<Fruit> {
+class FruitsResourceImpl implements CollectionResource<Fruit> {
   private _fruits: Map<number, Fruit>
 
   public constructor() {
@@ -18,13 +20,9 @@ class FruitsResourceImpl implements CollectionResource<Fruit>, Manager<Fruit> {
     ])
   }
 
-  public isNew(item: Fruit): boolean {
-    return !this._fruits.has(item.id)
-  }
+  public readonly key: keyof Fruit = 'id'
 
-  public readonly key = 'id'
-
-  public readonly keyKind = 'number'
+  public readonly asPath: RequestPath = fakeRequestPath()
 
   private notFound(key: Key): never {
     throw new Error(`Item not found for key '${key}'`)
@@ -39,34 +37,22 @@ class FruitsResourceImpl implements CollectionResource<Fruit>, Manager<Fruit> {
   }
 
   public create(): Fruit {
-    return { id: 0, name: '' }
+    return { id: -1, name: '' }
   }
 
-  public async send(item: Fruit): Promise<void> {
+  public async send(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public async sendMany(items: Fruit[]): Promise<void> {
+  public async save(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public async save(item: Fruit): Promise<void> {
+  public async delete(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public async saveMany(items: Fruit[]): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  public async delete(item: Fruit): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  public async deleteKey(key: Key): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  public async deleteMany(items: Fruit[]): Promise<void> {
+  public async deleteKey(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -76,9 +62,5 @@ class FruitsResourceImpl implements CollectionResource<Fruit>, Manager<Fruit> {
 }
 
 export function fakeResource(): CollectionResource<Fruit> {
-  return new FruitsResourceImpl()
-}
-
-export function fakeManager(): Manager<Fruit> {
   return new FruitsResourceImpl()
 }

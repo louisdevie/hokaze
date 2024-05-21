@@ -1,9 +1,10 @@
 import type { ResourceDescriptor } from '@module/resources'
 import { Likelihood } from '@module/inference'
 import { Field, KeyKind } from '@module/fields'
-import { Internal, Throw } from '@module/errors'
+import { Err, internal, throwError } from '@module/errors'
 import { chooseKey } from '@module/resources/helpers'
 import type { DescriptorInterpreter } from '.'
+import __ from '@module/locale'
 
 export class DescriptorMapInterpreter implements DescriptorInterpreter {
   private readonly _resourceName: string
@@ -11,7 +12,7 @@ export class DescriptorMapInterpreter implements DescriptorInterpreter {
   private readonly _fieldList: string[]
 
   public constructor(descriptor: ResourceDescriptor) {
-    if (Array.isArray(descriptor.fields)) Internal.descriptorNotSupported()
+    if (Array.isArray(descriptor.fields)) internal(Err.descriptorNotSupported)
 
     this._resourceName = descriptor.name
     this._fieldDescriptors = descriptor.fields
@@ -19,8 +20,7 @@ export class DescriptorMapInterpreter implements DescriptorInterpreter {
   }
 
   public findKey(): { property: string; kind: KeyKind } {
-    let fieldsInfo: [string, Likelihood][]
-    fieldsInfo = this._fieldList.map((name) => [
+    const fieldsInfo: [string, Likelihood][] = this._fieldList.map((name) => [
       name,
       this._fieldDescriptors[name].isKey({
         fieldName: name,
@@ -30,17 +30,17 @@ export class DescriptorMapInterpreter implements DescriptorInterpreter {
     const property = chooseKey(this._resourceName, fieldsInfo)
 
     const keyField = this._fieldDescriptors[property]
-    if (keyField.keyKind == null) Throw.badTypeKey(this._resourceName, property)
-    if (keyField.isOptional) Throw.optionalKey(this._resourceName, property)
-    if (keyField.isNullable) Throw.nullableKey(this._resourceName, property)
-    if (!keyField.isReadable) Throw.unreadableKey(this._resourceName, property)
+    if (keyField.keyKind == null) throwError(__.badKeyType(this._resourceName, property))
+    if (keyField.isOptional) throwError(__.optionalKey(this._resourceName, property))
+    if (keyField.isNullable) throwError(__.nullableKey(this._resourceName, property))
+    if (!keyField.isReadable) throwError(__.unreadableKey(this._resourceName, property))
     const kind = keyField.keyKind
 
     return { property, kind }
   }
 
-  public createInstance(keyProperty: string | number | symbol | undefined): any {
-    const object = {} as any
+  public createInstance(keyProperty: string | number | symbol | undefined): unknown {
+    const object = {} as Record<string, unknown>
 
     for (const property of this._fieldList) {
       const descriptor = this._fieldDescriptors[property]
@@ -58,7 +58,7 @@ export class DescriptorMapInterpreter implements DescriptorInterpreter {
     return object
   }
 
-  public copy(from: Record<string, any>, to: Record<string, any>) {
+  public copy(from: Record<string, unknown>, to: Record<string, unknown>): void {
     for (const property of this._fieldList) {
       to[property] = from[property]
     }

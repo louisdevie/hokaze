@@ -1,5 +1,4 @@
-import { string } from '@module'
-import { valid } from '@module/validation'
+import { string } from '@module/fields'
 import { Checks } from '@module/fields/checks'
 
 function isValid(value: string | null | undefined, checks: Checks<string | null | undefined>): boolean {

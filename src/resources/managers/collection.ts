@@ -1,17 +1,22 @@
 import { KeyKind } from '@module/fields'
-import type { Key, ResourceDescriptor } from '@module/resources'
+import type { CollectionDescriptor, Key, ResourceChildren } from '@module/resources'
 import { DescriptorInterpreter, getInterpreterFor } from './interpreters'
+import type { RequestPath } from '@module/requestPath'
+import { InvalidRequestPath } from '@module/resources/managers/mock'
+import __ from '@module/locale'
 
 export class CollectionManager<T extends object> {
   private readonly _interpreter: DescriptorInterpreter
+  private readonly _childrenFactory?: ResourceChildren
   private readonly _key: keyof T
   private readonly _keyKind: KeyKind
 
-  public constructor(descriptor: ResourceDescriptor) {
+  public constructor(descriptor: CollectionDescriptor) {
     this._interpreter = getInterpreterFor(descriptor)
     const keyFound = this._interpreter.findKey()
     this._key = keyFound.property as keyof T
     this._keyKind = keyFound.kind
+    this._childrenFactory = descriptor.forEach
   }
 
   /**
@@ -51,23 +56,23 @@ export class CollectionManager<T extends object> {
    * @param key The value to set for the property.
    */
   public setKeyOf(item: T, key: Key): void {
-    item[this.key] = key as any
+    item[this.key] = key as T[keyof T]
   }
 
   /**
    * Creates a new instance of an item filled with blank values.
    */
   public createInstance(): T {
-    return this._interpreter.createInstance(this._key)
+    return this._interpreter.createInstance(this._key) as T
   }
 
   /**
    * Updates an item or adds it to the collection if it doesn't exist.
-   * @param key The key of the item.
+   * @param _key The key of the item.
    * @param item The item object.
    * @return A unique reference to that item.
    */
-  public createOrUpdateOne(key: Key, item: T): T {
+  public createOrUpdateOne(_key: Key, item: T): T {
     return item // no management
   }
 
@@ -78,5 +83,17 @@ export class CollectionManager<T extends object> {
    */
   public updateAll(items: T[]): T[] {
     return items // no management
+  }
+
+  public addChildren(to: object, requestPath: RequestPath | null): void {
+    let children = {}
+    if (this._childrenFactory !== undefined) {
+      if (requestPath !== null) {
+        children = this._childrenFactory(requestPath)
+      } else {
+        children = this._childrenFactory(new InvalidRequestPath(__.childUsedWithoutKey))
+      }
+    }
+    Object.assign(to, children)
   }
 }

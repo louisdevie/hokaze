@@ -1,5 +1,4 @@
 import type { Key, CollectionResource } from '@module/resources'
-import It = jest.It
 
 type RefState<ItemType> = { loaded: false } | { loaded: true; value: ItemType }
 

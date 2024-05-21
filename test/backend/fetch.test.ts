@@ -81,6 +81,7 @@ test('putJson makes a PUT request with a JSON body', async () => {
     method: 'PUT',
     body: JSON.stringify(testData),
     headers: {
+      Accept: '*/*',
       'Content-Type': 'application/json',
     },
   })
@@ -93,5 +94,10 @@ test('delete makes an empty DELETE request', async () => {
 
   await client.delete(new URL('https://toaruapi.com/characters/53'))
 
-  expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), { method: 'DELETE' })
+  expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), {
+    method: 'DELETE',
+    headers: {
+      Accept: '*/*',
+    },
+  })
 })

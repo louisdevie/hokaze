@@ -1,4 +1,5 @@
 import { ValidationResult } from './validation'
+import { Err, internal } from '@module/errors'
 
 type ResultVariant<T, E> = { success: true; value: T } | { success: false; error: E }
 
@@ -32,9 +33,9 @@ export class Result<T, E = string> {
     for (let i = 0; i < array.length; i++) {
       const mapped = mapFn(array[i])
       if (mapped.success) {
-        mappedValues.push(mapped.value!)
+        mappedValues.push(mapped.unwrap())
       } else {
-        errors.push([mapped.error!, i])
+        errors.push([mapped.unwrap_error(), i])
       }
     }
 
@@ -55,7 +56,15 @@ export class Result<T, E = string> {
     return this._variant.success ? this._variant.value : undefined
   }
 
+  public unwrap(): T {
+    return this._variant.success ? this._variant.value : internal(Err.unwrappedError)
+  }
+
   public get error(): E | undefined {
     return !this._variant.success ? this._variant.error : undefined
+  }
+
+  public unwrap_error(): E {
+    return !this._variant.success ? this._variant.error : internal(Err.unwrappedValue)
   }
 }

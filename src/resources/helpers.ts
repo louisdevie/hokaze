@@ -1,6 +1,7 @@
 import { UrlSearchArgs } from '@module/url'
 import { Likelihood } from '@module/inference'
-import { Throw } from '@module/errors'
+import { throwError } from '@module/errors'
+import __ from '@module/locale'
 
 export type OptionalSearchArgs = UrlSearchArgs | undefined
 
@@ -23,6 +24,6 @@ export function chooseKey(resourceName: string, fields: [string, Likelihood][]):
   if (possibleKeys.length === 1 && highestLikelihood.isMoreLikelyThan(Likelihood.implicit(0))) {
     return possibleKeys[0]
   } else {
-    Throw.couldNotInferKey(resourceName)
+    throwError(__.couldNotInferKey(resourceName))
   }
 }

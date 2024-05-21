@@ -73,17 +73,17 @@ export interface Field<T> {
 /**
  * Describes a boolean field.
  */
-export const boolean = new BooleanField<never>()
+export const boolean: BooleanField<never> = new BooleanField()
 
 /**
  * Describes a number field.
  */
-export const number = new NumberField<never>()
+export const number: NumberField<never> = new NumberField()
 
 /**
  * Describes a string field.
  */
-export const string = new StringField<never>()
+export const string: StringField<never> = new StringField()
 
 // generic fields
 export { arrayFieldFactory as array } from './array'
