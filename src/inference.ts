@@ -21,8 +21,8 @@ export class Likelihood {
   }
 
   /**
-   * Creates a {@link Likelihood} instance that indicates a property that was inferred by the library. The {@link Infer}
-   * class always returns this variant of likelihood.
+   * Creates a {@link Likelihood} instance that indicates a property that was inferred by the library. The inference
+   * module always returns this variant of likelihood.
    * @param level A number indicating a likelihood between 0 (absolutely not) and 10 (surely).
    */
   public static implicit(level: number): Likelihood {
