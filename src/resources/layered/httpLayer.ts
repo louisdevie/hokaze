@@ -23,14 +23,14 @@ export class HttpLayer implements RawSendAndReceive, ResourceRequestPath {
   public get forResource(): RequestPathInit {
     return {
       httpClient: this._client,
-      baseUrl: new UrlTemplate(this._urlTemplate.getUrlForResource(this._urlPath, {}), {}),
+      baseUrl: new UrlTemplate(this._urlTemplate.getUrlForResource(this._urlPath, {}), this._urlTemplate.options),
     }
   }
 
   public forItem(key: Key): RequestPathInit {
     return {
       httpClient: this._client,
-      baseUrl: new UrlTemplate(this._urlTemplate.getUrlForItem(this._urlPath, key, {}), {}),
+      baseUrl: new UrlTemplate(this._urlTemplate.getUrlForItem(this._urlPath, key, {}), this._urlTemplate.options),
     }
   }
 

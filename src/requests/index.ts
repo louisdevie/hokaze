@@ -37,10 +37,10 @@ export type RequestType<Descriptor extends CustomRequestDescriptor> =
 export type ResponseType<Descriptor extends CustomRequestDescriptor> =
   Descriptor extends WithResponse ? ObjectTypeFromFields<Descriptor['response']>
   : Descriptor extends WithRequestAndResponse ? ObjectTypeFromFields<Descriptor['requestAndResponse']>
-  : void
+  : undefined
 
 export type RequestParams = [] | [object]
-export type RequestReturn = object | void
+export type RequestReturn = object | undefined
 
 export interface CustomRequest<Q extends RequestParams, R extends RequestReturn> {
   send(...request: Q): Promise<R>

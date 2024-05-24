@@ -12,7 +12,7 @@ type Fields<O> = { [p in keyof O]: Field<O[p]> }
  * @template O The type of the object.
  * @template N Additional values the field can hold.
  */
-export class ObjectField<O extends object, N> extends AnyField<O | N, ObjectField<O, N>> {
+export class ObjectField<O extends Record<string, unknown>, N> extends AnyField<O | N, ObjectField<O, N>> {
   private readonly _fields: Fields<O>
 
   public constructor(fields: Fields<O>, copyFrom?: ObjectField<O, N>, options?: ObjectFieldOpts<O, N>) {
@@ -22,11 +22,11 @@ export class ObjectField<O extends object, N> extends AnyField<O | N, ObjectFiel
   }
 
   protected get defaultBlankValue(): O | N {
-    let object: any = {}
+    const object: Partial<O> = {}
     for (const property in this._fields) {
       object[property] = this._fields[property].blankValue
     }
-    return object
+    return object as O
   }
 
   protected cloneAsSelf(options: ObjectFieldOpts<O, N>): ObjectField<O, N> {
@@ -50,7 +50,7 @@ type ObjectDescriptor = Record<string, Field<unknown>>
 
 // inverse of Fields
 type ObjectItemType<Descriptor extends ObjectDescriptor> = {
-  [Property in keyof Descriptor]: Descriptor[Property] extends Field<infer T> ? T : any
+  [Property in keyof Descriptor]: Descriptor[Property] extends Field<infer T> ? T : unknown
 }
 
 /**
@@ -65,5 +65,5 @@ export function objectFieldFactory<Descriptor extends ObjectDescriptor>(
 ): ObjectField<ObjectItemType<Descriptor>, never> {
   // I think the compiler can't understand the round-trip (Fields<ObjectItemType<T>> is actually T)
   // because of the "infer T", so it just has to trust me
-  return new ObjectField<ObjectItemType<Descriptor>, never>(objectDescriptor as any)
+  return new ObjectField<ObjectItemType<Descriptor>, never>(objectDescriptor as Fields<ObjectItemType<Descriptor>>)
 }

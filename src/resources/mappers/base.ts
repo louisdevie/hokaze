@@ -17,7 +17,7 @@ export abstract class MappedField {
     return this._transferProperty
   }
 
-  public abstract packValue(value: any): Result<any>
+  public abstract packValue(value: unknown): Result<unknown>
 
-  public abstract unpackValue(value: any): Result<any>
+  public abstract unpackValue(value: unknown): Result<unknown>
 }

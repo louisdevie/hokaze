@@ -1,7 +1,7 @@
 import type { ResourceDescriptor } from '../../index'
 import type { KeyKind } from '@module/fields'
 import type { DescriptorInterpreter } from '.'
-import { Infer, Likelihood } from '@module/inference'
+import { isImplicitId, Likelihood } from '@module/inference'
 import { chooseKey } from '@module/resources/helpers'
 import { Err, internal } from '@module/errors'
 
@@ -19,7 +19,7 @@ export class FieldListInterpreter implements DescriptorInterpreter {
   public findKey(): { property: string; kind: KeyKind } {
     const fieldsInfo: [string, Likelihood][] = this._fieldList.map((name) => [
       name,
-      Infer.isImplicitId({
+      isImplicitId({
         fieldName: name,
         resourceName: this._resourceName,
       }),

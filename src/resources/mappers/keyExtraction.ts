@@ -8,10 +8,10 @@ export interface KeyExtractionMethod {
 }
 
 export class ExtractFromObjectBody implements KeyExtractionMethod {
-  private readonly _mapper: Mapper<any, any>
+  private readonly _mapper: Mapper<NonNullable<unknown>, object>
   private readonly _key: string
 
-  public constructor(mapper: Mapper<any, any>, key: string) {
+  public constructor(mapper: Mapper<NonNullable<unknown>, object>, key: string) {
     this._mapper = mapper
     this._key = key
   }

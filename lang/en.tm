@@ -27,3 +27,5 @@ requestBodyRequired = '{method} requests require a request body.'
 
 invalidRequestPathDefault = 'Invalid request path used.'
 childUsedWithoutKey = 'A child request was used on a item that has no key.'
+
+objectInUrlNotAllowed = "An object can't be used in URL query parameters."

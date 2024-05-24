@@ -4,8 +4,8 @@ export interface Checks<T> {
   validate(value: T): ValidationResult
 }
 
-export class NoChecks implements Checks<any> {
-  validate(value: any): ValidationResult {
+export class NoChecks implements Checks<never> {
+  public validate(): ValidationResult {
     return valid()
   }
 }
@@ -18,7 +18,7 @@ export abstract class SingleCheck<T> implements Checks<T> {
   }
 
   public validate(value: T): ValidationResult {
-    let thisCheckResult = this.check(value)
+    const thisCheckResult = this.check(value)
     return !thisCheckResult.isValid ? thisCheckResult : this._otherChecks.validate(value)
   }
 

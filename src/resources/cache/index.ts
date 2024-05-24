@@ -19,7 +19,7 @@ export interface ResourceCache {
    * @param key The primary key of the item.
    * @param search Additional arguments in the request.
    */
-  beforeGettingOne(key: Key, search: OptionalSearchArgs): Promise<unknown | undefined>
+  beforeGettingOne(key: Key, search: OptionalSearchArgs): Promise<unknown>
 
   /**
    * Triggered when a single item has been received.
@@ -34,7 +34,7 @@ export interface ResourceCache {
    * request is interrupted and that value is returned instead.
    * @param search Additional arguments in the request.
    */
-  beforeGettingAll(search: OptionalSearchArgs): Promise<unknown | undefined>
+  beforeGettingAll(search: OptionalSearchArgs): Promise<unknown>
 
   /**
    * Triggered when all the items have been received.

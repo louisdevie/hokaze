@@ -1,11 +1,13 @@
-import type { Key } from './resources'
+import type { Key } from '@module/resources'
+import type { UrlSearchArgs, UrlSerializationBehavior } from '@module/url'
+import { UrlSerializationImpl } from '@module/url/serialization'
 
-export interface UrlTemplateOptions {}
-
-export type UrlSearchArgs = Record<string, any>
+export interface UrlTemplateOptions {
+  readonly urlSerializationBehavior: UrlSerializationBehavior
+}
 
 export class UrlTemplate {
-  private _options: UrlTemplateOptions
+  private readonly _options: UrlTemplateOptions
   private readonly _base: URL
 
   public constructor(baseUrl: string | URL, options: UrlTemplateOptions) {
@@ -17,6 +19,10 @@ export class UrlTemplate {
     UrlTemplate.ensureTrailingSeparator(this._base)
 
     this._options = options
+  }
+
+  public get options(): UrlTemplateOptions {
+    return this._options
   }
 
   private static ensureTrailingSeparator(url: URL): void {
@@ -34,23 +40,26 @@ export class UrlTemplate {
   public getUrlForResource(path: string, args: UrlSearchArgs): URL {
     const resourceUrl = new URL(path, this._base)
     UrlTemplate.stripTrailingSeparator(resourceUrl)
-    UrlTemplate.addSearchArgs(resourceUrl, args)
+    this.addSearchArgs(resourceUrl, args)
     return resourceUrl
   }
 
   public getUrlForItem(path: string, key: Key, args: UrlSearchArgs): URL {
     const itemUrl = this.getUrlForResource(path, {})
-    itemUrl.pathname += '/' + key
-    UrlTemplate.addSearchArgs(itemUrl, args)
+    itemUrl.pathname += `/${key}`
+    this.addSearchArgs(itemUrl, args)
     return itemUrl
   }
 
-  private static addSearchArgs(url: URL, args: UrlSearchArgs): void {
-    for (const name in args) {
-      if (args[name] === null) {
+  private addSearchArgs(url: URL, args: UrlSearchArgs): void {
+    for (const name of Object.keys(args)) {
+      const arg = args[name]
+      if (arg === null) {
         url.searchParams.append(name, 'null')
-      } else if (args[name] !== undefined) {
-        url.searchParams.append(name, args[name].toString())
+      } else if (typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean') {
+        url.searchParams.append(name, arg.toString())
+      } else if (arg !== undefined) {
+        url.searchParams.append(name, UrlSerializationImpl[this._options.urlSerializationBehavior](arg))
       }
     }
   }

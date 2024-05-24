@@ -1,5 +1,5 @@
 import { Field, FieldRoleHints, KeyKind } from '.'
-import { Infer, Likelihood } from '@module/inference'
+import { isImplicitId, Likelihood } from '@module/inference'
 import { ValidationResult, invalid } from '@module/validation'
 import { Checks, NoChecks } from './checks'
 import { MappedField } from '@module/resources/mappers/base'
@@ -110,7 +110,7 @@ export abstract class AnyField<T, Self> implements Field<T> {
     } else if (this.keyKind == null) {
       likelihood = Likelihood.implicit(0)
     } else {
-      likelihood = Infer.isImplicitId(hints)
+      likelihood = isImplicitId(hints)
     }
     return likelihood
   }

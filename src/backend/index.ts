@@ -2,17 +2,17 @@ import type { Key } from '@module/resources'
 
 export interface CreationResult {
   location: string | null
-  responseBody: any
+  responseBody: unknown
 }
 
 export interface HttpClient {
-  getJson(url: URL): Promise<any>
+  getJson(url: URL): Promise<unknown>
 
-  postJson(url: URL, payload: any): Promise<CreationResult>
+  postJson(url: URL, payload: unknown): Promise<CreationResult>
 
-  putJson(url: URL, payload: any, ignoreResponse?: boolean): Promise<any>
+  putJson(url: URL, payload: unknown, ignoreResponse?: boolean): Promise<unknown>
 
-  delete(url: URL, ignoreResponse?: boolean): Promise<any>
+  delete(url: URL, ignoreResponse?: boolean): Promise<unknown>
 }
 
 export { FetchHttpClient as DefaultHttpClient } from './fetch'
@@ -44,7 +44,7 @@ export interface ResourceCacheStorage {
   isFresh(): Promise<boolean>
 
   /**
-   * Checks if any items are present in the cache. This method will also return true if the resource has been fetched
+   * Checks if unknown items are present in the cache. This method will also return true if the resource has been fetched
    * but is empty.
    */
   hasAny(): Promise<boolean>
@@ -80,25 +80,25 @@ export interface ResourceCacheStorage {
    * Tries to get an item from the cache. If the item is missing, this method will return `undefined`.
    * @param key The primary key of the item to look up.
    */
-  get(key: Key): Promise<any>
+  get(key: Key): Promise<unknown>
 
   /**
    * Gets all the items present in the cache.
    */
-  getAll(): Promise<any[]>
+  getAll(): Promise<unknown[]>
 
   /**
    * Adds or update an item in the cache. After this operation, the item will be up-to-date again.
    * @param key The primary key of the item.
    * @param value The new value to store.
    */
-  put(key: Key, value: any): Promise<void>
+  put(key: Key, value: unknown): Promise<void>
 
   /**
    * Adds or update a batch of items in the cache. After this operation, the items will be up-to-date again.
    * @param entries An array of [keys, values] to store.
    */
-  putMany(entries: [Key, any][]): Promise<void>
+  putMany(entries: [Key, unknown][]): Promise<void>
 
   /**
    * Marks an item as outdated until it gets updated. After this operation, the item is still available.

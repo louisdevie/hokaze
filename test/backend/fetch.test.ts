@@ -1,6 +1,6 @@
 import { FetchHttpClient } from '@module/backend/fetch'
 
-let fetchMock = jest.spyOn(global, 'fetch')
+const fetchMock = jest.spyOn(global, 'fetch')
 
 beforeEach(() => fetchMock.mockClear())
 

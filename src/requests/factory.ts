@@ -6,88 +6,68 @@ import {
   GenericPutRequest,
   OptionalMapper,
 } from './generic'
-import { DefaultHttpClient, HttpClient } from '@module/backend'
+import { HttpClient } from '@module/backend'
 import { UrlTemplate } from '@module/url'
 import { Mapper } from '@module/resources/mappers'
 
-export class RequestFactory {
-  public static makeGetRequest<Opts extends CustomRequestDescriptor>(
-    baseUrl: UrlTemplate,
-    client: HttpClient,
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return new GenericGetRequest(
-      client,
-      baseUrl,
-      options.path,
-      this.makeRequestMapper(options),
-      this.makeResponseMapper(options),
-    )
+export function makeGetRequest<Opts extends CustomRequestDescriptor>(
+  baseUrl: UrlTemplate,
+  client: HttpClient,
+  options: Opts,
+): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
+  return new GenericGetRequest(client, baseUrl, options.path, makeRequestMapper(options), makeResponseMapper(options))
+}
+
+export function makePostRequest<Opts extends CustomRequestDescriptor>(
+  baseUrl: UrlTemplate,
+  client: HttpClient,
+  options: Opts,
+): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
+  return new GenericPostRequest(client, baseUrl, options.path, makeRequestMapper(options), makeResponseMapper(options))
+}
+
+export function makePutRequest<Opts extends CustomRequestDescriptor>(
+  baseUrl: UrlTemplate,
+  client: HttpClient,
+  options: Opts,
+): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
+  return new GenericPutRequest(client, baseUrl, options.path, makeRequestMapper(options), makeResponseMapper(options))
+}
+
+export function makeDeleteRequest<Opts extends CustomRequestDescriptor>(
+  baseUrl: UrlTemplate,
+  client: HttpClient,
+  options: Opts,
+): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
+  return new GenericDeleteRequest(
+    client,
+    baseUrl,
+    options.path,
+    makeRequestMapper(options),
+    makeResponseMapper(options),
+  )
+}
+
+function makeRequestMapper<T>(options: CustomRequestDescriptor): OptionalMapper<T> {
+  let mapper = undefined
+
+  if (options.request !== undefined) {
+    mapper = new Mapper(options.request)
+  } else if (options.requestAndResponse !== undefined) {
+    mapper = new Mapper(options.requestAndResponse)
   }
 
-  public static makePostRequest<Opts extends CustomRequestDescriptor>(
-    baseUrl: UrlTemplate,
-    client: HttpClient,
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return new GenericPostRequest(
-      client,
-      baseUrl,
-      options.path,
-      this.makeRequestMapper(options),
-      this.makeResponseMapper(options),
-    )
+  return mapper as OptionalMapper<T>
+}
+
+function makeResponseMapper<T>(options: CustomRequestDescriptor): OptionalMapper<T> {
+  let mapper = undefined
+
+  if (options.response !== undefined) {
+    mapper = new Mapper(options.response)
+  } else if (options.requestAndResponse !== undefined) {
+    mapper = new Mapper(options.requestAndResponse)
   }
 
-  public static makePutRequest<Opts extends CustomRequestDescriptor>(
-    baseUrl: UrlTemplate,
-    client: HttpClient,
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return new GenericPutRequest(
-      client,
-      baseUrl,
-      options.path,
-      this.makeRequestMapper(options),
-      this.makeResponseMapper(options),
-    )
-  }
-
-  public static makeDeleteRequest<Opts extends CustomRequestDescriptor>(
-    baseUrl: UrlTemplate,
-    client: HttpClient,
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return new GenericDeleteRequest(
-      client,
-      baseUrl,
-      options.path,
-      this.makeRequestMapper(options),
-      this.makeResponseMapper(options),
-    )
-  }
-
-  private static makeRequestMapper<T>(options: CustomRequestDescriptor): OptionalMapper<T> {
-    let mapper = undefined
-
-    if (options.request !== undefined) {
-      mapper = new Mapper(options.request)
-    } else if (options.requestAndResponse !== undefined) {
-      mapper = new Mapper(options.requestAndResponse)
-    }
-
-    return mapper as OptionalMapper<T>
-  }
-
-  private static makeResponseMapper<T>(options: CustomRequestDescriptor): OptionalMapper<T> {
-    let mapper = undefined
-
-    if (options.response !== undefined) {
-      mapper = new Mapper(options.response)
-    } else if (options.requestAndResponse !== undefined) {
-      mapper = new Mapper(options.requestAndResponse)
-    }
-
-    return mapper as OptionalMapper<T>
-  }
+  return mapper as OptionalMapper<T>
 }

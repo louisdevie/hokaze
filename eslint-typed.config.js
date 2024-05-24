@@ -1,13 +1,26 @@
-/* eslint-disable */
+import tsESLint from 'typescript-eslint'
+import baseCfg from './eslint.config.js'
 
-const tsESLint = require('typescript-eslint')
-const baseCfg = require('./eslint.config')
-
-module.exports = tsESLint.config(...baseCfg, ...tsESLint.configs.strictTypeCheckedOnly, {
-  languageOptions: {
-    parserOptions: {
-      project: true,
-      tsconfigRootDir: __dirname,
+export default tsESLint.config(
+  ...baseCfg,
+  ...tsESLint.configs.strictTypeCheckedOnly,
+  {
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
-})
+  {
+    rules: {
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        {
+          allowBoolean: true,
+          allowNumber: true,
+        },
+      ],
+    },
+  },
+)

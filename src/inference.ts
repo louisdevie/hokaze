@@ -65,54 +65,52 @@ export class Likelihood {
   }
 }
 
-export class Infer {
-  private static readonly IDENTIFIER_KEYWORD = 'id'
+const IDENTIFIER_KEYWORD = 'id'
 
-  /**
-   * Determines the likelihood of a field being the identifier of a given resource.
-   * @param hints Hints about the role of the field.
-   */
-  public static isImplicitId(hints: FieldRoleHints): Likelihood {
-    let looksLike: number
+/**
+ * Determines the likelihood of a field being the identifier of a given resource.
+ * @param hints Hints about the role of the field.
+ */
+export function isImplicitId(hints: FieldRoleHints): Likelihood {
+  let lvl: number
+  let likelihoodLevel
 
-    let likelihoodLevel
-    if ((looksLike = this.looksLike(hints.fieldName, this.IDENTIFIER_KEYWORD + hints.resourceName)) > 0) {
-      // "idSomething" -> very likely, 8 to 10
-      likelihoodLevel = 7 + looksLike
-    } else if ((looksLike = this.looksLike(hints.fieldName, hints.resourceName + this.IDENTIFIER_KEYWORD)) > 0) {
-      // "somethingId" -> same
-      likelihoodLevel = 7 + looksLike
-    } else if ((looksLike = this.looksLike(hints.fieldName, this.IDENTIFIER_KEYWORD)) > 0) {
-      // "id" -> maybe, 5 to 7
-      likelihoodLevel = 4 + looksLike
-    } else {
-      // otherwise it's surely not and id
-      likelihoodLevel = 0
-    }
-
-    return Likelihood.implicit(likelihoodLevel)
+  if ((lvl = looksLike(hints.fieldName, IDENTIFIER_KEYWORD + hints.resourceName)) > 0) {
+    // "idSomething" -> very likely, 8 to 10
+    likelihoodLevel = 7 + lvl
+  } else if ((lvl = looksLike(hints.fieldName, hints.resourceName + IDENTIFIER_KEYWORD)) > 0) {
+    // "somethingId" -> same
+    likelihoodLevel = 7 + lvl
+  } else if ((lvl = looksLike(hints.fieldName, IDENTIFIER_KEYWORD)) > 0) {
+    // "id" -> maybe, 5 to 7
+    likelihoodLevel = 4 + lvl
+  } else {
+    // otherwise it's surely not and id
+    likelihoodLevel = 0
   }
 
-  private static looksLike(identifier1: string, identifier2: string): number {
-    // exact same
-    if (identifier1 === identifier2) {
-      return 3
-    }
+  return Likelihood.implicit(likelihoodLevel)
+}
 
-    // ignore case
-    identifier1 = identifier1.toLowerCase()
-    identifier2 = identifier2.toLowerCase()
-    if (identifier1 === identifier2) {
-      return 2
-    }
-
-    // ignore non-alphanumeric characters
-    identifier1 = identifier1.replace(/[^a-z0-9]/g, '')
-    identifier2 = identifier2.replace(/[^a-z0-9]/g, '')
-    if (identifier1 === identifier2) {
-      return 1
-    }
-
-    return 0
+function looksLike(identifier1: string, identifier2: string): number {
+  // exact same
+  if (identifier1 === identifier2) {
+    return 3
   }
+
+  // ignore case
+  identifier1 = identifier1.toLowerCase()
+  identifier2 = identifier2.toLowerCase()
+  if (identifier1 === identifier2) {
+    return 2
+  }
+
+  // ignore non-alphanumeric characters
+  identifier1 = identifier1.replace(/[^a-z0-9]/g, '')
+  identifier2 = identifier2.replace(/[^a-z0-9]/g, '')
+  if (identifier1 === identifier2) {
+    return 1
+  }
+
+  return 0
 }

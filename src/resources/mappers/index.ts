@@ -1,4 +1,4 @@
-import type { Key, ObjectTypeFromFields, ResourceDescriptor, ResourceFields, ResourceItemType } from '@module/resources'
+import type { Key, ObjectTypeFromFields, ResourceFields } from '@module/resources'
 import { AutoMappedField } from './auto'
 import { MappingFactoryImpl } from '@module/resources/mappers/factory'
 import { Result } from '@module/result'
@@ -20,8 +20,8 @@ export class Mapper<Descriptor extends ResourceFields, ItemType extends ObjectTy
     }
   }
 
-  public packItem(item: ItemType): Result<any> {
-    const dto: any = {}
+  public packItem(item: ItemType): Result<Record<string, unknown>> {
+    const dto: Record<string, unknown> = {}
     const errors = []
 
     for (const property in item) {
@@ -46,47 +46,55 @@ export class Mapper<Descriptor extends ResourceFields, ItemType extends ObjectTy
     return result
   }
 
-  public packItemsArray(items: ItemType[]): Result<any[]> {
-    return Result.mapArray(items, (item) => this.packItem(item), Mapper.joinArrayErrors)
+  public packItemsArray(items: ItemType[]): Result<Record<string, unknown>[]> {
+    return Result.mapArray(items, (item) => this.packItem(item), Mapper.joinArrayErrors.bind(Mapper))
   }
 
-  public unpackItem(dto: any): Result<ItemType> {
-    const item: any = {}
-    const errors = []
+  public unpackItem(dto: unknown): Result<ItemType> {
+    const item: Record<string, unknown> = {}
+    let result: Result<ItemType>
 
-    for (const property in dto) {
-      const mapping = this._receive.get(property)
-      if (mapping !== undefined) {
-        const mapped = mapping.unpackValue(dto[property])
-        if (mapped.success) {
-          item[mapping.modelProperty] = mapped.value
-        } else {
-          errors.push(`[${property}] ${mapped.error}`)
+    if (dto === null) {
+      result = Result.error('Could not unpack null value.')
+    } else if (typeof dto !== 'object' || Array.isArray(dto)) {
+      result = Result.error(`Could not unpack value of type ${typeof dto}.`)
+    } else {
+      const errors = []
+      const dtoRecord = dto as Record<string, unknown>
+
+      for (const property in dtoRecord) {
+        const mapping = this._receive.get(property)
+        if (mapping !== undefined) {
+          const mapped = mapping.unpackValue(dtoRecord[property])
+          if (mapped.success) {
+            item[mapping.modelProperty] = mapped.value
+          } else {
+            errors.push(`[${property}] ${mapped.error}`)
+          }
         }
       }
-    }
 
-    let result: Result<ItemType>
-    if (errors.length > 0) {
-      result = Result.error('Errors when unpacking item: ' + errors.join(', '))
-    } else {
-      result = Result.ok(item as ItemType)
+      if (errors.length > 0) {
+        result = Result.error('Errors when unpacking item: ' + errors.join(', '))
+      } else {
+        result = Result.ok(item as ItemType)
+      }
     }
 
     return result
   }
 
-  public unpackItemsArray(dto: any[]): Result<ItemType[]> {
-    return Result.mapArray(dto, (itemDto) => this.unpackItem(itemDto), Mapper.joinArrayErrors)
+  public unpackItemsArray(dto: unknown[]): Result<ItemType[]> {
+    return Result.mapArray(dto, (itemDto) => this.unpackItem(itemDto), Mapper.joinArrayErrors.bind(Mapper))
   }
 
-  public tryToUnpackKey(dto: any, keyProperty: string): Result<Key> {
+  public tryToUnpackKey(dto: unknown, keyProperty: string): Result<Key> {
     let idFound: Result<Key> = Result.error('')
 
     const mapping = this._send.get(keyProperty)
-    if (mapping !== undefined) {
-      const mapped = mapping.unpackValue(dto[mapping.transferProperty])
-      if (mapped.success) {
+    if (mapping !== undefined && typeof dto === 'object' && dto !== null) {
+      const mapped = mapping.unpackValue((dto as Record<string, unknown>)[mapping.transferProperty])
+      if ((mapped.success && typeof mapped.value === 'string') || typeof mapped.value === 'number') {
         idFound = Result.ok(mapped.value)
       }
     }

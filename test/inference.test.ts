@@ -1,4 +1,4 @@
-import { Infer, Likelihood } from '@module/inference'
+import { isImplicitId, Likelihood } from '@module/inference'
 
 test('explicit is always more likely than implicit', () => {
   const explicit = Likelihood.explicit()
@@ -101,11 +101,11 @@ test('the isAsLikelyAs is an equality relation', () => {
 })
 
 test('relative ID field likelihood is correct', () => {
-  let resourceNamePlusId = Infer.isImplicitId({ fieldName: 'somethingId', resourceName: 'something' })
-  let idPlusResourceName = Infer.isImplicitId({ fieldName: 'idSomething', resourceName: 'something' })
-  let resourceNameUnderscoreId = Infer.isImplicitId({ fieldName: 'something_id', resourceName: 'something' })
-  let justId = Infer.isImplicitId({ fieldName: 'id', resourceName: 'something' })
-  let random = Infer.isImplicitId({ fieldName: 'random', resourceName: 'something' })
+  const resourceNamePlusId = isImplicitId({ fieldName: 'somethingId', resourceName: 'something' })
+  const idPlusResourceName = isImplicitId({ fieldName: 'idSomething', resourceName: 'something' })
+  const resourceNameUnderscoreId = isImplicitId({ fieldName: 'something_id', resourceName: 'something' })
+  const justId = isImplicitId({ fieldName: 'id', resourceName: 'something' })
+  const random = isImplicitId({ fieldName: 'random', resourceName: 'something' })
 
   expect(resourceNamePlusId.isAsLikelyAs(idPlusResourceName)).toBeTrue()
   expect(resourceNamePlusId.isMoreLikelyThan(resourceNameUnderscoreId)).toBeTrue()
@@ -114,15 +114,15 @@ test('relative ID field likelihood is correct', () => {
 })
 
 test('ID field inference is insensitive to case and punctuation', () => {
-  let same = [
+  const same = [
     ['something1Id', 'Something1ID'],
     ['random', '__random__'],
     ['something-1-id', 'something1.id'],
   ]
 
   for (const [first, second] of same) {
-    let firstResult = Infer.isImplicitId({ fieldName: first, resourceName: 'something1' })
-    let secondResult = Infer.isImplicitId({ fieldName: second, resourceName: 'something1' })
+    const firstResult = isImplicitId({ fieldName: first, resourceName: 'something1' })
+    const secondResult = isImplicitId({ fieldName: second, resourceName: 'something1' })
 
     expect(firstResult.isAsLikelyAs(secondResult)).toBeTrue()
   }

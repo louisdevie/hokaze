@@ -39,7 +39,7 @@ export class ArrayField<E, N> extends AnyField<E[] | N, ArrayField<E, N>> {
   //endregion
 }
 
-type ArrayElementType<ElementDescriptor> = ElementDescriptor extends Field<infer T> ? T : any
+type ArrayElementType<ElementDescriptor> = ElementDescriptor extends Field<infer T> ? T : never
 
 /**
  * Describes an array field.
@@ -48,6 +48,8 @@ type ArrayElementType<ElementDescriptor> = ElementDescriptor extends Field<infer
 export function arrayFieldFactory<ElementDescriptor>(
   elements: ElementDescriptor,
 ): ArrayField<ArrayElementType<ElementDescriptor>, never> {
-  // same as in objectFieldFactory, we need to cast to any
-  return new ArrayField<ArrayElementType<ElementDescriptor>, never>(elements as any)
+  // same as in objectFieldFactory, we need to cast
+  return new ArrayField<ArrayElementType<ElementDescriptor>, never>(
+    elements as Field<ArrayElementType<ElementDescriptor>>,
+  )
 }

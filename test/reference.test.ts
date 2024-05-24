@@ -19,16 +19,16 @@ test('a Ref created from a value is loaded and has the corresponding key', () =>
   expect(ref.key).toEqual(2)
 })
 
-test('using get on a Ref fetches the value if necessary', () => {
+test('using get on a Ref fetches the value if necessary', async () => {
   const res = fakeResource()
   const get = jest.spyOn(res, 'get')
 
   const refFromValue = Ref.fromValue(res, { id: 2, name: 'Pear' })
-  expect(refFromValue.get()).resolves.toEqual({ id: 2, name: 'Pear' })
+  await expect(refFromValue.get()).resolves.toEqual({ id: 2, name: 'Pear' })
   expect(get).not.toHaveBeenCalled()
 
   const refFromKey = Ref.fromKey(res, 2)
-  expect(refFromKey.get()).resolves.toEqual({ id: 2, name: 'Pear' })
+  await expect(refFromKey.get()).resolves.toEqual({ id: 2, name: 'Pear' })
   expect(get).toHaveBeenCalledWith(2)
 })
 

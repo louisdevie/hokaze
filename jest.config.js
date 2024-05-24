@@ -5,6 +5,7 @@ export default {
     '@module/(.*)': '<rootDir>/src/$1',
     '@module': '<rootDir>/src/index',
     '@fake': '<rootDir>/test/_fake/index',
+    '@data': '<rootDir>/test/_data/constants',
   },
   transform: {
     '^.+\\.tsx?$': [

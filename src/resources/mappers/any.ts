@@ -15,7 +15,7 @@ export class AnyMappedField<T> extends MappedField {
     return this._descriptor
   }
 
-  public packValue(value: any): Result<any> {
+  public packValue(value: T): Result<unknown> {
     let result
 
     if (!this.descriptor.isWritable) {
@@ -27,7 +27,7 @@ export class AnyMappedField<T> extends MappedField {
     return result
   }
 
-  public unpackValue(value: any): Result<any> {
+  public unpackValue(value: unknown): Result<unknown> {
     return Result.ok(this.descriptor.isReadable ? value : undefined)
   }
 }

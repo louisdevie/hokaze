@@ -1,5 +1,3 @@
-import __ from '@module/locale'
-
 export function throwInline(error: unknown): never {
   throw error
 }
@@ -8,10 +6,10 @@ export function throwError(message: string, options?: ErrorOptions): never {
   throw new Error(message, options)
 }
 
-export function internal(error: unknown): never {
-  console.error('[EIKTOBEL INTERNAL ERROR] ' + error)
+export function internal(error: string): never {
+  console.error(`[EIKTOBEL INTERNAL ERROR] ${error}`)
   console.warn('The error above is not your fault. Please report it at : https://github.com/louisdevie/eiktobel/issues')
-  throw 'Interrupting because of internal error'
+  throw new Error('Interrupting because of internal error')
 }
 
 export const Err = {

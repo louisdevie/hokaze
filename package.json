@@ -13,7 +13,9 @@
     "build-translations": "elzii release",
     "build": "tsup",
     "test": "jest",
-    "format": "prettier --write src/** test/**"
+    "format": "prettier --write src/** test/**",
+    "lint": "eslint --config eslint-typed.config.js src/** test/**",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "Louis DEVIE",

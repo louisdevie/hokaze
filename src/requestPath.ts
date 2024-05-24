@@ -7,10 +7,10 @@ import type {
   SingleResource,
 } from '@module/resources'
 import { makeCollectionResource, makeSingleResource } from '@module/resources/layered/factory'
-import { CustomRequest, CustomRequestDescriptor, RequestType, ResponseType } from '@module/requests'
-import { RequestFactory } from '@module/requests/factory'
-import { UrlTemplate } from '@module/url'
-import { HttpClient } from '@module/backend'
+import type { CustomRequest, CustomRequestDescriptor, RequestType, ResponseType } from '@module/requests'
+import { makeGetRequest, makeDeleteRequest, makePostRequest, makePutRequest } from '@module/requests/factory'
+import type { UrlTemplate } from '@module/url'
+import type { HttpClient } from '@module/backend'
 
 export interface RequestPathInit {
   baseUrl: UrlTemplate
@@ -93,24 +93,24 @@ export class DefaultRequestPath implements RequestPath {
   public getRequest<Opts extends CustomRequestDescriptor>(
     options: Opts,
   ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return RequestFactory.makeGetRequest(this._baseUrl, this._httpClient, options)
+    return makeGetRequest(this._baseUrl, this._httpClient, options)
   }
 
   public postRequest<Opts extends CustomRequestDescriptor>(
     options: Opts,
   ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return RequestFactory.makePostRequest(this._baseUrl, this._httpClient, options)
+    return makePostRequest(this._baseUrl, this._httpClient, options)
   }
 
   public putRequest<Opts extends CustomRequestDescriptor>(
     options: Opts,
   ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return RequestFactory.makePutRequest(this._baseUrl, this._httpClient, options)
+    return makePutRequest(this._baseUrl, this._httpClient, options)
   }
 
   public deleteRequest<Opts extends CustomRequestDescriptor>(
     options: Opts,
   ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return RequestFactory.makeDeleteRequest(this._baseUrl, this._httpClient, options)
+    return makeDeleteRequest(this._baseUrl, this._httpClient, options)
   }
 }

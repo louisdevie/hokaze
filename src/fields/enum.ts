@@ -54,7 +54,9 @@ export class EnumField<E, N> extends AnyField<E | N, EnumField<E, N>> {
   //endregion
 }
 
-class EnumObjectAdapter<TypeOfE extends object> implements EnumAdapter<TypeOfE[keyof TypeOfE]> {
+type EnumRecord = Record<string | number, string | number>
+
+class EnumObjectAdapter<TypeOfE extends EnumRecord> implements EnumAdapter<TypeOfE[keyof TypeOfE]> {
   private readonly _enumObject: TypeOfE
   private readonly _isIndexedBothWays: boolean
   private readonly _reverseIndex?: Map<TypeOfE[keyof TypeOfE], keyof TypeOfE>
@@ -70,7 +72,7 @@ class EnumObjectAdapter<TypeOfE extends object> implements EnumAdapter<TypeOfE[k
     }
   }
 
-  private rejectIfEmpty() {
+  private rejectIfEmpty(): void {
     if (Object.keys(this._enumObject).length === 0) throw new Error('this enumeration is empty')
   }
 
@@ -80,14 +82,15 @@ class EnumObjectAdapter<TypeOfE extends object> implements EnumAdapter<TypeOfE[k
       if (allValuesIndexed && Object.hasOwn(this._enumObject, key)) {
         // the loose equality here is on purpose
         // (number values are, well, numbers, but the corresponding keys are strings, so we consider "0" and 0 to be the same)
-        allValuesIndexed = (this._enumObject as any)[this._enumObject[key]] == key
+        allValuesIndexed =
+          (this._enumObject as Record<TypeOfE[keyof TypeOfE], keyof TypeOfE>)[this._enumObject[key]] == key
       }
     }
     return allValuesIndexed
   }
 
   private buildReverseIndex(): Map<TypeOfE[keyof TypeOfE], keyof TypeOfE> {
-    const reverseIndex = new Map()
+    const reverseIndex: Map<TypeOfE[keyof TypeOfE], keyof TypeOfE> = new Map()
 
     for (const key in this._enumObject) {
       if (Object.hasOwn(this._enumObject, key)) {
@@ -112,7 +115,7 @@ class ValueListAdapter<UnionType> implements EnumAdapter<UnionType> {
     this.rejectIfEmpty()
   }
 
-  private rejectIfEmpty() {
+  private rejectIfEmpty(): void {
     if (this._values.length === 0) throw new Error('this enumeration is empty')
   }
 
@@ -291,7 +294,7 @@ export function enumFieldFactory<
   ...otherValues: EnumValue[]
 ): EnumField<EnumValue, never>
 export function enumFieldFactory(
-  objectOrFirstValue: object | EnumValue,
+  objectOrFirstValue: EnumRecord | EnumValue,
   ...otherValues: EnumValue[]
 ): EnumField<unknown, never> {
   let adapter

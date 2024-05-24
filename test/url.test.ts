@@ -1,14 +1,15 @@
 import { UrlTemplate } from '@module/url'
+import { testUrlTemplateOptions } from '@data'
 
 test('a resource URL is the base followed by the name of the resource', () => {
-  const template = new UrlTemplate('https://my.api.com/v1/', {})
+  const template = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
 
   expect(template.getUrlForResource('fruits', {})).toEqual(new URL('https://my.api.com/v1/fruits'))
 })
 
 test('path separators are added and/or removed to normalize resource URLs', () => {
-  const withSeparator = new UrlTemplate('https://my.api.com/v1/', {})
-  const withoutSeparator = new UrlTemplate('https://my.api.com/v1', {})
+  const withSeparator = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
+  const withoutSeparator = new UrlTemplate('https://my.api.com/v1', testUrlTemplateOptions)
 
   const sameExpectedResult = new URL('https://my.api.com/v1/fruits')
 
@@ -20,7 +21,7 @@ test('path separators are added and/or removed to normalize resource URLs', () =
 })
 
 test('query parameters can be added to resource and item URLs', () => {
-  const template = new UrlTemplate('https://my.api.com/v1/', {})
+  const template = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
 
   const args = {
     text: 'hello',
@@ -56,7 +57,7 @@ test('query parameters can be added to resource and item URLs', () => {
 })
 
 test('an item URL is the base followed by the name of the resource and the key', () => {
-  const template = new UrlTemplate('https://my.api.com/v1/', {})
+  const template = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
 
   expect(template.getUrlForItem('fruits', 2, {})).toEqual(new URL('https://my.api.com/v1/fruits/2'))
 })

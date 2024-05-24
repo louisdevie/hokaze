@@ -4,17 +4,17 @@ import type { HttpClient, CreationResult } from '.'
  * @internal
  */
 export class FetchHttpClient implements HttpClient {
-  public async getJson(url: URL): Promise<any> {
+  public async getJson(url: URL): Promise<unknown> {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
       },
     })
-    return await response.json()
+    return (await response.json()) as unknown
   }
 
-  public async postJson(url: URL, payload: any): Promise<CreationResult> {
+  public async postJson(url: URL, payload: unknown): Promise<CreationResult> {
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -26,7 +26,7 @@ export class FetchHttpClient implements HttpClient {
 
     let responseBody
     try {
-      responseBody = await response.json()
+      responseBody = (await response.json()) as unknown
     } catch {
       responseBody = undefined
     }
@@ -34,7 +34,7 @@ export class FetchHttpClient implements HttpClient {
     return { responseBody, location: response.headers.get('Location') }
   }
 
-  public async putJson(url: URL, payload: any, ignoreResponse = true): Promise<any> {
+  public async putJson(url: URL, payload: unknown, ignoreResponse = true): Promise<unknown> {
     const response = await fetch(url, {
       method: 'PUT',
       body: JSON.stringify(payload),
@@ -47,7 +47,7 @@ export class FetchHttpClient implements HttpClient {
     if (!ignoreResponse) {
       let responseBody
       try {
-        responseBody = await response.json()
+        responseBody = (await response.json()) as unknown
       } catch {
         responseBody = undefined
       }
@@ -56,7 +56,7 @@ export class FetchHttpClient implements HttpClient {
     }
   }
 
-  public async delete(url: URL, ignoreResponse = true): Promise<any> {
+  public async delete(url: URL, ignoreResponse = true): Promise<unknown> {
     const response = await fetch(url, {
       method: 'DELETE',
       headers: {
@@ -67,7 +67,7 @@ export class FetchHttpClient implements HttpClient {
     if (!ignoreResponse) {
       let responseBody
       try {
-        responseBody = await response.json()
+        responseBody = (await response.json()) as unknown
       } catch {
         responseBody = undefined
       }

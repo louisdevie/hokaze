@@ -1,6 +1,5 @@
 import { RequestPath } from '@module/requestPath'
-import type { Key, CollectionResource } from '@module/resources'
-import { UrlSearchArgs } from '@module/url'
+import type { CollectionResource, Key } from '@module/resources'
 import { fakeRequestPath } from './requestPath'
 
 export interface Fruit {
@@ -28,35 +27,35 @@ class FruitsResourceImpl implements CollectionResource<Fruit> {
     throw new Error(`Item not found for key '${key}'`)
   }
 
-  public async get(key: Key): Promise<Fruit> {
-    return this._fruits.get(typeof key === 'number' ? key : this.notFound(key)) ?? this.notFound(key)
+  public get(key: Key): Promise<Fruit> {
+    return Promise.resolve(this._fruits.get(typeof key === 'number' ? key : this.notFound(key)) ?? this.notFound(key))
   }
 
-  public async getAll(): Promise<Fruit[]> {
-    return Array.from(this._fruits.values())
+  public getAll(): Promise<Fruit[]> {
+    return Promise.resolve(Array.from(this._fruits.values()))
   }
 
   public create(): Fruit {
     return { id: -1, name: '' }
   }
 
-  public async send(): Promise<void> {
+  public send(): never {
     throw new Error('Method not implemented.')
   }
 
-  public async save(): Promise<void> {
+  public save(): never {
     throw new Error('Method not implemented.')
   }
 
-  public async delete(): Promise<void> {
+  public delete(): never {
     throw new Error('Method not implemented.')
   }
 
-  public async deleteKey(): Promise<void> {
+  public deleteKey(): never {
     throw new Error('Method not implemented.')
   }
 
-  public async deleteAll(): Promise<void> {
+  public deleteAll(): never {
     throw new Error('Method not implemented.')
   }
 }

@@ -2,15 +2,15 @@ import { Result } from '@module/result'
 import { MappedField } from './base'
 
 export class AutoMappedField extends MappedField {
-  constructor(fieldName: string) {
+  public constructor(fieldName: string) {
     super(fieldName, fieldName)
   }
 
-  public packValue(value: any): Result<any> {
+  public packValue(value: unknown): Result<unknown> {
     return Result.ok(value)
   }
 
-  public unpackValue(value: any): Result<any> {
+  public unpackValue(value: unknown): Result<unknown> {
     return Result.ok(value)
   }
 }

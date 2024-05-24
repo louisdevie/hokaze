@@ -2,9 +2,8 @@ import type { CustomRequest, RequestParams, RequestReturn } from '.'
 import type { HttpClient } from '@module/backend'
 import type { UrlSearchArgs, UrlTemplate } from '@module/url'
 import type { Mapper } from '@module/resources/mappers'
-import { Throw } from '@module/errors'
 
-export type OptionalMapper<T> = Mapper<any, NonNullable<T>> | undefined
+export type OptionalMapper<T> = Mapper<NonNullable<unknown>, NonNullable<T>> | undefined
 
 abstract class GenericBaseRequest<Q extends RequestParams, R extends RequestReturn> implements CustomRequest<Q, R> {
   private readonly _client: HttpClient
@@ -31,11 +30,11 @@ abstract class GenericBaseRequest<Q extends RequestParams, R extends RequestRetu
     return this._client
   }
 
-  protected buildUrl(args?: UrlSearchArgs | undefined): URL {
-    return this._baseUrl.getUrlForResource(this._path, args ?? {})
+  protected buildUrl(args?: unknown): URL {
+    return this._baseUrl.getUrlForResource(this._path, (args ?? {}) as UrlSearchArgs)
   }
 
-  protected abstract sendRaw(request: any): Promise<any>
+  protected abstract sendRaw(request: unknown): Promise<unknown>
 
   public async send(...request: Q): Promise<R> {
     let mappedRequest = undefined
@@ -61,26 +60,26 @@ abstract class GenericBaseRequest<Q extends RequestParams, R extends RequestRetu
 }
 
 export class GenericGetRequest<Q extends RequestParams, R extends RequestReturn> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(request: any): Promise<any> {
+  protected sendRaw(request: unknown): Promise<unknown> {
     return this.client.getJson(this.buildUrl(request))
   }
 }
 
 export class GenericPostRequest<Q extends RequestParams, R extends RequestReturn> extends GenericBaseRequest<Q, R> {
-  protected async sendRaw(request: any): Promise<any> {
+  protected async sendRaw(request: unknown): Promise<unknown> {
     const creationResult = await this.client.postJson(this.buildUrl(), request)
     return creationResult.responseBody
   }
 }
 
 export class GenericPutRequest<Q extends RequestParams, R extends RequestReturn> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(request: any): Promise<any> {
+  protected sendRaw(request: unknown): Promise<unknown> {
     return this.client.putJson(this.buildUrl(), request, false)
   }
 }
 
 export class GenericDeleteRequest<Q extends RequestParams, R extends RequestReturn> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(request: any): Promise<any> {
+  protected sendRaw(request: unknown): Promise<unknown> {
     return this.client.delete(this.buildUrl(request), false)
   }
 }
