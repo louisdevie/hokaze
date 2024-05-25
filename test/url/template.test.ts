@@ -7,6 +7,19 @@ test('a resource URL is the base followed by the name of the resource', () => {
   expect(template.getUrlForResource('fruits', {})).toEqual(new URL('https://my.api.com/v1/fruits'))
 })
 
+test('a template can be created from either a string or a URL object', () => {
+  const templateFromString = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
+  const templateFromURL = new UrlTemplate(new URL('https://my.api.com/v1/'), testUrlTemplateOptions)
+
+  expect(templateFromString).toEqual(templateFromURL)
+})
+
+test('accessing the options', () => {
+  const template = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
+
+  expect(template.options).toEqual(testUrlTemplateOptions)
+})
+
 test('path separators are added and/or removed to normalize resource URLs', () => {
   const withSeparator = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
   const withoutSeparator = new UrlTemplate('https://my.api.com/v1', testUrlTemplateOptions)
@@ -21,7 +34,7 @@ test('path separators are added and/or removed to normalize resource URLs', () =
 })
 
 test('query parameters can be added to resource and item URLs', () => {
-  const template = new UrlTemplate('https://my.api.com/v1/', testUrlTemplateOptions)
+  const template = new UrlTemplate('https://my.api.com/v1/', { urlSerializationBehavior: 'json' })
 
   const args = {
     text: 'hello',
@@ -30,6 +43,7 @@ test('query parameters can be added to resource and item URLs', () => {
     noValue: null,
     notIncluded: undefined,
     'kebab-case-param': 'a: b',
+    obj: { a: 78 },
   }
 
   const resourceUrl = template.getUrlForResource('fruits', args)
@@ -51,6 +65,7 @@ test('query parameters can be added to resource and item URLs', () => {
     ['enable', 'true'],
     ['noValue', 'null'],
     ['kebab-case-param', 'a: b'],
+    ['obj', '{"a":78}'],
   ]
   expect(Array.from(resourceUrl.searchParams)).toIncludeSameMembers(expectedSearchParams)
   expect(Array.from(itemUrl.searchParams)).toIncludeSameMembers(expectedSearchParams)

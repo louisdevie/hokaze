@@ -16,8 +16,16 @@ export default {
     ],
   },
   setupFilesAfterEnv: ['jest-extended/all'],
+  collectCoverage: true,
   collectCoverageFrom: ['src/**/*.ts'],
   coveragePathIgnorePatterns: ['src/locale/gen/*'],
-  coverageReporters: ['html'],
-  coverageDirectory: 'coverage',
+  coverageDirectory: '.',
+  coverageReporters: [
+    [
+      'cobertura',
+      {
+        file: 'coverage.xml',
+      },
+    ],
+  ],
 }

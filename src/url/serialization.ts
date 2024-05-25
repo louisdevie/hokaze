@@ -10,5 +10,5 @@ export const UrlSerializationImpl: { [B in UrlSerializationBehavior]: (value: ob
 
   json: (value) => JSON.stringify(value),
 
-  'json+base64': (value) => atob(JSON.stringify(value)),
+  'json+base64': (value) => btoa(JSON.stringify(value)),
 }
