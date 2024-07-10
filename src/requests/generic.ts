@@ -34,7 +34,7 @@ abstract class GenericBaseRequest<Q extends RequestParams, R extends RequestRetu
     return this._baseUrl.getUrlForResource(this._path, (args ?? {}) as UrlSearchArgs)
   }
 
-  protected abstract sendRaw(request: unknown): Promise<unknown>
+  protected abstract sendRaw(request: unknown, ignoreResponse: boolean): Promise<unknown>
 
   public async send(...request: Q): Promise<R> {
     let mappedRequest = undefined
@@ -45,7 +45,7 @@ abstract class GenericBaseRequest<Q extends RequestParams, R extends RequestRetu
       }
     }
 
-    const response = await this.sendRaw(mappedRequest?.value)
+    const response = await this.sendRaw(mappedRequest?.value, this._responseMapper === undefined)
 
     let mappedResponse = undefined
     if (this._responseMapper !== undefined && response !== undefined) {
@@ -73,13 +73,13 @@ export class GenericPostRequest<Q extends RequestParams, R extends RequestReturn
 }
 
 export class GenericPutRequest<Q extends RequestParams, R extends RequestReturn> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(request: unknown): Promise<unknown> {
-    return this.client.putJson(this.buildUrl(), request, false)
+  protected sendRaw(request: unknown, ignoreResponse: boolean): Promise<unknown> {
+    return this.client.putJson(this.buildUrl(), request, ignoreResponse)
   }
 }
 
 export class GenericDeleteRequest<Q extends RequestParams, R extends RequestReturn> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(request: unknown): Promise<unknown> {
-    return this.client.delete(this.buildUrl(request), false)
+  protected sendRaw(request: unknown, ignoreResponse: boolean): Promise<unknown> {
+    return this.client.delete(this.buildUrl(request), ignoreResponse)
   }
 }
