@@ -1,47 +1,62 @@
-import { ObjectTypeFromFields, ResourceFields } from '@module/resources'
+import { DataDescriptor } from '@module/data'
 
-/**
- * Describes a custom request.
- */
-export interface CustomRequestDescriptor {
+export interface EmptyCustomRequestInit {
   /**
    * The name of the resource as it appears in the URL.
    */
   path: string
-
-  /**
-   * Describes the objects sent.
-   */
-  request?: ResourceFields
-
-  /**
-   * Describes the objects received.
-   */
-  response?: ResourceFields
-
-  /**
-   * Describes the objects sent and received.
-   */
-  requestAndResponse?: ResourceFields
 }
 
-type WithRequest = { request: ResourceFields }
-type WithResponse = { response: ResourceFields }
-type WithRequestAndResponse = { requestAndResponse: ResourceFields }
-
-export type RequestType<Descriptor extends CustomRequestDescriptor> =
-  Descriptor extends WithRequest ? [ObjectTypeFromFields<Descriptor['request']>]
-  : Descriptor extends WithRequestAndResponse ? [ObjectTypeFromFields<Descriptor['requestAndResponse']>]
-  : []
-
-export type ResponseType<Descriptor extends CustomRequestDescriptor> =
-  Descriptor extends WithResponse ? ObjectTypeFromFields<Descriptor['response']>
-  : Descriptor extends WithRequestAndResponse ? ObjectTypeFromFields<Descriptor['requestAndResponse']>
-  : undefined
-
-export type RequestParams = [] | [object]
-export type RequestReturn = object | undefined
-
-export interface CustomRequest<Q extends RequestParams, R extends RequestReturn> {
-  send(...request: Q): Promise<R>
+export interface TxOnlyCustomRequestInit<Q> extends EmptyCustomRequestInit {
+  /**
+   * Describes the values sent.
+   */
+  request: DataDescriptor<Q>
 }
+
+export interface RxOnlyCustomRequestInit<R> extends EmptyCustomRequestInit {
+  /**
+   * Describes the values received.
+   */
+  response: DataDescriptor<R>
+}
+
+export interface AsymmetricCustomRequestInit<Q, R> extends TxOnlyCustomRequestInit<Q>, RxOnlyCustomRequestInit<R> {}
+
+export interface SymmetricCustomRequestInit<T> extends EmptyCustomRequestInit {
+  /**
+   * Describes both the values sent and received.
+   */
+  requestAndResponse: DataDescriptor<T>
+}
+
+/**
+ * Describes a custom request.
+ */
+export type CustomRequestInit<Q, R> =
+  | EmptyCustomRequestInit
+  | TxOnlyCustomRequestInit<Q>
+  | RxOnlyCustomRequestInit<R>
+  | AsymmetricCustomRequestInit<Q, R>
+  | SymmetricCustomRequestInit<Q & R>
+
+export interface CustomRequest<Q, R> {
+  send(request: Q): Promise<R>
+}
+
+export interface EmptyCustomRequest extends CustomRequest<undefined, void> {
+  send(): Promise<void>
+}
+
+export interface TxOnlyCustomRequest<Q> extends CustomRequest<Q, void> {}
+
+export interface RxOnlyCustomRequest<R> extends CustomRequest<undefined, R> {
+  send(): Promise<R>
+}
+
+export type SpecificRequestType<Init extends CustomRequestInit<unknown, unknown>> =
+  Init extends SymmetricCustomRequestInit<infer T> ? CustomRequest<T, T>
+  : Init extends AsymmetricCustomRequestInit<infer Q, infer R> ? CustomRequest<Q, R>
+  : Init extends RxOnlyCustomRequestInit<infer Q> ? RxOnlyCustomRequest<Q>
+  : Init extends TxOnlyCustomRequestInit<infer R> ? TxOnlyCustomRequest<R>
+  : EmptyCustomRequest

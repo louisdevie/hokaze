@@ -1,35 +1,38 @@
 import type { Key, CollectionResource } from '@module/resources'
 
-type RefState<ItemType> = { loaded: false } | { loaded: true; value: ItemType }
+type RefState<T> = { loaded: false } | { loaded: true; value: T }
 
-export class Ref<ItemType> {
-  private readonly _resource: CollectionResource<ItemType>
+export class Ref<T> {
+  private readonly _resource: CollectionResource<T>
   private _key: Key
-  private _state: RefState<ItemType>
+  private _state: RefState<T>
 
-  private constructor(resource: CollectionResource<ItemType>, key: Key, state: RefState<ItemType>) {
+  private constructor(resource: CollectionResource<T>, key: Key, state: RefState<T>) {
     this._resource = resource
     this._key = key
     this._state = state
   }
 
-  public static fromKey<ItemType>(resource: CollectionResource<ItemType>, key: Key): Ref<ItemType> {
+  public static fromKey<T>(resource: CollectionResource<T>, key: Key): Ref<T> {
     return new Ref(resource, key, { loaded: false })
   }
 
-  public static fromValue<ItemType>(resource: CollectionResource<ItemType>, value: ItemType): Ref<ItemType> {
-    return new Ref(resource, value[resource.key] as Key, { loaded: true, value })
+  public static fromValue<T>(resource: CollectionResource<T>, value: T): Ref<T> {
+    return new Ref(resource, value[resource.keyProperty] as Key, {
+      loaded: true,
+      value,
+    })
   }
 
   public get key(): Key {
     return this._key
   }
 
-  public get value(): ItemType | undefined {
+  public get value(): T | undefined {
     return this._state.loaded ? this._state.value : undefined
   }
 
-  public set value(value: ItemType | undefined) {
+  public set value(value: T | undefined) {
     if (value === undefined) {
       this._state = { loaded: false }
     } else {
@@ -46,7 +49,7 @@ export class Ref<ItemType> {
     }
   }
 
-  public async get(): Promise<ItemType> {
+  public async get(): Promise<T> {
     await this.update()
     if (!this._state.loaded) throw new Error('failed to load referenced resource')
     return this._state.value

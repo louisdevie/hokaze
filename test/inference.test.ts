@@ -101,11 +101,23 @@ test('the isAsLikelyAs is an equality relation', () => {
 })
 
 test('relative ID field likelihood is correct', () => {
-  const resourceNamePlusId = isImplicitId({ fieldName: 'somethingId', resourceName: 'something' })
-  const idPlusResourceName = isImplicitId({ fieldName: 'idSomething', resourceName: 'something' })
-  const resourceNameUnderscoreId = isImplicitId({ fieldName: 'something_id', resourceName: 'something' })
+  const resourceNamePlusId = isImplicitId({
+    fieldName: 'somethingId',
+    resourceName: 'something',
+  })
+  const idPlusResourceName = isImplicitId({
+    fieldName: 'idSomething',
+    resourceName: 'something',
+  })
+  const resourceNameUnderscoreId = isImplicitId({
+    fieldName: 'something_id',
+    resourceName: 'something',
+  })
   const justId = isImplicitId({ fieldName: 'id', resourceName: 'something' })
-  const random = isImplicitId({ fieldName: 'random', resourceName: 'something' })
+  const random = isImplicitId({
+    fieldName: 'random',
+    resourceName: 'something',
+  })
 
   expect(resourceNamePlusId.isAsLikelyAs(idPlusResourceName)).toBeTrue()
   expect(resourceNamePlusId.isMoreLikelyThan(resourceNameUnderscoreId)).toBeTrue()
@@ -121,8 +133,14 @@ test('ID field inference is insensitive to case and punctuation', () => {
   ]
 
   for (const [first, second] of same) {
-    const firstResult = isImplicitId({ fieldName: first, resourceName: 'something1' })
-    const secondResult = isImplicitId({ fieldName: second, resourceName: 'something1' })
+    const firstResult = isImplicitId({
+      fieldName: first,
+      resourceName: 'something1',
+    })
+    const secondResult = isImplicitId({
+      fieldName: second,
+      resourceName: 'something1',
+    })
 
     expect(firstResult.isAsLikelyAs(secondResult)).toBeTrue()
   }

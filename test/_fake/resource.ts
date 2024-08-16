@@ -1,5 +1,5 @@
 import { RequestPath } from '@module/requestPath'
-import type { CollectionResource, Key } from '@module/resources'
+import type {CollectionResource, Key} from '@module/resources'
 import { fakeRequestPath } from './requestPath'
 
 export interface Fruit {
@@ -19,7 +19,7 @@ class FruitsResourceImpl implements CollectionResource<Fruit> {
     ])
   }
 
-  public readonly key: keyof Fruit = 'id'
+  public readonly keyProperty: keyof Fruit = 'id'
 
   public readonly asPath: RequestPath = fakeRequestPath()
 
@@ -58,8 +58,12 @@ class FruitsResourceImpl implements CollectionResource<Fruit> {
   public deleteAll(): never {
     throw new Error('Method not implemented.')
   }
+
+  public isNew(item: Fruit): boolean {
+    return this._fruits.has(item.id);
+  }
 }
 
-export function fakeResource(): CollectionResource<Fruit> {
+export function fakeResource(): FruitsResourceImpl {
   return new FruitsResourceImpl()
 }

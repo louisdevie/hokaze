@@ -1,7 +1,7 @@
 {
   "name": "eiktobel",
   "version": "1.0.0",
-  "description": "An object-REST mapper with caching capabilities",
+  "description": "An object-REST mapper",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,7 +37,6 @@
     "typescript-eslint": "^7.9.0"
   },
   "dependencies": {
-    "dexie": "^4.0.1",
     "elzii": "^0.2.1"
   }
 }

@@ -1,16 +1,16 @@
 import type {
-  CollectionDescriptor,
-  CollectionResource,
-  ResourceDescriptor,
-  ResourceItemType,
-  ResourceType,
-  SingleResource,
-} from '@module/resources'
-import { makeCollectionResource, makeSingleResource } from '@module/resources/layered/factory'
-import type { CustomRequest, CustomRequestDescriptor, RequestType, ResponseType } from '@module/requests'
-import { makeGetRequest, makeDeleteRequest, makePostRequest, makePutRequest } from '@module/requests/factory'
+  CustomRequestInit,
+  EmptyCustomRequestInit,
+  RxOnlyCustomRequestInit,
+  SpecificRequestType,
+} from '@module/requests'
+import { makeDeleteRequest, makeGetRequest, makePostRequest, makePutRequest } from '@module/requests/factory'
 import type { UrlTemplate } from '@module/url'
 import type { HttpClient } from '@module/backend'
+import { DataDescriptor } from '@module/data'
+import { CollectionResource, SingleResource, TypeOfData } from '@module/resources'
+import { makeCollectionResource, makeSingleResource } from '@module/resources/factory'
+import {ObjectDescriptor} from "@module/data/serialized/object";
 
 export interface RequestPathInit {
   baseUrl: UrlTemplate
@@ -22,42 +22,50 @@ export interface RequestPathInit {
  */
 export interface RequestPath {
   /**
-   * Creates a "collection" resource.
-   * @param options An object describing the resource.
+   * Creates a resource that is a list of objects.
+   * @param name The name of the resource as it appears in the URL.
+   * @param descriptor An object describing the resource.
    */
-  collection<Opts extends CollectionDescriptor>(options: Opts): CollectionResource<ResourceItemType<Opts>>
+  collection<Descriptor extends ObjectDescriptor<unknown>>(
+    name: string,
+    descriptor: Descriptor,
+  ): CollectionResource<TypeOfData<Descriptor>>
 
   /**
-   * Creates a "single" resource.
-   * @param options An object describing the resource.
+   * Creates a simple resource.
+   * @param name The name of the resource as it appears in the URL.
+   * @param descriptor An object describing the resource.
    */
-  single<Opts extends ResourceDescriptor>(options: Opts): SingleResource<ResourceType<Opts>>
+  single<Descriptor extends DataDescriptor<unknown>>(
+    name: string,
+    descriptor: Descriptor,
+  ): SingleResource<TypeOfData<Descriptor>>
 
   /**
    * Crates a custom GET request.
-   * @param options An object describing the endpoint.
+   * @param init An object describing the endpoint.
    */
-  getRequest<Opts extends CustomRequestDescriptor>(options: Opts): CustomRequest<RequestType<Opts>, ResponseType<Opts>>
+  getRequest<Init extends RxOnlyCustomRequestInit<unknown>>(init: Init): SpecificRequestType<Init>
 
   /**
    * Crates a custom POST request.
-   * @param options An object describing the endpoint.
+   * @param init An object describing the endpoint.
    */
-  postRequest<Opts extends CustomRequestDescriptor>(options: Opts): CustomRequest<RequestType<Opts>, ResponseType<Opts>>
+  postRequest<Init extends CustomRequestInit<unknown, unknown>>(init: Init): SpecificRequestType<Init>
 
   /**
    * Crates a custom PUT request.
-   * @param options An object describing the endpoint.
+   * @param init An object describing the endpoint.
    */
-  putRequest<Opts extends CustomRequestDescriptor>(options: Opts): CustomRequest<RequestType<Opts>, ResponseType<Opts>>
+  putRequest<Init extends CustomRequestInit<unknown, unknown>>(init: Init): SpecificRequestType<Init>
 
   /**
    * Crates a custom DELETE request.
-   * @param options An object describing the endpoint.
+   * @param init An object describing the endpoint.
    */
-  deleteRequest<Opts extends CustomRequestDescriptor>(
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>>
+  deleteRequest<Init extends EmptyCustomRequestInit | RxOnlyCustomRequestInit<unknown>>(
+    init: Init,
+  ): SpecificRequestType<Init>
 }
 
 /**
@@ -74,43 +82,49 @@ export class DefaultRequestPath implements RequestPath {
     this._httpClient = init.httpClient
   }
 
-  public collection<Opts extends CollectionDescriptor>(options: Opts): CollectionResource<ResourceItemType<Opts>> {
+  // we have to cast the returned value in every method below because the compiler can't guarantee what an inferred type
+  // will be (for example, TypeOfData<Something> when Something extends DataDescriptor<T> will actually always be T)
+  // see also data/serialized/object.ts line 80
+
+  public collection<Descriptor extends ObjectDescriptor<unknown>>(
+    name: string,
+    descriptor: Descriptor,
+  ): CollectionResource<TypeOfData<Descriptor>> {
     return makeCollectionResource({
       baseUrl: this._baseUrl,
       httpClient: this._httpClient,
-      descriptor: options,
-    })
+      name,
+      descriptor,
+    }) as CollectionResource<TypeOfData<Descriptor>>
   }
 
-  public single<Opts extends ResourceDescriptor>(options: Opts): SingleResource<ResourceType<Opts>> {
+  public single<Descriptor extends DataDescriptor<unknown>>(
+    name: string,
+    descriptor: Descriptor,
+  ): SingleResource<TypeOfData<Descriptor>> {
     return makeSingleResource({
       baseUrl: this._baseUrl,
       httpClient: this._httpClient,
-      descriptor: options,
-    })
+      name,
+      descriptor,
+    }) as SingleResource<TypeOfData<Descriptor>>
   }
 
-  public getRequest<Opts extends CustomRequestDescriptor>(
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return makeGetRequest(this._baseUrl, this._httpClient, options)
+  public getRequest<Init extends RxOnlyCustomRequestInit<R>, R>(init: Init): SpecificRequestType<Init> {
+    return makeGetRequest(this._baseUrl, this._httpClient, init) as SpecificRequestType<Init>
   }
 
-  public postRequest<Opts extends CustomRequestDescriptor>(
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return makePostRequest(this._baseUrl, this._httpClient, options)
+  public postRequest<Init extends CustomRequestInit<unknown, unknown>>(init: Init): SpecificRequestType<Init> {
+    return makePostRequest(this._baseUrl, this._httpClient, init) as SpecificRequestType<Init>
   }
 
-  public putRequest<Opts extends CustomRequestDescriptor>(
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return makePutRequest(this._baseUrl, this._httpClient, options)
+  public putRequest<Init extends CustomRequestInit<unknown, unknown>>(init: Init): SpecificRequestType<Init> {
+    return makePutRequest(this._baseUrl, this._httpClient, init) as SpecificRequestType<Init>
   }
 
-  public deleteRequest<Opts extends CustomRequestDescriptor>(
-    options: Opts,
-  ): CustomRequest<RequestType<Opts>, ResponseType<Opts>> {
-    return makeDeleteRequest(this._baseUrl, this._httpClient, options)
+  public deleteRequest<Init extends EmptyCustomRequestInit | RxOnlyCustomRequestInit<unknown>>(
+    init: Init,
+  ): SpecificRequestType<Init> {
+    return makeDeleteRequest(this._baseUrl, this._httpClient, init) as SpecificRequestType<Init>
   }
 }

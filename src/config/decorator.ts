@@ -1,13 +1,11 @@
 import type { Config } from '.'
-import { defaultConfig } from '@module/config/default'
-import type { UrlSerializationBehavior } from '@module/url'
 
 export type ResetValue = 'reset'
 
 export type ConfigOverride = { [P in keyof Config]?: Config[P] | ResetValue }
 
 export class DecoratorConfig implements Config {
-  private static readonly resetValue: ResetValue = 'reset'
+  // private static readonly resetValue: ResetValue = 'reset'
 
   private readonly _wrapped: Config
   private readonly _overrides: ConfigOverride
@@ -17,11 +15,7 @@ export class DecoratorConfig implements Config {
     this._overrides = overrides
   }
 
-  public get objectSerializationInURL(): UrlSerializationBehavior {
-    return this.overrideConfigProperty('objectSerializationInURL')
-  }
-
-  private overrideConfigProperty<P extends keyof Config>(p: P): Config[P] {
+  /*private overrideConfigProperty<P extends keyof Config>(p: P): Config[P] {
     let finalValue: Config[P] = this._wrapped[p]
 
     const option: Config[P] | ResetValue | undefined = this._overrides[p]
@@ -32,5 +26,5 @@ export class DecoratorConfig implements Config {
     }
 
     return finalValue
-  }
+  }*/
 }

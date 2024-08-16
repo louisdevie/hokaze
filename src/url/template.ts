@@ -1,28 +1,16 @@
 import type { Key } from '@module/resources'
-import type { UrlSearchArgs, UrlSerializationBehavior } from '@module/url'
-import { UrlSerializationImpl } from '@module/url/serialization'
-
-export interface UrlTemplateOptions {
-  readonly urlSerializationBehavior: UrlSerializationBehavior
-}
+import type { UrlSearchArgs } from '@module/url'
 
 export class UrlTemplate {
-  private readonly _options: UrlTemplateOptions
   private readonly _base: URL
 
-  public constructor(baseUrl: string | URL, options: UrlTemplateOptions) {
+  public constructor(baseUrl: string | URL) {
     if (typeof baseUrl === 'string') {
       this._base = new URL(baseUrl)
     } else {
       this._base = baseUrl
     }
     UrlTemplate.ensureTrailingSeparator(this._base)
-
-    this._options = options
-  }
-
-  public get options(): UrlTemplateOptions {
-    return this._options
   }
 
   private static ensureTrailingSeparator(url: URL): void {
@@ -59,7 +47,7 @@ export class UrlTemplate {
       } else if (typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean') {
         url.searchParams.append(name, arg.toString())
       } else if (arg !== undefined) {
-        url.searchParams.append(name, UrlSerializationImpl[this._options.urlSerializationBehavior](arg))
+        url.searchParams.append(name, '[object]')
       }
     }
   }

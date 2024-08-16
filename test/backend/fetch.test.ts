@@ -1,4 +1,6 @@
 import { FetchHttpClient } from '@module/backend/fetch'
+import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
+import { NoRequestBody } from '@module/mappers/noRequestBody'
 
 const fetchMock = jest.spyOn(global, 'fetch')
 
@@ -11,19 +13,19 @@ const testData = {
   occupation: 'Researcher (Formerly)',
 }
 
-test('getJson makes a GET request and parse the response as JSON', async () => {
+test('get makes a GET request', async () => {
   const client = new FetchHttpClient()
 
   fetchMock.mockResolvedValueOnce(
-    new Response(JSON.stringify(testData), {
+    Response.json(testData, {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     }),
   )
 
-  const result = await client.getJson(new URL('https://toaruapi.com/characters/53'))
+  const result = await client.get(new URL('https://toaruapi.com/characters/53'), 'application/json')
 
-  expect(result).toEqual(testData)
+  expect(await result.json()).toEqual(testData)
   expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), {
     method: 'GET',
     headers: {
@@ -32,43 +34,39 @@ test('getJson makes a GET request and parse the response as JSON', async () => {
   })
 })
 
-describe('postJson', () => {
-  test('makes a POST request with a JSON body and returns the response and the location header', async () => {
+describe('post', () => {
+  test('makes a POST request and returns the response and the location header', async () => {
     const client = new FetchHttpClient()
 
-    // no infos in the response
+    // no Location header in the response
 
     fetchMock.mockResolvedValueOnce(new Response('not json', { status: 200 }))
 
-    let result = await client.postJson(new URL('https://toaruapi.com/characters'), testData)
+    let result = await client.post(new URL('https://toaruapi.com/characters'), new JsonRequestBody(testData), '*/*')
 
-    expect(result).toStrictEqual({ responseBody: undefined, location: null })
+    expect(await result.responseBody.text()).toEqual('not json')
+    expect(result.location).toBeNull()
     expect(fetchMock).toHaveBeenLastCalledWith(new URL('https://toaruapi.com/characters'), {
       method: 'POST',
       body: JSON.stringify(testData),
-      headers: {
+      headers: new Headers({
         'Content-Type': 'application/json',
         Accept: '*/*',
-      },
+      }),
     })
-
-    // valid json in the response body
-
-    fetchMock.mockResolvedValueOnce(new Response('4', { status: 200 }))
-
-    result = await client.postJson(new URL('https://toaruapi.com/characters'), testData)
-
-    expect(result).toStrictEqual({ responseBody: 4, location: null })
 
     // Location header in the response
 
     fetchMock.mockResolvedValueOnce(
-      new Response('', { status: 200, headers: { Location: 'https://toaruapi.com/characters/53' } }),
+      new Response('', {
+        status: 200,
+        headers: { Location: 'https://toaruapi.com/characters/53' },
+      }),
     )
 
-    result = await client.postJson(new URL('https://toaruapi.com/characters'), testData)
+    result = await client.post(new URL('https://toaruapi.com/characters'), new JsonRequestBody(testData), '*/*')
 
-    expect(result).toStrictEqual({ responseBody: undefined, location: 'https://toaruapi.com/characters/53' })
+    expect(result.location).toEqual('https://toaruapi.com/characters/53')
   })
 
   test("doesn't include a Content-Type header if there's no body", async () => {
@@ -76,91 +74,64 @@ describe('postJson', () => {
 
     fetchMock.mockResolvedValueOnce(new Response('', { status: 200 }))
 
-    const result = await client.postJson(new URL('https://toaruapi.com/characters'), undefined)
+    await client.post(new URL('https://toaruapi.com/characters'), new NoRequestBody(), '*/*')
 
-    expect(result).toStrictEqual({ responseBody: undefined, location: null })
     expect(fetchMock).toHaveBeenLastCalledWith(new URL('https://toaruapi.com/characters'), {
       method: 'POST',
-      body: undefined,
-      headers: {
+      body: null,
+      headers: new Headers({
         Accept: '*/*',
-      },
+      }),
     })
   })
 })
 
-describe('putJson', () => {
-  test('makes a PUT request with a JSON body', async () => {
+describe('put', () => {
+  test('makes a PUT request', async () => {
     const client = new FetchHttpClient()
 
     fetchMock.mockResolvedValueOnce(new Response('', { status: 200 }))
 
-    await client.putJson(new URL('https://toaruapi.com/characters/53'), testData)
+    await client.put(new URL('https://toaruapi.com/characters/53'), new JsonRequestBody(testData), '*/*')
 
     expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), {
       method: 'PUT',
       body: JSON.stringify(testData),
-      headers: {
+      headers: new Headers({
         Accept: '*/*',
         'Content-Type': 'application/json',
-      },
+      }),
     })
   })
 
-  test("doesn't parse the response unless explicitly told to do so", async () => {
+  test("doesn't include a Content-Type header if there's no body", async () => {
     const client = new FetchHttpClient()
-
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(testData), { status: 200 }))
-
-    let res = await client.putJson(new URL('https://toaruapi.com/characters/53'), testData)
-    expect(res).toBeUndefined()
-
-    res = await client.putJson(new URL('https://toaruapi.com/characters/53'), testData, true)
-    expect(res).toBeUndefined()
-
-    res = await client.putJson(new URL('https://toaruapi.com/characters/53'), testData, false)
-    expect(res).toEqual(testData)
 
     fetchMock.mockResolvedValueOnce(new Response('', { status: 200 }))
 
-    res = await client.putJson(new URL('https://toaruapi.com/characters/53'), testData, false)
-    expect(res).toBeUndefined()
+    await client.put(new URL('https://toaruapi.com/characters/53'), new NoRequestBody(), '*/*')
+
+    expect(fetchMock).toHaveBeenLastCalledWith(new URL('https://toaruapi.com/characters/53'), {
+      method: 'PUT',
+      body: null,
+      headers: new Headers({
+        Accept: '*/*',
+      }),
+    })
   })
 })
 
-describe('delete', () => {
-  test('makes an empty DELETE request', async () => {
-    const client = new FetchHttpClient()
+test('delete makes a DELETE request', async () => {
+  const client = new FetchHttpClient()
 
-    fetchMock.mockResolvedValueOnce(new Response('', { status: 200 }))
+  fetchMock.mockResolvedValueOnce(new Response('', { status: 200 }))
 
-    await client.delete(new URL('https://toaruapi.com/characters/53'))
+  await client.delete(new URL('https://toaruapi.com/characters/53'), '*/*')
 
-    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), {
-      method: 'DELETE',
-      headers: {
-        Accept: '*/*',
-      },
-    })
-  })
-
-  test("doesn't parse the response unless explicitly told to do so", async () => {
-    const client = new FetchHttpClient()
-
-    fetchMock.mockResolvedValue(new Response('{ "deleteCount": 1 }', { status: 200 }))
-
-    let res = await client.delete(new URL('https://toaruapi.com/characters/53'))
-    expect(res).toBeUndefined()
-
-    res = await client.delete(new URL('https://toaruapi.com/characters/53'), true)
-    expect(res).toBeUndefined()
-
-    res = await client.delete(new URL('https://toaruapi.com/characters/53'), false)
-    expect(res).toEqual({ deleteCount: 1 })
-
-    fetchMock.mockResolvedValueOnce(new Response('', { status: 200 }))
-
-    res = await client.delete(new URL('https://toaruapi.com/characters/53'), false)
-    expect(res).toBeUndefined()
+  expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), {
+    method: 'DELETE',
+    headers: {
+      Accept: '*/*',
+    },
   })
 })

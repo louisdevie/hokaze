@@ -1,8 +1,7 @@
 import { UrlTemplate } from './url'
 import { DefaultHttpClient } from '@module/backend'
 import { DefaultRequestPath, RequestPath } from '@module/requestPath'
-import { ConfigOverride, DecoratorConfig } from '@module/config/decorator'
-import { getGlobalConfig } from '@module/config/global'
+import { ConfigOverride } from '@module/config/decorator'
 
 export interface Service extends RequestPath {}
 
@@ -15,10 +14,10 @@ export function service(init: string | URL | ServiceOptions): Service {
     init = { baseUrl: init }
   }
 
-  const serviceConfig = new DecoratorConfig(getGlobalConfig(), init)
+  // const serviceConfig = new DecoratorConfig(getGlobalConfig(), init)
 
   return new DefaultRequestPath({
-    baseUrl: new UrlTemplate(init.baseUrl, { urlSerializationBehavior: serviceConfig.objectSerializationInURL }),
+    baseUrl: new UrlTemplate(init.baseUrl),
     httpClient: new DefaultHttpClient(),
   })
 }

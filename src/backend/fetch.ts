@@ -1,78 +1,51 @@
-import type { HttpClient, CreationResult } from '.'
+import type { CreationResult, HttpClient, RequestBodyOrParams, ResponseBody } from '.'
 
 /**
  * @internal
  */
 export class FetchHttpClient implements HttpClient {
-  public async getJson(url: URL): Promise<unknown> {
-    const response = await fetch(url, {
+  public get(url: URL, expectedResponseType: string): Promise<ResponseBody> {
+    return fetch(url, {
       method: 'GET',
       headers: {
-        Accept: 'application/json',
+        Accept: expectedResponseType,
       },
     })
-    return (await response.json()) as unknown
   }
 
-  public async postJson(url: URL, payload: unknown): Promise<CreationResult> {
+  public async post(url: URL, payload: RequestBodyOrParams, expectedResponseType: string): Promise<CreationResult> {
+    const headers = new Headers({ Accept: expectedResponseType })
+    if (payload.type !== null) headers.append('Content-Type', payload.type)
+
     const response = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
-        Accept: '*/*',
-        ...(payload === undefined ? {} : { 'Content-Type': 'application/json' }),
-      },
+      body: payload.intoBodyInit(),
+      headers,
     })
 
-    let responseBody
-    try {
-      responseBody = (await response.json()) as unknown
-    } catch {
-      responseBody = undefined
+    return {
+      responseBody: response,
+      location: response.headers.get('Location'),
     }
-
-    return { responseBody, location: response.headers.get('Location') }
   }
 
-  public async putJson(url: URL, payload: unknown, ignoreResponse = true): Promise<unknown> {
-    const response = await fetch(url, {
+  public put(url: URL, payload: RequestBodyOrParams, expectedResponseType: string): Promise<ResponseBody> {
+    const headers = new Headers({ Accept: expectedResponseType })
+    if (payload.type !== null) headers.append('Content-Type', payload.type)
+
+    return fetch(url, {
       method: 'PUT',
-      body: JSON.stringify(payload),
-      headers: {
-        Accept: '*/*',
-        'Content-Type': 'application/json',
-      },
+      body: payload.intoBodyInit(),
+      headers,
     })
-
-    if (!ignoreResponse) {
-      let responseBody
-      try {
-        responseBody = (await response.json()) as unknown
-      } catch {
-        responseBody = undefined
-      }
-
-      return responseBody
-    }
   }
 
-  public async delete(url: URL, ignoreResponse = true): Promise<unknown> {
-    const response = await fetch(url, {
+  public delete(url: URL, expectedResponseType: string): Promise<ResponseBody> {
+    return fetch(url, {
       method: 'DELETE',
       headers: {
-        Accept: '*/*',
+        Accept: expectedResponseType,
       },
     })
-
-    if (!ignoreResponse) {
-      let responseBody
-      try {
-        responseBody = (await response.json()) as unknown
-      } catch {
-        responseBody = undefined
-      }
-
-      return responseBody
-    }
   }
 }
