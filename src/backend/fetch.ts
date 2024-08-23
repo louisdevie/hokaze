@@ -1,21 +1,36 @@
 import type { CreationResult, HttpClient, RequestBodyOrParams, ResponseBody } from '.'
+import { AuthScheme } from '@module/auth'
 
 /**
  * @internal
  */
 export class FetchHttpClient implements HttpClient {
-  public get(url: URL, expectedResponseType: string): Promise<ResponseBody> {
+  private _globalAuth?: AuthScheme
+
+  public get(url: URL, expectedResponseType: string, headers: Headers = new Headers()): Promise<ResponseBody> {
+    headers.append('Accept', expectedResponseType)
+    if (this._globalAuth !== undefined && !headers.has('Authorization')) {
+      this._globalAuth.setupHeaders(headers)
+    }
     return fetch(url, {
       method: 'GET',
-      headers: {
-        Accept: expectedResponseType,
-      },
+      headers,
     })
   }
 
-  public async post(url: URL, payload: RequestBodyOrParams, expectedResponseType: string): Promise<CreationResult> {
-    const headers = new Headers({ Accept: expectedResponseType })
-    if (payload.type !== null) headers.append('Content-Type', payload.type)
+  public async post(
+    url: URL,
+    payload: RequestBodyOrParams,
+    expectedResponseType: string,
+    headers: Headers = new Headers(),
+  ): Promise<CreationResult> {
+    headers.append('Accept', expectedResponseType)
+    if (payload.type !== null) {
+      headers.append('Content-Type', payload.type)
+    }
+    if (this._globalAuth !== undefined && !headers.has('Authorization')) {
+      this._globalAuth.setupHeaders(headers)
+    }
 
     const response = await fetch(url, {
       method: 'POST',
@@ -29,9 +44,19 @@ export class FetchHttpClient implements HttpClient {
     }
   }
 
-  public put(url: URL, payload: RequestBodyOrParams, expectedResponseType: string): Promise<ResponseBody> {
-    const headers = new Headers({ Accept: expectedResponseType })
-    if (payload.type !== null) headers.append('Content-Type', payload.type)
+  public put(
+    url: URL,
+    payload: RequestBodyOrParams,
+    expectedResponseType: string,
+    headers: Headers = new Headers(),
+  ): Promise<ResponseBody> {
+    headers.append('Accept', expectedResponseType)
+    if (payload.type !== null) {
+      headers.append('Content-Type', payload.type)
+    }
+    if (this._globalAuth !== undefined && !headers.has('Authorization')) {
+      this._globalAuth.setupHeaders(headers)
+    }
 
     return fetch(url, {
       method: 'PUT',
@@ -40,12 +65,17 @@ export class FetchHttpClient implements HttpClient {
     })
   }
 
-  public delete(url: URL, expectedResponseType: string): Promise<ResponseBody> {
+  public delete(url: URL, expectedResponseType: string, headers: Headers = new Headers()): Promise<ResponseBody> {
+    if (this._globalAuth !== undefined && !headers.has('Authorization')) {
+      this._globalAuth.setupHeaders(headers)
+    }
     return fetch(url, {
       method: 'DELETE',
-      headers: {
-        Accept: expectedResponseType,
-      },
+      headers,
     })
+  }
+
+  public useAuth(auth: AuthScheme) {
+    this._globalAuth = auth
   }
 }

@@ -10,7 +10,7 @@ import type { HttpClient } from '@module/backend'
 import { DataDescriptor } from '@module/data'
 import { CollectionResource, SingleResource, TypeOfData } from '@module/resources'
 import { makeCollectionResource, makeSingleResource } from '@module/resources/factory'
-import {ObjectDescriptor} from "@module/data/serialized/object";
+import { ObjectDescriptor } from '@module/data/serialized/object'
 
 export interface RequestPathInit {
   baseUrl: UrlTemplate
@@ -81,6 +81,10 @@ export class DefaultRequestPath implements RequestPath {
     this._baseUrl = init.baseUrl
     this._httpClient = init.httpClient
   }
+
+  /*protected get httpClient(): HttpClient {
+    return this._httpClient
+  }*/
 
   // we have to cast the returned value in every method below because the compiler can't guarantee what an inferred type
   // will be (for example, TypeOfData<Something> when Something extends DataDescriptor<T> will actually always be T)

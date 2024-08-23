@@ -1,3 +1,4 @@
+
 import {ValueMapper} from "@module/mappers/serialized";
 
 export class JsonIsoDateMapper<N> extends ValueMapper<Date | N> {

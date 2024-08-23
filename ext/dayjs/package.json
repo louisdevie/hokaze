@@ -1,0 +1,39 @@
+{
+  "name": "eiktobel-dayjs",
+  "version": "1.0.0",
+  "description": "Dayjs extension for Eiktobel",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "format": "prettier --write ./*.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "Louis DEVIE",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.2.3",
+    "tsup": "^8.0.1",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.10"
+  },
+  "peerDependencies": {
+    "eiktobel": "file:../.."
+  },
+  "tsup": {
+    "entry": ["./index.ts"],
+    "format": ["esm", "cjs"],
+    "dts": true,
+    "sourcemap": true,
+    "clean": true,
+    "minify": true
+  }
+}

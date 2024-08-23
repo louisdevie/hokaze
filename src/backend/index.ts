@@ -1,3 +1,5 @@
+import type { AuthScheme } from '@module/auth'
+
 export interface RequestBodyOrParams {
   intoBodyInit(): BodyInit | null
   readonly type: string | null
@@ -21,13 +23,15 @@ export interface CreationResult {
 }
 
 export interface HttpClient {
-  get(url: URL, expectedResponseType: string): Promise<ResponseBody>
+  get(url: URL, expectedResponseType: string, headers?: Headers): Promise<ResponseBody>
 
-  post(url: URL, payload: RequestBodyOrParams, expectedResponseType: string): Promise<CreationResult>
+  post(url: URL, payload: RequestBodyOrParams, expectedResponseType: string, headers?: Headers): Promise<CreationResult>
 
-  put(url: URL, payload: RequestBodyOrParams, expectedResponseType: string): Promise<ResponseBody>
+  put(url: URL, payload: RequestBodyOrParams, expectedResponseType: string, headers?: Headers): Promise<ResponseBody>
 
-  delete(url: URL, expectedResponseType: string): Promise<ResponseBody>
+  delete(url: URL, expectedResponseType: string, headers?: Headers): Promise<ResponseBody>
+
+  useAuth(auth: AuthScheme): void
 }
-export const AnyResponseType = '*/*';
+export const AnyResponseType = '*/*'
 export { FetchHttpClient as DefaultHttpClient } from './fetch'
