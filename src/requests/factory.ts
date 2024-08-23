@@ -2,14 +2,20 @@ import { CustomRequest, CustomRequestInit } from '.'
 import { UrlTemplate } from '@module/url'
 import { HttpClient } from '@module/backend'
 import { GenericDeleteRequest, GenericGetRequest, GenericPostRequest, GenericPutRequest } from './generic'
-import {Mapper} from "@module/mappers";
+import { Mapper } from '@module/mappers'
 
 export function makeGetRequest<Q, R>(
   baseUrl: UrlTemplate,
   client: HttpClient,
   init: CustomRequestInit<Q, R>,
 ): CustomRequest<Q, R> {
-  return new GenericGetRequest(client, baseUrl, init.path, makeRequestMapper(init), makeResponseMapper(init))
+  return new GenericGetRequest({
+    client,
+    baseUrl,
+    path: init.path,
+    requestMapper: makeRequestMapper(init),
+    responseMapper: makeResponseMapper(init),
+  })
 }
 
 export function makePostRequest<Q, R>(
@@ -17,7 +23,13 @@ export function makePostRequest<Q, R>(
   client: HttpClient,
   init: CustomRequestInit<Q, R>,
 ): CustomRequest<Q, R> {
-  return new GenericPostRequest(client, baseUrl, init.path, makeRequestMapper(init), makeResponseMapper(init))
+  return new GenericPostRequest({
+    client,
+    baseUrl,
+    path: init.path,
+    requestMapper: makeRequestMapper(init),
+    responseMapper: makeResponseMapper(init),
+  })
 }
 
 export function makePutRequest<Q, R>(
@@ -25,7 +37,13 @@ export function makePutRequest<Q, R>(
   client: HttpClient,
   init: CustomRequestInit<Q, R>,
 ): CustomRequest<Q, R> {
-  return new GenericPutRequest(client, baseUrl, init.path, makeRequestMapper(init), makeResponseMapper(init))
+  return new GenericPutRequest({
+    client,
+    baseUrl,
+    path: init.path,
+    requestMapper: makeRequestMapper(init),
+    responseMapper: makeResponseMapper(init),
+  })
 }
 
 export function makeDeleteRequest<Q, R>(
@@ -33,13 +51,13 @@ export function makeDeleteRequest<Q, R>(
   client: HttpClient,
   init: CustomRequestInit<Q, R>,
 ): CustomRequest<Q, R> {
-  return new GenericDeleteRequest(
+  return new GenericDeleteRequest({
     client,
     baseUrl,
-    init.path,
-    makeRequestMapper(init),
-    makeResponseMapper(init),
-  )
+    path: init.path,
+    requestMapper: makeRequestMapper(init),
+    responseMapper: makeResponseMapper(init),
+  })
 }
 
 function makeRequestMapper<T>(init: CustomRequestInit<T, unknown>): Mapper<T> | null {
