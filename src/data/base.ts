@@ -5,7 +5,6 @@ import { Mapper } from '@module/mappers'
 
 /**
  * Options shared by all descriptors.
- * @internal
  */
 export interface AnyDataOptions<T> {
   blankValueFactory?: () => T
