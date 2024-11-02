@@ -1,5 +1,7 @@
 /* LIBRARY USAGE */
-export { Service, service } from './service'
+export { type Service, service } from './service'
+export type { TxOnlyCustomRequest, EmptyCustomRequest, RxOnlyCustomRequest, CustomRequest } from './requests'
+export type { CollectionResource, SingleResource, Key } from './resources'
 export { string, boolean, number, /*ref,*/ array, enumeration, object } from './data/serialized'
 export { BasicAuth, BearerToken } from './auth'
 export { plainText } from './data/plainText'

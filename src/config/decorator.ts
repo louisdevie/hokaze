@@ -1,11 +1,12 @@
-import type { Config } from '.'
+import type { Config, BadResponseHandler } from '.'
+import { defaultConfig } from '@module/config/default'
 
-export type ResetValue = 'reset'
+export type ResetValue = 'default'
 
 export type ConfigOverride = { [P in keyof Config]?: Config[P] | ResetValue }
 
 export class DecoratorConfig implements Config {
-  // private static readonly resetValue: ResetValue = 'reset'
+  private static readonly resetValue: ResetValue = 'default'
 
   private readonly _wrapped: Config
   private readonly _overrides: ConfigOverride
@@ -15,7 +16,11 @@ export class DecoratorConfig implements Config {
     this._overrides = overrides
   }
 
-  /*private overrideConfigProperty<P extends keyof Config>(p: P): Config[P] {
+  public get badResponseHandler(): BadResponseHandler {
+    return this.overrideConfigProperty('badResponseHandler')
+  }
+
+  private overrideConfigProperty<P extends keyof Config>(p: P): Config[P] {
     let finalValue: Config[P] = this._wrapped[p]
 
     const option: Config[P] | ResetValue | undefined = this._overrides[p]
@@ -26,5 +31,5 @@ export class DecoratorConfig implements Config {
     }
 
     return finalValue
-  }*/
+  }
 }

@@ -11,7 +11,7 @@ export class PlainTextMapper implements Mapper<string> {
   }
 
   public get expectedResponseType(): string {
-    return "text/plain";
+    return 'text/plain'
   }
 }
 

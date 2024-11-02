@@ -1,11 +1,10 @@
 import { Mapper } from '@module/mappers'
-import {ValidationResult} from "@module/validation";
+import { ValidationResult } from '@module/validation'
 
 /**
  * An object describing a value mapped to the JavaScript type `T`.
  */
 export interface DataDescriptor<T> {
-
   /**
    * Indicates whether this data may be received from the API.
    */

@@ -26,9 +26,10 @@ export class JsonObjectMapper<O, N> extends ValueMapper<O | N> implements Object
     return obj
   }
 
-  public unpackValue(response: unknown): O {
-    if (typeof response !== 'object' || response === null)
-      throw new Error(`Expected an object, got ${JSON.stringify(response)}`)
+  public unpackValue(response: unknown): O | N {
+    if (response === undefined) return undefined as N
+    if (response === null) return null as N
+    if (typeof response !== 'object') throw new Error(`Expected an object, got ${JSON.stringify(response)}`)
     const obj: Partial<O> = {}
     for (const [field, mapper] of this._fieldMappers) {
       obj[field] = mapper.unpackValue((response as Record<keyof O, unknown>)[field])

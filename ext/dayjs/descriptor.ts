@@ -1,5 +1,5 @@
 import __dayjs, { Dayjs } from 'dayjs'
-import { AnyValue, AnyValueOptions, ValueMapper, ValueDescriptor } from 'eiktobel'
+import { AnyValue, AnyValueOptions, ValueMapper, ValueDescriptor } from '@hokaze/core'
 import { JsonDayjsMapper } from './json'
 
 export interface DayjsValuePublicAPI<N> extends ValueDescriptor<Dayjs | N> {
@@ -15,10 +15,7 @@ export interface DayjsValuePublicAPI<N> extends ValueDescriptor<Dayjs | N> {
  * Describes a dayjs value serialized in ISO format.
  * @template N Additional values the field can hold.
  */
-export class DayjsValue<N>
-  extends AnyValue<Dayjs | N, DayjsValue<N>>
-  implements DayjsValuePublicAPI<N>
-{
+export class DayjsValue<N> extends AnyValue<Dayjs | N, DayjsValue<N>> implements DayjsValuePublicAPI<N> {
   public constructor(copyFrom?: DayjsValue<N>, options?: AnyValueOptions<N>) {
     super(copyFrom, options)
   }
@@ -44,7 +41,7 @@ export class DayjsValue<N>
   public override get nullable(): DayjsValue<N | null> {
     return new DayjsValue<N | null>(this, {
       isNullable: true,
-      blankValueFactory: () => null
+      blankValueFactory: () => null,
     })
   }
 

@@ -1,4 +1,6 @@
 import type { AuthScheme } from '@module/auth'
+import { Config } from '@module/config'
+import { FetchHttpClient } from '@module/backend/fetch'
 
 export interface RequestBodyOrParams {
   intoBodyInit(): BodyInit | null
@@ -33,5 +35,9 @@ export interface HttpClient {
 
   useAuth(auth: AuthScheme): void
 }
+
 export const AnyResponseType = '*/*'
-export { FetchHttpClient as DefaultHttpClient } from './fetch'
+
+export function httpClient(config: Config): HttpClient {
+  return new FetchHttpClient(config)
+}

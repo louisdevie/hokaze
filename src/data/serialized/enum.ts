@@ -12,9 +12,9 @@ export interface EnumAdapter<E> {
 
   makeDefaultBlankValue(): E
 
-  nameFor(value: E): unknown;
+  nameFor(value: E): unknown
 
-  valueFor(name: unknown): E;
+  valueFor(name: unknown): E
 }
 
 /**
@@ -78,7 +78,7 @@ type EnumRecord = Record<string | number, string | number>
 
 class EnumObjectAdapter<TypeOfE extends EnumRecord> implements EnumAdapter<TypeOfE[keyof TypeOfE]> {
   private readonly _enumObject: TypeOfE
-  private _reverseIndex?: Map<string|number, string|number>
+  private _reverseIndex?: Map<string | number, string | number>
 
   public constructor(enumObject: TypeOfE) {
     this._enumObject = enumObject
@@ -134,7 +134,7 @@ class EnumObjectAdapter<TypeOfE extends EnumRecord> implements EnumAdapter<TypeO
   }
 
   public valueFor(name: unknown): TypeOfE[keyof TypeOfE] {
-    return this._enumObject[String(name)] as TypeOfE[keyof TypeOfE];
+    return this._enumObject[String(name)] as TypeOfE[keyof TypeOfE]
   }
 }
 

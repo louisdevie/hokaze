@@ -1,6 +1,6 @@
 {
-  "name": "eiktobel",
-  "version": "1.0.0",
+  "name": "@hokaze/core",
+  "version": "0.1.3",
   "description": "An object-REST mapper",
   "type": "module",
   "main": "./dist/index.cjs",

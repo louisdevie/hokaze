@@ -1,13 +1,14 @@
-import type {RequestPath} from "@module/requestPath";
-import type {DataDescriptor} from "@module/data";
-import {UrlSearchArgs} from "@module/url";
+import type { RequestPath } from '@module/requestPath'
+import type { DataDescriptor } from '@module/data'
+import { UrlSearchArgs } from '@module/url'
 
 /**
  * The types allowed as resource keys.
  */
 export type Key = string | number
 
-export type TypeOfData<Descriptor extends DataDescriptor<unknown>> = Descriptor extends DataDescriptor<infer T> ? T : never
+export type TypeOfData<Descriptor extends DataDescriptor<unknown>> =
+  Descriptor extends DataDescriptor<infer T> ? T : never
 
 export interface ResourceRequestPath {
   readonly resourcePath: RequestPath

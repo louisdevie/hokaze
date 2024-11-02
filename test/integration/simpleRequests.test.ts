@@ -1,7 +1,7 @@
 import { fakeHttpClient, fakeService } from '@fake'
-import {number, object, string} from '@module'
-import {NoRequestBody} from "@module/mappers/noRequestBody";
-import {JsonRequestBody} from "@module/mappers/serialized/json/jsonRequestBody";
+import { number, object, string } from '@module'
+import { NoRequestBody } from '@module/mappers/noRequestBody'
+import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
 
 const abcObject = object({ a: number, b: number, c: number })
 const xyObject = object({ x: string, y: number })
@@ -16,7 +16,7 @@ describe('creating a GET request from a service', () => {
     http.get.mockResolvedValueOnce(Response.json({ a: 1, b: 2, c: 3, d: 4 }))
     const res = await req.send()
 
-    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), "application/json")
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), 'application/json')
     expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 
@@ -50,7 +50,11 @@ describe('creating a POST request from a service', () => {
     })
     await req.send()
 
-    expect(http.post).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), new NoRequestBody(), "*/*")
+    expect(http.post).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://some-api.com/foo/bar'),
+      new NoRequestBody(),
+      '*/*',
+    )
   })
 
   test('with a request and no response body', async () => {
@@ -63,7 +67,11 @@ describe('creating a POST request from a service', () => {
     })
     await req.send({ x: 'a', y: 7 })
 
-    expect(http.post).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), new JsonRequestBody({ x: 'a', y: 7 }), "*/*")
+    expect(http.post).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://some-api.com/foo/bar'),
+      new JsonRequestBody({ x: 'a', y: 7 }),
+      '*/*',
+    )
   })
 
   test('with a response and no request body', async () => {
@@ -76,7 +84,11 @@ describe('creating a POST request from a service', () => {
     })
     const res = await req.send()
 
-    expect(http.post).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), new NoRequestBody(), "application/json")
+    expect(http.post).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://some-api.com/foo/bar'),
+      new NoRequestBody(),
+      'application/json',
+    )
     expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 
@@ -94,7 +106,11 @@ describe('creating a POST request from a service', () => {
     })
     const res = await req.send({ x: 'a', y: 7 })
 
-    expect(http.post).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), new JsonRequestBody({ x: 'a', y: 7 }), "application/json")
+    expect(http.post).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://some-api.com/foo/bar'),
+      new JsonRequestBody({ x: 'a', y: 7 }),
+      'application/json',
+    )
     expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 })
@@ -109,7 +125,11 @@ describe('creating a PUT request from a service', () => {
     http.put.mockResolvedValueOnce(new Response())
     await req.send()
 
-    expect(http.put).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), new NoRequestBody(), "*/*")
+    expect(http.put).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://some-api.com/foo/bar'),
+      new NoRequestBody(),
+      '*/*',
+    )
   })
 
   test('with a request and no response body', async () => {
@@ -119,7 +139,11 @@ describe('creating a PUT request from a service', () => {
     http.put.mockResolvedValueOnce(new Response())
     await req.send({ x: 'a', y: 7 })
 
-    expect(http.put).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), new JsonRequestBody({ x: 'a', y: 7 }), "*/*")
+    expect(http.put).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://some-api.com/foo/bar'),
+      new JsonRequestBody({ x: 'a', y: 7 }),
+      '*/*',
+    )
   })
 
   test('with a response and no request body', async () => {
@@ -129,7 +153,11 @@ describe('creating a PUT request from a service', () => {
     http.put.mockResolvedValueOnce(Response.json({ a: 1, b: 2, c: 3, d: 4 }))
     const res = await req.send()
 
-    expect(http.put).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), new NoRequestBody(), "application/json")
+    expect(http.put).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://some-api.com/foo/bar'),
+      new NoRequestBody(),
+      'application/json',
+    )
     expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 
@@ -147,7 +175,7 @@ describe('creating a PUT request from a service', () => {
     expect(http.put).toHaveBeenCalledExactlyOnceWith(
       new URL('https://some-api.com/foo/bar'),
       new JsonRequestBody({ x: 'a', y: 7 }),
-      "application/json"
+      'application/json',
     )
     expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
@@ -160,10 +188,10 @@ describe('creating a DELETE request from a service', () => {
   test('without a response body', async () => {
     const req = ws.deleteRequest({ path: '/foo/bar' })
 
-    http.delete.mockResolvedValueOnce(new Response)
+    http.delete.mockResolvedValueOnce(new Response())
     await req.send()
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), "*/*")
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), '*/*')
   })
 
   test('with a response body', async () => {
@@ -173,7 +201,7 @@ describe('creating a DELETE request from a service', () => {
     http.delete.mockResolvedValueOnce(Response.json({ a: 1, b: 2, c: 3, d: 4 }))
     const res = await req.send()
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), "application/json")
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/bar'), 'application/json')
     expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
   })
 })

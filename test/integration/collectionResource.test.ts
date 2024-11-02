@@ -40,11 +40,11 @@ describe('creating a collection resource from a service', () => {
   })
 
   test('to create a new value to send', async () => {
-    expect(collection.create()).toMatchObject({id: -1, type: '', variant: '', baseDamage: 0})
+    expect(collection.create()).toMatchObject({ id: -1, type: '', variant: '', baseDamage: 0 })
   })
 
   test('to send a value', async () => {
-    const data = {id: -1, type: 'rocket launcher', variant: 'firestarter', baseDamage: 3.5}
+    const data = { id: -1, type: 'rocket launcher', variant: 'firestarter', baseDamage: 3.5 }
     http.post.mockClear()
     http.post.mockResolvedValueOnce({
       responseBody: new Response(),
@@ -78,7 +78,7 @@ describe('creating a collection resource from a service', () => {
   })
 
   test('to save an existing value', async () => {
-    const data = {id: 4, type: 'shotgun', variant: 'pump charge', baseDamage: 2.5}
+    const data = { id: 4, type: 'shotgun', variant: 'pump charge', baseDamage: 2.5 }
     http.put.mockClear()
     http.put.mockResolvedValueOnce(new Response())
     await collection.save(data)
@@ -93,12 +93,9 @@ describe('creating a collection resource from a service', () => {
   test('to delete a value', async () => {
     http.delete.mockClear()
     http.delete.mockResolvedValueOnce(new Response())
-    await collection.delete({id: 4, type: 'shotgun', variant: 'pump charge', baseDamage: 2.5})
+    await collection.delete({ id: 4, type: 'shotgun', variant: 'pump charge', baseDamage: 2.5 })
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/weapons/4'),
-      '*/*',
-    )
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons/4'), '*/*')
   })
 
   test('to delete a value using its key', async () => {
@@ -106,10 +103,7 @@ describe('creating a collection resource from a service', () => {
     http.delete.mockResolvedValueOnce(new Response())
     await collection.deleteKey(4)
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/weapons/4'),
-      '*/*',
-    )
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons/4'), '*/*')
   })
 
   test('to delete all values', async () => {
@@ -117,9 +111,6 @@ describe('creating a collection resource from a service', () => {
     http.delete.mockResolvedValueOnce(new Response())
     await collection.deleteAll()
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/weapons'),
-      '*/*',
-    )
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons'), '*/*')
   })
 })

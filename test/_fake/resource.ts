@@ -1,5 +1,5 @@
 import { RequestPath } from '@module/requestPath'
-import type {CollectionResource, Key} from '@module/resources'
+import type { CollectionResource, Key } from '@module/resources'
 import { fakeRequestPath } from './requestPath'
 
 export interface Fruit {
@@ -60,7 +60,7 @@ class FruitsResourceImpl implements CollectionResource<Fruit> {
   }
 
   public isNew(item: Fruit): boolean {
-    return this._fruits.has(item.id);
+    return this._fruits.has(item.id)
   }
 }
 

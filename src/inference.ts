@@ -1,5 +1,4 @@
-import {FieldRoleHints} from "@module/data/serialized";
-
+import { FieldRoleHints } from '@module/data/serialized'
 
 /**
  * Likelihood for inferred properties.

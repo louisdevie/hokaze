@@ -1,3 +1,12 @@
-import type { Config } from '.'
+import type { Config, BadResponseHandler } from '.'
+import { BadResponse } from '@module/backend/fetch'
 
-export const defaultConfig: Config = {}
+const defaultErrorHandler: BadResponseHandler = {
+  onBadResponse(response: Response): Response {
+    throw new BadResponse(response)
+  },
+}
+
+export const defaultConfig: Config = {
+  badResponseHandler: defaultErrorHandler,
+}

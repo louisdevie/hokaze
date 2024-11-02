@@ -1,4 +1,4 @@
-import type { Config } from '.'
+import type { Config, BadResponseHandler } from '.'
 import { defaultConfig } from '@module/config/default'
 import { ConfigOverride, DecoratorConfig } from '@module/config/decorator'
 
@@ -9,15 +9,19 @@ class GlobalConfig implements Config {
     this._current = defaultConfig
   }
 
-  public override(options: ConfigOverride): void {
+  public set(options: ConfigOverride): void {
     this._current = new DecoratorConfig(defaultConfig, options)
+  }
+
+  public get badResponseHandler(): BadResponseHandler {
+    return this._current.badResponseHandler
   }
 }
 
 const __glob__ = new GlobalConfig()
 
 export function globalConfig(options: ConfigOverride): void {
-  __glob__.override(options)
+  __glob__.set(options)
 }
 
 export function getGlobalConfig(): Config {

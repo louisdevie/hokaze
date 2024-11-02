@@ -1,6 +1,6 @@
 import __dayjs, { Dayjs } from 'dayjs'
 import { DayjsValue, DayjsValuePublicAPI } from './descriptor'
-import { FieldRoleHints, Likelihood, ValidationResult, ValueMapper } from 'eiktobel'
+import { FieldRoleHints, Likelihood, ValidationResult, ValueMapper } from '@hokaze/core'
 
 export { Dayjs } from 'dayjs'
 
@@ -30,7 +30,7 @@ const init: DayjsValuePublicAPI<never> = {
   nullable: new DayjsValue<never>().nullable,
   withBlankValue(factoryOrValue: (() => Dayjs) | Dayjs): DayjsValue<never> {
     return new DayjsValue<never>().withBlankValue(factoryOrValue as Dayjs)
-  }
+  },
 }
 
 const dayjs: ExtendedDayjs = Object.assign(__dayjs, init)

@@ -16,9 +16,9 @@ import { ObjectMapper } from '@module/mappers/serialized/object'
 export type AllowedOperations = 'r' | 'w' | 'rw'
 
 export class GenericSingleResource<T> implements SingleResource<T> {
-  private readonly _requestBuilder: ResourceRequestBuilder;
-  private readonly _descriptor: DataDescriptor<T>;
-  private readonly _mapper: Mapper<T>;
+  private readonly _requestBuilder: ResourceRequestBuilder
+  private readonly _descriptor: DataDescriptor<T>
+  private readonly _mapper: Mapper<T>
   private readonly _allowedOperations: AllowedOperations
 
   public constructor(
@@ -26,9 +26,9 @@ export class GenericSingleResource<T> implements SingleResource<T> {
     descriptor: DataDescriptor<T>,
     allowedOperations: AllowedOperations,
   ) {
-    this._requestBuilder = requestBuilder;
-    this._descriptor = descriptor;
-    this._mapper = descriptor.makeMapper();
+    this._requestBuilder = requestBuilder
+    this._descriptor = descriptor
+    this._mapper = descriptor.makeMapper()
     this._allowedOperations = allowedOperations
   }
 
@@ -52,18 +52,18 @@ export class GenericSingleResource<T> implements SingleResource<T> {
   public async send(value: T): Promise<void> {
     if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
     const validation = this._descriptor.validate(value)
-    if (!validation.isValid) throwError(validation.reason);
+    if (!validation.isValid) throwError(validation.reason)
 
-    const dto =  this._mapper.pack(value)
+    const dto = this._mapper.pack(value)
     await this._requestBuilder.saveNew(dto, AnyResponseType)
   }
 
   public async save(value: T): Promise<void> {
     if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
     const validation = this._descriptor.validate(value)
-    if (!validation.isValid) throwError(validation.reason);
+    if (!validation.isValid) throwError(validation.reason)
 
-    const dto =  this._mapper.pack(value)
+    const dto = this._mapper.pack(value)
     await this._requestBuilder.saveAll(dto, AnyResponseType)
   }
 

@@ -1,7 +1,7 @@
 {
-  "name": "eiktobel-dayjs",
-  "version": "1.0.0",
-  "description": "Dayjs extension for Eiktobel",
+  "name": "@hokaze/dayjs",
+  "version": "0.1.2",
+  "description": "Dayjs extension for Hokaze",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -26,7 +26,7 @@
     "dayjs": "^1.11.10"
   },
   "peerDependencies": {
-    "eiktobel": "file:../.."
+    "@hokaze/core": "^0.1.0"
   },
   "tsup": {
     "entry": ["./index.ts"],

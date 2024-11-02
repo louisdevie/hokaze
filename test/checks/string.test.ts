@@ -1,5 +1,5 @@
-import {MaximumLengthCheck, NotEmptyCheck} from "@module/checks/string";
-import {NoChecks} from "@module/checks";
+import { MaximumLengthCheck, NotEmptyCheck } from '@module/checks/string'
+import { NoChecks } from '@module/checks'
 
 test('the NotEmptyCheck rejects empty strings', () => {
   const notEmpty = new NotEmptyCheck(new NoChecks())

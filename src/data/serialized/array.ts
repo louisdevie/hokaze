@@ -2,7 +2,7 @@ import { ValueDescriptor } from '@module/data/serialized/index'
 import { ValueMapper } from '@module/mappers/serialized'
 import { AnyValue, AnyValueOptions } from '@module/data/serialized/base'
 import { JsonArrayMapper } from '@module/mappers/serialized/json'
-import { ValidationResult} from "@module/validation";
+import { ValidationResult } from '@module/validation'
 
 /**
  * Describes a serialized array of values.
@@ -32,17 +32,17 @@ export class ArrayValue<E, N> extends AnyValue<E[] | N, ArrayValue<E, N>> {
   }
 
   public validate(value: E[]): ValidationResult {
-    let result = super.validate(value);
+    let result = super.validate(value)
     if (result.isValid) {
       for (const elt of value) {
         const eltResult = this._element.validate(elt)
         if (!eltResult.isValid) {
-          result = eltResult;
-          break;
+          result = eltResult
+          break
         }
       }
     }
-    return result;
+    return result
   }
 
   //region Builder methods

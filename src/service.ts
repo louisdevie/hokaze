@@ -1,8 +1,9 @@
 import { UrlTemplate } from './url'
-import { DefaultHttpClient } from '@module/backend'
+import { httpClient } from '@module/backend'
 import { DefaultRequestPath, RequestPath } from '@module/requestPath'
-import { ConfigOverride } from '@module/config/decorator'
+import { ConfigOverride, DecoratorConfig } from '@module/config/decorator'
 import type { AuthScheme } from '@module/auth'
+import { getGlobalConfig } from '@module/config/global'
 
 export interface Service extends RequestPath {
   useAuth(auth: AuthScheme): void
@@ -26,7 +27,7 @@ export function service(init: string | URL | ServiceOptions): Service {
 
   const service = new DefaultService({
     baseUrl: new UrlTemplate(init.baseUrl),
-    httpClient: new DefaultHttpClient(),
+    httpClient: httpClient(new DecoratorConfig(getGlobalConfig(), init)),
   })
 
   if (init.auth !== undefined) {

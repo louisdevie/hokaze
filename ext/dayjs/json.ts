@@ -1,4 +1,4 @@
-import { ValueMapper } from 'eiktobel'
+import { ValueMapper } from '@hokaze/core'
 import __dayjs, { Dayjs } from 'dayjs'
 
 export class JsonDayjsMapper<N> extends ValueMapper<Dayjs | N> {

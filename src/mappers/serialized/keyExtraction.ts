@@ -1,7 +1,7 @@
 import type { CreationResult } from '@module/backend'
 import type { Key } from '@module/resources'
-import {ObjectMapper} from "@module/mappers/serialized/object";
-import {KeyKind} from "@module/data/serialized";
+import { ObjectMapper } from '@module/mappers/serialized/object'
+import { KeyKind } from '@module/data/serialized'
 
 export interface KeyExtractionMethod {
   tryToExtractKey(postResult: CreationResult): Promise<Key | undefined>
@@ -35,7 +35,9 @@ export class ExtractFromKeyBody implements KeyExtractionMethod {
       if (typeof response === 'string' || typeof response === 'number') {
         keyFound = response
       }
-    } catch { /* no key found */ }
+    } catch {
+      /* no key found */
+    }
 
     return keyFound
   }

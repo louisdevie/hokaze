@@ -35,7 +35,7 @@ test('query parameters can be added to resource and item URLs', () => {
     enable: true,
     noValue: null,
     notIncluded: undefined,
-    'kebab-case-param': 'a: b'
+    'kebab-case-param': 'a: b',
   }
 
   const resourceUrl = template.getUrlForResource('fruits', args)

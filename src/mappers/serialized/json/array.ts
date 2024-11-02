@@ -12,12 +12,14 @@ export class JsonArrayMapper<E, N> extends ValueMapper<E[] | N> {
     return value.map((e) => this._elementMapper.packValue(e))
   }
 
-  public unpackValue(response: unknown): E[] {
+  public unpackValue(response: unknown): E[] | N {
+    if (response === undefined) return undefined as N
+    if (response === null) return null as N
     if (!Array.isArray(response)) throw new Error(`Expected an array, got ${JSON.stringify(response)}`)
     return response.map((e) => this._elementMapper.unpackValue(e))
   }
 
   public get expectedResponseType(): string {
-    return "application/json";
+    return 'application/json'
   }
 }
