@@ -2,6 +2,9 @@ import type { Key, CollectionResource } from '@module/resources'
 
 type RefState<T> = { loaded: false } | { loaded: true; value: T }
 
+/**
+ * A reference to a resource from a collection.
+ */
 export class Ref<T> {
   private readonly _resource: CollectionResource<T>
   private _key: Key
@@ -13,10 +16,20 @@ export class Ref<T> {
     this._state = state
   }
 
+  /**
+   * Creates a ref without value.
+   * @param resource The referenced collection resource.
+   * @param key The key of the item in this collection.
+   */
   public static fromKey<T>(resource: CollectionResource<T>, key: Key): Ref<T> {
     return new Ref(resource, key, { loaded: false })
   }
 
+  /**
+   * Creates a ref with a value.
+   * @param resource The referenced collection resource.
+   * @param value The item from the collection.
+   */
   public static fromValue<T>(resource: CollectionResource<T>, value: T): Ref<T> {
     return new Ref(resource, value[resource.keyProperty] as Key, {
       loaded: true,
@@ -24,10 +37,16 @@ export class Ref<T> {
     })
   }
 
+  /**
+   * The key of the item in the collection.
+   */
   public get key(): Key {
     return this._key
   }
 
+  /**
+   * The value of the item, or `undefined` if this ref is unloaded.
+   */
   public get value(): T | undefined {
     return this._state.loaded ? this._state.value : undefined
   }
@@ -40,6 +59,10 @@ export class Ref<T> {
     }
   }
 
+  /**
+   * Changes the key and *unloads* the value. Use {@link change} to reload it immediately instead.
+   * @param key The key to the new item to reference.
+   */
   public set(key: Key): void {
     // the loose equality here is on purpose. changing from key '2' to key 2 shouldn't do anything because
     // the resulting URL would be the same.
@@ -49,12 +72,19 @@ export class Ref<T> {
     }
   }
 
+  /**
+   * Returns the referenced item, loading it if necessary.
+   */
   public async get(): Promise<T> {
     await this.update()
     if (!this._state.loaded) throw new Error('failed to load referenced resource')
     return this._state.value
   }
 
+  /**
+   * Changes the key and *reloads* the value. Use {@link set} if you don't want to reload the value immediately.
+   * @param key The key to the new item to reference.
+   */
   public async change(key: Key): Promise<void> {
     // see the comment inside the set method
     if (key != this._key) {

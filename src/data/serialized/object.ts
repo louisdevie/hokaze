@@ -5,6 +5,7 @@ import { KeyKind, ValueDescriptor } from '@module/data/serialized/index'
 import { Likelihood } from '@module/inference'
 import { throwError } from '@module/errors'
 import __ from '@module/locale/gen'
+import { ValidationResult } from '@module/validation'
 
 // inverse of ObjectType
 type Fields<O> = [keyof O & string, ValueDescriptor<O[keyof O & string]>][]
@@ -47,6 +48,20 @@ export class ObjectValue<O extends Record<string, unknown>, N>
 
   public makeMapper(): ObjectMapper<O | N> {
     return new JsonObjectMapper<O, N>(this._fields.map(([property, descriptor]) => [property, descriptor.makeMapper()]))
+  }
+
+  public validate(value: O): ValidationResult {
+    let result = super.validate(value)
+    if (result.isValid) {
+      for (const [name, descriptor] of this._fields) {
+        const fieldResult = descriptor.validate(value[name])
+        if (!fieldResult.isValid) {
+          result = fieldResult
+          break
+        }
+      }
+    }
+    return result
   }
 
   public findKey(resourceName: string): { property: string; kind: KeyKind } {
