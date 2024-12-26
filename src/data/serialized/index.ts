@@ -61,4 +61,4 @@ export const string: StringValue<never> = new StringValue()
 export { jsonArrayFactory as array } from './array'
 export { jsonEnumFactory as enumeration } from './enum'
 export { jsonObjectFactory as object } from './object'
-// export { jsonRefFactory as ref } from './ref'
+export { jsonRefFactory as ref } from './ref'

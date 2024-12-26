@@ -1,6 +1,7 @@
 import type { RequestPath } from '@module/requestPath'
 import type { DataDescriptor } from '@module/data'
 import { UrlSearchArgs } from '@module/url'
+import { ObjectDescriptor } from '@module/data/serialized/object'
 
 /**
  * The types allowed as resource keys.
@@ -23,6 +24,8 @@ export interface ResourceRequestPath {
  */
 export interface SingleResource<T> {
   readonly asPath: RequestPath
+
+  readonly descriptor: DataDescriptor<T>
 
   /**
    * Reads the value of resource.
@@ -53,10 +56,12 @@ export interface SingleResource<T> {
 }
 
 /**
- * Represents a REST resource that is a list of objects.
+ * Represents a REST resource that is a collection of objects.
  */
 export interface CollectionResource<T> {
   readonly asPath: RequestPath
+
+  readonly descriptor: ObjectDescriptor<T>
 
   readonly keyProperty: keyof T
 

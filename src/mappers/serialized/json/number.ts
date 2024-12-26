@@ -18,8 +18,4 @@ export class JsonNumberMapper<N> extends ValueMapper<number | N> {
     const num = Number(response)
     return this._integer ? Math.floor(num) : num
   }
-
-  public get expectedResponseType(): string {
-    return 'application/json'
-  }
 }

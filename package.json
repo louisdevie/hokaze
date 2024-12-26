@@ -1,7 +1,7 @@
 {
   "name": "@hokaze/core",
-  "version": "0.1.3",
-  "description": "An object-REST mapper",
+  "version": "0.1.4",
+  "description": "An object-to-REST mapper",
   "type": "module",
   "main": "./dist/index.cjs",
   "module":"./dist/index.js",

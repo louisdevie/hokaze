@@ -36,6 +36,10 @@ export class GenericSingleResource<T> implements SingleResource<T> {
     return this._requestBuilder.resourcePath
   }
 
+  public get descriptor(): DataDescriptor<T> {
+    return this._descriptor
+  }
+
   public async get(): Promise<T> {
     if (this._allowedOperations === 'w') throwError(__.writeOnlyResource)
 
@@ -74,7 +78,7 @@ export class GenericSingleResource<T> implements SingleResource<T> {
   }
 }
 
-const NewItemSymbol = Symbol.for('eiktobel-new-tag')
+const NewItemSymbol = Symbol.for('hokaze:new')
 
 type TaggedObject = { [NewItemSymbol]?: unknown }
 
@@ -110,6 +114,10 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
     return this._requestBuilder.resourcePath
   }
 
+  public get descriptor(): ObjectDescriptor<T> {
+    return this._descriptor
+  }
+
   public get keyProperty(): keyof T {
     return this._keyProperty
   }
@@ -137,7 +145,11 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   }
 
   public isNew(item: T): boolean {
-    return this.getNewTagOf(item) === true || this.getKeyOf(item) === null || this.getKeyOf(item) === undefined
+    return (
+      this.getNewTagOf(item) === true ||
+      (this.getKeyOf(item) as Key | null) === null ||
+      (this.getKeyOf(item) as Key | undefined) === undefined
+    )
   }
 
   public async send(item: T): Promise<void> {

@@ -1,6 +1,7 @@
 import type { CreationResult, HttpClient, RequestBodyOrParams, ResponseBody } from '.'
 import { AuthScheme } from '@module/auth'
 import { Config } from '@module/config'
+import { Err, internal } from '@module/errors'
 
 /**
  * @internal
@@ -16,7 +17,14 @@ export class FetchHttpClient implements HttpClient {
 
   private async fetch(input: string | URL | globalThis.Request, init?: RequestInit): Promise<Response> {
     let response = await fetch(input, init)
-    if (!response.ok) response = this._config.badResponseHandler.onBadResponse(response)
+    if (!response.ok) {
+      const processedResponse = this._config.badResponseHandler.onBadResponse(response)
+      if (processedResponse instanceof Promise) {
+        response = await processedResponse
+      } else {
+        response = processedResponse
+      }
+    }
     return response
   }
 
@@ -93,11 +101,12 @@ export class FetchHttpClient implements HttpClient {
   }
 }
 
-export class BadResponse implements Response {
+export class BadResponse extends Error implements Response {
   private _originalResponse: Response
 
   public constructor(response: Response) {
-    if (response.ok) throw 'BadResponse constructor called with ok response'
+    super('Bad response')
+    if (response.ok) internal(Err.triedToThrowOkResponse)
     this._originalResponse = response
   }
 
@@ -158,6 +167,6 @@ export class BadResponse implements Response {
   }
 
   public text(): Promise<string> {
-    return this._originalResponse.json()
+    return this._originalResponse.text()
   }
 }

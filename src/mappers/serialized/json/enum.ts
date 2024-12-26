@@ -20,8 +20,4 @@ export class JsonEnumMapper<E, N> extends ValueMapper<E | N> {
     if (response === null) return null as N
     return this._useNames ? this._adapter.valueFor(response) : (response as E)
   }
-
-  public get expectedResponseType(): string {
-    return 'application/json'
-  }
 }

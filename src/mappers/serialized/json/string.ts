@@ -10,8 +10,4 @@ export class JsonStringMapper<N> extends ValueMapper<string | N> {
     if (response === null) return null as N
     return String(response)
   }
-
-  public get expectedResponseType(): string {
-    return 'application/json'
-  }
 }

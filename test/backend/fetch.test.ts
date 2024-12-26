@@ -29,9 +29,9 @@ test('get makes a GET request', async () => {
   expect(await result.json()).toEqual(testData)
   expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), {
     method: 'GET',
-    headers: {
+    headers: new Headers({
       Accept: 'application/json',
-    },
+    }),
   })
 })
 
@@ -131,9 +131,9 @@ test('delete makes a DELETE request', async () => {
 
   expect(fetchMock).toHaveBeenCalledExactlyOnceWith(new URL('https://toaruapi.com/characters/53'), {
     method: 'DELETE',
-    headers: {
+    headers: new Headers({
       Accept: '*/*',
-    },
+    }),
   })
 })
 

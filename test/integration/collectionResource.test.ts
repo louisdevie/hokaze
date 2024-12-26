@@ -39,7 +39,7 @@ describe('creating a collection resource from a service', () => {
     expect(res).toEqual(data)
   })
 
-  test('to create a new value to send', async () => {
+  test('to create a new value to send', () => {
     expect(collection.create()).toMatchObject({ id: -1, type: '', variant: '', baseDamage: 0 })
   })
 

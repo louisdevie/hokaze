@@ -1,6 +1,7 @@
 import { RequestPath } from '@module/requestPath'
 import type { CollectionResource, Key } from '@module/resources'
 import { fakeRequestPath } from './requestPath'
+import { number, object, string } from '@module'
 
 export interface Fruit {
   id: number
@@ -20,6 +21,8 @@ class FruitsResourceImpl implements CollectionResource<Fruit> {
   }
 
   public readonly keyProperty: keyof Fruit = 'id'
+
+  public readonly descriptor = object({ id: number, name: string })
 
   public readonly asPath: RequestPath = fakeRequestPath()
 

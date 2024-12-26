@@ -18,7 +18,7 @@ describe('creating a single resource from a service', () => {
     expect(res).toEqual(6)
   })
 
-  test('to create a new value to send', async () => {
+  test('to create a new value to send', () => {
     expect(single.create()).toEqual(0)
   })
 

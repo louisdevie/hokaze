@@ -63,10 +63,10 @@ export abstract class AnyValue<T, Self> extends AnyData<T, Self> implements Valu
 
   public validate(value: T): ValidationResult {
     let result
-    if (this._isNullable || value !== null) {
-      result = super.validate(value)
-    } else {
+    if (value === null && !this._isNullable) {
       result = invalid('Unexpected null value.')
+    } else {
+      result = super.validate(value)
     }
     return result
   }

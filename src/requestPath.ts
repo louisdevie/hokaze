@@ -86,7 +86,7 @@ export class DefaultRequestPath implements RequestPath {
 
   // we have to cast the returned value in every method below because the compiler can't guarantee what an inferred type
   // will be (for example, TypeOfData<Something> when Something extends DataDescriptor<T> will actually always be T)
-  // see also data/serialized/object.ts line 80
+  // see also data/serialized/object.ts line 121
 
   public collection<Descriptor extends ObjectDescriptor<unknown>>(
     name: string,

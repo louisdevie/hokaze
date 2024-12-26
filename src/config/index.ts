@@ -3,5 +3,5 @@ export interface Config {
 }
 
 export interface BadResponseHandler {
-  onBadResponse(response: Response): Response
+  onBadResponse(response: Response): Response | Promise<Response>
 }

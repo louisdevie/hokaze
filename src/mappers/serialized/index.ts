@@ -11,7 +11,9 @@ export abstract class ValueMapper<T> implements Mapper<T> {
     return this.unpackValue(await response.json())
   }
 
-  public abstract get expectedResponseType(): string
+  public get expectedResponseType(): string {
+    return 'application/json'
+  }
 
   public abstract packValue(value: T): unknown
 

@@ -69,10 +69,10 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
 
   public validate(value: T): ValidationResult {
     let result
-    if (this._isOptional || value !== undefined) {
-      result = this._checks.validate(value)
-    } else {
+    if (value === undefined && !this._isOptional) {
       result = invalid('Required value missing.')
+    } else {
+      result = this._checks.validate(value)
     }
     return result
   }

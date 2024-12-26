@@ -41,8 +41,8 @@ export class Ref<T> {
   }
 
   public set(key: Key): void {
-    // the loose equality here is on purpose. changing from key '2' to key 2 shouldn't do anything.
-    // (mixed keys shouldn't even be a thing if the library is used normally)
+    // the loose equality here is on purpose. changing from key '2' to key 2 shouldn't do anything because
+    // the resulting URL would be the same.
     if (key != this._key) {
       this._key = key
       this._state = { loaded: false }
@@ -70,6 +70,14 @@ export class Ref<T> {
   }
 
   private async reload(): Promise<void> {
-    this.value = await this._resource.get(this.key)
+    const keyUsed = this.key
+    this.value = await this._resource.get(keyUsed)
+    const receivedKey = this.value[this._resource.keyProperty]
+    // the loose equality here is on purpose. see the set(...) method above.
+    if (receivedKey != keyUsed) {
+      console.warn(
+        `Reference loaded from key ${JSON.stringify(keyUsed)} has a different key ${JSON.stringify(receivedKey)}`,
+      )
+    }
   }
 }

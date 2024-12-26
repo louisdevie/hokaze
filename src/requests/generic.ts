@@ -85,7 +85,9 @@ abstract class GenericBaseRequest<Q, R> implements CustomRequest<Q, R> {
   public withHeaders(init: HeadersInit): CustomRequest<Q, R> {
     const newHeaders = new Headers(this._headers)
     const headersToAppend = new Headers(init)
-    headersToAppend.forEach((value, key) => newHeaders.append(key, value))
+    headersToAppend.forEach((value, key) => {
+      newHeaders.append(key, value)
+    })
     return this.cloneWithOptions({ headers: newHeaders })
   }
 
@@ -106,7 +108,7 @@ abstract class GenericBaseRequest<Q, R> implements CustomRequest<Q, R> {
 
   public withoutHeaders(...keys: string[]): CustomRequest<Q, R> {
     const newHeaders = new Headers(this._headers)
-    keys.forEach((key) => newHeaders.delete(key))
+    for (const key of keys) newHeaders.delete(key)
     return this.cloneWithOptions({ headers: newHeaders })
   }
 }

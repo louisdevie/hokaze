@@ -10,8 +10,4 @@ export class JsonIsoDateMapper<N> extends ValueMapper<Date | N> {
     if (response === null) return null as N
     return new Date(String(response))
   }
-
-  public get expectedResponseType(): string {
-    return 'application/json'
-  }
 }

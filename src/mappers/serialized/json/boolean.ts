@@ -10,8 +10,4 @@ export class JsonBooleanMapper<N> extends ValueMapper<boolean | N> {
     if (response === null) return null as N
     return Boolean(response)
   }
-
-  public get expectedResponseType(): string {
-    return 'application/json'
-  }
 }

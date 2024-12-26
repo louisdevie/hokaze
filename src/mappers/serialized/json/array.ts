@@ -18,8 +18,4 @@ export class JsonArrayMapper<E, N> extends ValueMapper<E[] | N> {
     if (!Array.isArray(response)) throw new Error(`Expected an array, got ${JSON.stringify(response)}`)
     return response.map((e) => this._elementMapper.unpackValue(e))
   }
-
-  public get expectedResponseType(): string {
-    return 'application/json'
-  }
 }
