@@ -59,10 +59,7 @@ export class FetchHttpClient implements HttpClient {
       headers,
     })
 
-    return {
-      responseBody: response,
-      location: response.headers.get('Location'),
-    }
+    return { responseBody: response, location: response.headers.get('Location') }
   }
 
   public put(

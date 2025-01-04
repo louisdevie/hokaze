@@ -10,7 +10,7 @@ import { UrlSearchArgs } from '@module/url'
 import { JsonArrayMapper } from '@module/mappers/serialized/json'
 import { ObjectDescriptor } from '@module/data/serialized/object'
 import { ValueMapper } from '@module/mappers/serialized'
-import { KeyExtractionMethod } from '@module/mappers/serialized/keyExtraction'
+import { consumeCreationResult, KeyExtractionMethod } from '@module/mappers/serialized/keyExtraction'
 import { ObjectMapper } from '@module/mappers/serialized/object'
 
 export type AllowedOperations = 'r' | 'w' | 'rw'
@@ -224,10 +224,11 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   }
 
   private async tryToExtractId(result: CreationResult): Promise<Key | undefined> {
-    let keyFound = undefined
-    let i
+    const ccr = await consumeCreationResult(result)
+
+    let keyFound = undefined, i
     for (i = 0; i < this._keyExtractionMethods.length && keyFound === undefined; i++) {
-      keyFound = this._keyExtractionMethods[i].tryToExtractKey(result)
+      keyFound = await this._keyExtractionMethods[i].tryToExtractKey(ccr)
     }
 
     if (keyFound !== undefined && !this._foundWorkingMethod) {

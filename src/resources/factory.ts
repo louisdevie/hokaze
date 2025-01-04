@@ -5,7 +5,7 @@ import { AllowedOperations, GenericCollectionResource, GenericSingleResource } f
 import { ResourceRequestBuilder } from '@module/resources/requestBuilder'
 import { throwError } from '@module/errors'
 import __ from '@module/locale'
-import { CollectionResource } from '@module/resources/index'
+import { CollectionResource } from '@module/resources'
 import { ObjectDescriptor } from '@module/data/serialized/object'
 import {
   ExtractFromKeyBody,
@@ -31,7 +31,7 @@ export function makeCollectionResource<T>(init: CollectionResourceInit<T>): Coll
   mapper.setKeyProperty(key.property)
   const extractionMethods = [
     new ExtractFromObjectBody(mapper),
-    new ExtractFromKeyBody(),
+    new ExtractFromKeyBody(key.kind),
     new ExtractFromLocationUrl(init.baseUrl.getUrlForResource(init.name, {}), key.kind),
   ]
   return new GenericCollectionResource(

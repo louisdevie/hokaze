@@ -1,6 +1,5 @@
 import { ValueMapper } from '@module/mappers/serialized'
 import { ObjectMapper, RefDataResult } from '@module/mappers/serialized/object'
-import { ResponseBody } from '@module/backend'
 import { Key } from '@module/resources'
 
 type FieldMappers<O> = [keyof O, ValueMapper<O[keyof O]>][]
@@ -37,18 +36,18 @@ export class JsonObjectMapper<O, N> extends ValueMapper<O | N> implements Object
     return obj as O
   }
 
-  public async tryToUnpackKey(response: ResponseBody): Promise<Key | undefined> {
+  public async tryToUnpackKey(response: string): Promise<Key | undefined> {
     let key = undefined
     if (this._keyFieldIndex !== undefined) {
       let dto
       try {
-        dto = await response.json()
+        dto = await JSON.parse(response)
       } catch {
         dto = undefined
       }
       if (typeof dto === 'object' && dto !== null) {
         const [property, mapper] = this._fieldMappers[this._keyFieldIndex]
-        key = mapper.unpackValue((response as Record<keyof O, unknown>)[property])
+        key = mapper.unpackValue((dto as Record<keyof O, unknown>)[property])
       }
     }
     return key as Key | undefined

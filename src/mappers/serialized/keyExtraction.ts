@@ -3,8 +3,22 @@ import type { Key } from '@module/resources'
 import { ObjectMapper } from '@module/mappers/serialized/object'
 import { KeyKind } from '@module/data/serialized'
 
+export interface ConsumedCreationResult {
+  location: string | null
+  responseBody: string
+}
+
 export interface KeyExtractionMethod {
-  tryToExtractKey(postResult: CreationResult): Promise<Key | undefined>
+  tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined>
+}
+
+export async function consumeCreationResult(result: CreationResult): Promise<ConsumedCreationResult> {
+  try {
+    const text = await result.responseBody.text()
+    return { responseBody: text, location: result.location }
+  } catch {
+    return { responseBody: '', location: result.location }
+  }
 }
 
 export class ExtractFromObjectBody implements KeyExtractionMethod {
@@ -14,29 +28,31 @@ export class ExtractFromObjectBody implements KeyExtractionMethod {
     this._mapper = mapper
   }
 
-  public tryToExtractKey(postResult: CreationResult): Promise<Key | undefined> {
-    let keyFound = undefined
-
-    if (typeof postResult.responseBody === 'object') {
-      keyFound = this._mapper.tryToUnpackKey(postResult.responseBody)
-    }
-
-    return Promise.resolve(keyFound)
+  public tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
+    return this._mapper.tryToUnpackKey(postResult.responseBody)
   }
 }
 
 export class ExtractFromKeyBody implements KeyExtractionMethod {
-  public async tryToExtractKey(postResult: CreationResult): Promise<Key | undefined> {
+  private readonly _keyKind: KeyKind
+
+  public constructor(keyKind: KeyKind) {
+    this._keyKind = keyKind
+  }
+
+  public async tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
     let keyFound = undefined
 
     try {
-      const response = await postResult.responseBody.json()
-
-      if (typeof response === 'string' || typeof response === 'number') {
-        keyFound = response
+      keyFound = JSON.parse(postResult.responseBody)
+      if (typeof keyFound !== 'number' && typeof keyFound !== 'string') {
+        keyFound = undefined
       }
     } catch {
-      /* no key found */
+      keyFound = postResult.responseBody.trim()
+      if (keyFound.length === 0) {
+        keyFound = undefined
+      }
     }
 
     return keyFound
@@ -52,7 +68,7 @@ export class ExtractFromLocationUrl implements KeyExtractionMethod {
     this._keyKind = keyKind
   }
 
-  public tryToExtractKey(postResult: CreationResult): Promise<Key | undefined> {
+  public tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
     let keyFound = undefined
 
     if (postResult.location !== null) {
@@ -62,12 +78,13 @@ export class ExtractFromLocationUrl implements KeyExtractionMethod {
 
         if (locationPath.startsWith(resourcePath)) {
           const stringKey = locationPath.substring(resourcePath.length)
-          const intKey = parseInt(stringKey)
-
-          if (!isNaN(intKey) && this._keyKind === 'integer') {
-            keyFound = intKey
-          } else {
-            keyFound = stringKey
+          if (this._keyKind === 'integer') {
+            const intKey = parseInt(stringKey)
+            if (isNaN(intKey)) {
+              keyFound = stringKey
+            } else {
+              keyFound = intKey
+            }
           }
         }
       } catch {

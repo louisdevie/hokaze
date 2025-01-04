@@ -4,7 +4,7 @@ import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody
 
 describe('creating a collection resource from a service', () => {
   const http = fakeHttpClient()
-  const ws = fakeService('https://some-api.com/', http)
+  const ws = fakeService('https://ultrapi.dev/', http)
   const collection = ws.collection(
     'weapons',
     object({
@@ -21,7 +21,7 @@ describe('creating a collection resource from a service', () => {
     http.get.mockResolvedValueOnce(Response.json(data))
     const res = await collection.get(1)
 
-    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons/1'), 'application/json')
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons/1'), 'application/json')
     expect(res).toEqual(data)
   })
 
@@ -35,7 +35,7 @@ describe('creating a collection resource from a service', () => {
     http.get.mockResolvedValueOnce(Response.json(data))
     const res = await collection.getAll()
 
-    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons'), 'application/json')
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons'), 'application/json')
     expect(res).toEqual(data)
   })
 
@@ -53,7 +53,7 @@ describe('creating a collection resource from a service', () => {
     await collection.send(data)
 
     expect(http.post).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/weapons'),
+      new URL('https://ultrapi.dev/weapons'),
       new JsonRequestBody(data),
       '*/*',
     )
@@ -71,10 +71,69 @@ describe('creating a collection resource from a service', () => {
     await collection.save(data)
 
     expect(http.post).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/weapons'),
+      new URL('https://ultrapi.dev/weapons'),
       new JsonRequestBody(data),
       '*/*',
     )
+  })
+
+  describe('to save a new value and get its ID', () => {
+    test('through the Location header', async () => {
+      const data = collection.create()
+      data.type = 'shotgun'
+      data.variant = 'pump charge'
+      http.post.mockClear()
+      http.post.mockResolvedValueOnce({
+        responseBody: new Response(),
+        location: 'https://ultrapi.dev/weapons/4593',
+      })
+      await collection.save(data)
+
+      expect(http.post).toHaveBeenCalledExactlyOnceWith(
+        new URL('https://ultrapi.dev/weapons'),
+        new JsonRequestBody({ baseDamage: 0, id: -1, type: 'shotgun', variant: 'pump charge' }),
+        '*/*',
+      )
+      expect(data.id).toStrictEqual(4593)
+    })
+    test('through a response body containing the object', async () => {
+      const data = collection.create()
+      data.type = 'shotgun'
+      data.variant = 'pump charge'
+      http.post.mockClear()
+      http.post.mockResolvedValueOnce({
+        responseBody: new Response(
+          JSON.stringify({ baseDamage: 0, id: 4593, type: 'shotgun', variant: 'pump charge' }),
+        ),
+        location: null,
+      })
+      await collection.save(data)
+
+      expect(http.post).toHaveBeenCalledExactlyOnceWith(
+        new URL('https://ultrapi.dev/weapons'),
+        new JsonRequestBody({ baseDamage: 0, id: -1, type: 'shotgun', variant: 'pump charge' }),
+        '*/*',
+      )
+      expect(data.id).toStrictEqual(4593)
+    })
+    test('through a response body containing the ID', async () => {
+      const data = collection.create()
+      data.type = 'shotgun'
+      data.variant = 'pump charge'
+      http.post.mockClear()
+      http.post.mockResolvedValueOnce({
+        responseBody: new Response('4593'),
+        location: null,
+      })
+      await collection.save(data)
+
+      expect(http.post).toHaveBeenCalledExactlyOnceWith(
+        new URL('https://ultrapi.dev/weapons'),
+        new JsonRequestBody({ baseDamage: 0, id: -1, type: 'shotgun', variant: 'pump charge' }),
+        '*/*',
+      )
+      expect(data.id).toStrictEqual(4593)
+    })
   })
 
   test('to save an existing value', async () => {
@@ -84,7 +143,7 @@ describe('creating a collection resource from a service', () => {
     await collection.save(data)
 
     expect(http.put).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/weapons/4'),
+      new URL('https://ultrapi.dev/weapons/4'),
       new JsonRequestBody(data),
       '*/*',
     )
@@ -95,7 +154,7 @@ describe('creating a collection resource from a service', () => {
     http.delete.mockResolvedValueOnce(new Response())
     await collection.delete({ id: 4, type: 'shotgun', variant: 'pump charge', baseDamage: 2.5 })
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons/4'), '*/*')
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons/4'), '*/*')
   })
 
   test('to delete a value using its key', async () => {
@@ -103,7 +162,7 @@ describe('creating a collection resource from a service', () => {
     http.delete.mockResolvedValueOnce(new Response())
     await collection.deleteKey(4)
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons/4'), '*/*')
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://utlrapi.dev/weapons/4'), '*/*')
   })
 
   test('to delete all values', async () => {
@@ -111,6 +170,6 @@ describe('creating a collection resource from a service', () => {
     http.delete.mockResolvedValueOnce(new Response())
     await collection.deleteAll()
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/weapons'), '*/*')
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons'), '*/*')
   })
 })
