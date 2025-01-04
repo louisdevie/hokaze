@@ -226,7 +226,8 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   private async tryToExtractId(result: CreationResult): Promise<Key | undefined> {
     const ccr = await consumeCreationResult(result)
 
-    let keyFound = undefined, i
+    let keyFound = undefined,
+      i
     for (i = 0; i < this._keyExtractionMethods.length && keyFound === undefined; i++) {
       keyFound = await this._keyExtractionMethods[i].tryToExtractKey(ccr)
     }

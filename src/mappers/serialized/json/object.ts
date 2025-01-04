@@ -39,7 +39,7 @@ export class JsonObjectMapper<O, N> extends ValueMapper<O | N> implements Object
   public async tryToUnpackKey(response: string): Promise<Key | undefined> {
     let key = undefined
     if (this._keyFieldIndex !== undefined) {
-      let dto
+      let dto: unknown
       try {
         dto = await JSON.parse(response)
       } catch {

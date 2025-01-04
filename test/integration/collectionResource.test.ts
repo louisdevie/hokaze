@@ -162,7 +162,7 @@ describe('creating a collection resource from a service', () => {
     http.delete.mockResolvedValueOnce(new Response())
     await collection.deleteKey(4)
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://utlrapi.dev/weapons/4'), '*/*')
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons/4'), '*/*')
   })
 
   test('to delete all values', async () => {

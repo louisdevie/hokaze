@@ -40,8 +40,8 @@ export class ExtractFromKeyBody implements KeyExtractionMethod {
     this._keyKind = keyKind
   }
 
-  public async tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
-    let keyFound = undefined
+  public tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
+    let keyFound: unknown = undefined
 
     try {
       keyFound = JSON.parse(postResult.responseBody)
@@ -50,12 +50,12 @@ export class ExtractFromKeyBody implements KeyExtractionMethod {
       }
     } catch {
       keyFound = postResult.responseBody.trim()
-      if (keyFound.length === 0) {
+      if ((keyFound as string).length === 0) {
         keyFound = undefined
       }
     }
 
-    return keyFound
+    return Promise.resolve(keyFound as Key | undefined)
   }
 }
 
