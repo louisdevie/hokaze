@@ -1,9 +1,15 @@
 import { object, string } from '@module'
+import __ from '@module/locale'
 
 test('validating nested properties', () => {
   const noChecks = object({ prop: string })
   const withChecks = object({ prop: string.maxLength(20) })
 
   expect(noChecks.validate({ prop: "it's too big, isn't it ?" }).isValid).toBeTrue()
-  expect(withChecks.validate({ prop: "it's too big, isn't it ?" }).isValid).toBeFalse()
+  const checkedResult = withChecks.validate({ prop: "it's too big, isn't it ?" })
+  expect(checkedResult.isValid).toBeFalse()
+  expect(checkedResult.hasError('$')).toBeFalse()
+  expect(checkedResult.getError('$')).toBeUndefined()
+  expect(checkedResult.hasError('$.prop')).toBeTrue()
+  expect(checkedResult.getError('$.prop')).toEqual(__.stringTooLong(20))
 })

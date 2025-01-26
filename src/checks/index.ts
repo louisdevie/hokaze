@@ -1,4 +1,4 @@
-import { valid, ValidationResult } from '@module/validation'
+import { ValidationResult } from '@module/validation'
 
 export interface Checks<T> {
   validate(value: T): ValidationResult
@@ -6,7 +6,7 @@ export interface Checks<T> {
 
 export class NoChecks implements Checks<never> {
   public validate(): ValidationResult {
-    return valid()
+    return ValidationResult.valid()
   }
 }
 
@@ -18,8 +18,7 @@ export abstract class SingleCheck<T> implements Checks<T> {
   }
 
   public validate(value: T): ValidationResult {
-    const thisCheckResult = this.check(value)
-    return !thisCheckResult.isValid ? thisCheckResult : this._otherChecks.validate(value)
+    return this.check(value).mergeWith(this._otherChecks.validate(value))
   }
 
   protected abstract check(value: T): ValidationResult

@@ -2,8 +2,8 @@ import { AnyData, AnyDataOptions } from '@module/data/base'
 import { isImplicitId, Likelihood } from '@module/inference'
 import { ValueMapper } from '@module/mappers/serialized'
 import { FieldRoleHints, KeyKind, ValueDescriptor } from '@module/data/serialized/index'
-import { invalid, ValidationResult } from '@module/validation'
-import * as console from 'node:console'
+import { ValidationResult } from '@module/validation'
+import __ from '@module/locale'
 
 /**
  * Options shared by all descriptors.
@@ -63,8 +63,12 @@ export abstract class AnyValue<T, Self> extends AnyData<T, Self> implements Valu
 
   public validate(value: T): ValidationResult {
     let result
-    if (value === null && !this._isNullable) {
-      result = invalid('Unexpected null value.')
+    if (value === null) {
+      if (this._isNullable) {
+        result = ValidationResult.valid()
+      } else {
+        result = ValidationResult.invalid(__.missingValue)
+      }
     } else {
       result = super.validate(value)
     }

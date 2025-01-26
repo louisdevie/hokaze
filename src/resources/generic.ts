@@ -55,8 +55,8 @@ export class GenericSingleResource<T> implements SingleResource<T> {
 
   public async send(value: T): Promise<void> {
     if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
-    const validation = this._descriptor.validate(value)
-    if (!validation.isValid) throwError(validation.reason)
+    const validationResult = this._descriptor.validate(value)
+    if (!validationResult.isValid) throw validationResult
 
     const dto = this._mapper.pack(value)
     await this._requestBuilder.saveNew(dto, AnyResponseType)
@@ -64,8 +64,8 @@ export class GenericSingleResource<T> implements SingleResource<T> {
 
   public async save(value: T): Promise<void> {
     if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
-    const validation = this._descriptor.validate(value)
-    if (!validation.isValid) throwError(validation.reason)
+    const validationResult = this._descriptor.validate(value)
+    if (!validationResult.isValid) throw validationResult
 
     const dto = this._mapper.pack(value)
     await this._requestBuilder.saveAll(dto, AnyResponseType)
@@ -154,8 +154,8 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
 
   public async send(item: T): Promise<void> {
     if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
-    const validation = this._descriptor.validate(item)
-    if (!validation.isValid) throwError(validation.reason)
+    const validationResult = this._descriptor.validate(item)
+    if (!validationResult.isValid) throw validationResult
 
     const dto = this._itemMapper.pack(item)
     const result = await this._requestBuilder.saveNew(dto, AnyResponseType)
@@ -173,8 +173,8 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
     if (this.isNew(item)) {
       await this.send(item)
     } else {
-      const validation = this._descriptor.validate(item)
-      if (!validation.isValid) throwError(validation.reason)
+      const validationResult = this._descriptor.validate(item)
+      if (!validationResult.isValid) throw validationResult
 
       const dto = this._itemMapper.pack(item)
       await this._requestBuilder.saveExisting(dto, this.getKeyOf(item), AnyResponseType)

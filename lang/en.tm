@@ -2,6 +2,7 @@
 
 # field error messages, do not use capital letters at the start nor periods ============================================
 
+missingValue = 'required'
 stringTooLong = '{n} characters maximum'
 stringEmpty = 'cannot be empty'
 

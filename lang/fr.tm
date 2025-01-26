@@ -1,3 +1,30 @@
-# messages d'erreur des champs, pas de majuscule ni de point
+# messages d'erreur des champs, pas de majuscule ni de point ===========================================================
+
+missingValue = 'required'
 stringTooLong = "maximum {n} caractères"
 stringEmpty = "ne doit pas être vide"
+
+# ======================================================================================================================
+
+missingField = 'Le champ {name} est obligatoire.'
+collectionExpectsArray = "L'API a renvoyé une réponse différente d'un tableau pour une ressource de type collection."
+
+couldNotInferKey = "Impossible de deviner quelle propriété est la clé de la ressource '{resourceName}'. Utilisez .asKey() pour indiquer la propriété à utiliser."
+(resourceKeyErrorBase) = "Le champ '{fieldName}' de la ressource '{resourceName}' ne peut pas être utilisé comme clé :"
+badKeyType = '{%resourceKeyErrorBase} seuls les champs texte et numérique sont autorisés.'
+optionalKey = '{%resourceKeyErrorBase} elle ne devrait pas être optionnelle.'
+nullableKey = '{%resourceKeyErrorBase} elle ne devrait jamais être null.'
+unreadableKey = '{%resourceKeyErrorBase} elle ne devrait pas être en écriture seule.'
+
+writeOnlyResource = 'La ressource est en écriture seule.'
+readOnlyResource = 'La ressource est en lecture seule.'
+bothReadOnlyAndWriteOnly = 'Une ressource ne peut pas être à la fois en écriture seule et en lecture seule.'
+
+undefinedRequestBody = "Les requêtes {method} nécessitent qu'un corps de requête sois défini."
+undefinedResponseBody = "Les requêtes {method} nécessitent qu'un corps de réponse sois défini."
+requestBodyRequired = "Les requêtes {method} ont besoin d'un corps de requête."
+
+invalidRequestPathDefault = 'Un chemin de requête invalide ne peut pas être utilisé ici.'
+childUsedWithoutKey = 'Une requête fille ne peut pas être utilisée sans clé.'
+
+objectInUrlNotAllowed = "Les objets ne sont pas autorisés dans les paramètres d'URL."

@@ -1,7 +1,8 @@
 import { DataDescriptor } from '.'
-import { ValidationResult, invalid } from '@module/validation'
+import { ValidationResult } from '@module/validation'
 import { Checks, NoChecks } from '@module/checks'
 import { Mapper } from '@module/mappers'
+import __ from '@module/locale'
 
 /**
  * Options shared by all descriptors.
@@ -69,8 +70,12 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
 
   public validate(value: T): ValidationResult {
     let result
-    if (value === undefined && !this._isOptional) {
-      result = invalid('Required value missing.')
+    if (value === undefined) {
+      if (this._isOptional) {
+        result = ValidationResult.valid()
+      } else {
+        result = ValidationResult.invalid(__.missingValue)
+      }
     } else {
       result = this._checks.validate(value)
     }

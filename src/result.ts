@@ -18,8 +18,8 @@ export class Result<T, E = string> {
     return new Result({ success: false, error })
   }
 
-  public static withValidation<T>(value: T, validation: ValidationResult): Result<T> {
-    return validation.isValid ? Result.ok(value) : Result.error(validation.reason)
+  public static ofValidation<T>(value: T, validation: ValidationResult): Result<T, ValidationResult> {
+    return validation.isValid ? Result.ok(value) : Result.error(validation)
   }
 
   public static mapArray<T, U>(

@@ -54,11 +54,7 @@ export class ObjectValue<O extends Record<string, unknown>, N>
     let result = super.validate(value)
     if (result.isValid) {
       for (const [name, descriptor] of this._fields) {
-        const fieldResult = descriptor.validate(value[name])
-        if (!fieldResult.isValid) {
-          result = fieldResult
-          break
-        }
+        result = result.mergeWithProperty(name, descriptor.validate(value[name]))
       }
     }
     return result

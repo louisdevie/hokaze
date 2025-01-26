@@ -34,13 +34,7 @@ export class ArrayValue<E, N> extends AnyValue<E[] | N, ArrayValue<E, N>> {
   public validate(value: E[]): ValidationResult {
     let result = super.validate(value)
     if (result.isValid) {
-      for (const elt of value) {
-        const eltResult = this._element.validate(elt)
-        if (!eltResult.isValid) {
-          result = eltResult
-          break
-        }
-      }
+      value.forEach((elt, i) => (result = result.mergeWithItem(i, this._element.validate(elt))))
     }
     return result
   }
