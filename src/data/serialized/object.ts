@@ -52,6 +52,7 @@ export class ObjectValue<O extends Record<string, unknown>, N>
 
   public validate(value: O): ValidationResult {
     let result = super.validate(value)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (result.isValid && typeof value === 'object' && value !== null) {
       for (const [name, descriptor] of this._fields) {
         result = result.mergeWithProperty(name, descriptor.validate(value[name]))

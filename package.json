@@ -1,6 +1,6 @@
 {
   "name": "@hokaze/core",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "An object-to-REST mapper",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -11,11 +11,12 @@
   ],
   "scripts": {
     "build-translations": "elzii release",
-    "format": "prettier --write src/** test/**",
     "type-check": "tsc --noEmit",
-    "test": "jest",
     "lint": "eslint --config eslint-typed.config.js src/** test/**",
-    "build": "tsup"
+    "test": "jest",
+    "format": "prettier --write src/** test/**",
+    "build": "tsup",
+    "all": "npm run build-translations && npm run type-check && npm run lint && npm run test && npm run format && npm run build"
   },
   "keywords": [],
   "author": "Louis DEVIE",

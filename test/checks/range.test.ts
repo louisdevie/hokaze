@@ -1,14 +1,16 @@
-import {validate} from './validate'
+import { validate } from './validate'
 import {
-  between, exclusiveBetween,
+  between,
+  exclusiveBetween,
   greaterThan,
   greaterThanOrEqualTo,
   lessThan,
   lessThanOrEqualTo,
   negative,
-  positive, strictlyNegative,
-  strictlyPositive
-} from "@module/checks/range";
+  positive,
+  strictlyNegative,
+  strictlyPositive,
+} from '@module/checks/range'
 
 test('the greaterThan check rejects any number less than or equal to its argument', () => {
   expect(validate(-1, greaterThan(5))).toBeFalse()
