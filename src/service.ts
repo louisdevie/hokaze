@@ -1,9 +1,9 @@
 import { UrlTemplate } from './url'
-import { httpClient } from '@module/backend'
-import { DefaultRequestPath, RequestPath } from '@module/requestPath'
-import { ConfigOverride, DecoratorConfig } from '@module/config/decorator'
 import type { AuthScheme } from '@module/auth'
+import { httpClient } from '@module/backend'
+import { ConfigOverride, DecoratorConfig } from '@module/config/decorator'
 import { getGlobalConfig } from '@module/config/global'
+import { DefaultRequestPath, RequestPath } from '@module/requestPath'
 
 export interface Service extends RequestPath {
   useAuth(auth: AuthScheme): void

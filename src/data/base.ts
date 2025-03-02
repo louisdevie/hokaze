@@ -1,8 +1,8 @@
 import { DataDescriptor } from '.'
-import { ValidationResult } from '@module/validation'
-import { Checks, NoChecks } from '@module/checks'
+import { Check } from '@module/checks'
+import L from '@module/locale'
 import { Mapper } from '@module/mappers'
-import __ from '@module/locale'
+import { ValidationResult } from '@module/validation'
 
 /**
  * Options shared by all descriptors.
@@ -12,7 +12,7 @@ export interface AnyDataOptions<T> {
   isReadable?: boolean
   isWritable?: boolean
   isOptional?: boolean
-  checks?: Checks<T>
+  checks?: Check<T>[]
 }
 
 /**
@@ -25,7 +25,7 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
   private readonly _isReadable: boolean
   private readonly _isWritable: boolean
   private readonly _isOptional: boolean
-  private readonly _checks: Checks<T>
+  private readonly _checks: Check<T>[]
 
   /**
    * Creates a base descriptor.
@@ -38,7 +38,7 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
     this._isReadable = options?.isReadable ?? copyFrom?._isReadable ?? true
     this._isWritable = options?.isWritable ?? copyFrom?._isWritable ?? true
     this._isOptional = options?.isOptional ?? copyFrom?._isOptional ?? false
-    this._checks = options?.checks ?? copyFrom?._checks ?? new NoChecks()
+    this._checks = options?.checks ?? copyFrom?._checks ?? []
   }
 
   /**
@@ -48,21 +48,11 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
   protected abstract makeDefaultBlankValue(): T
 
   /**
-   * The checks currently applied.
-   * @protected
-   */
-  protected get currentChecks(): Checks<T> {
-    return this._checks
-  }
-
-  /**
    * Clones this object and return it as the Self type.
    * @param options Options to pass to the parent constructor.
    * @protected
    */
   protected abstract cloneAsSelf(options: AnyDataOptions<T>): Self
-
-  //region Field<T> implementation
 
   public makeBlankValue(): T {
     return this._blankValueFactory !== null ? this._blankValueFactory() : this.makeDefaultBlankValue()
@@ -74,10 +64,10 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
       if (this._isOptional) {
         result = ValidationResult.valid()
       } else {
-        result = ValidationResult.invalid(__.missingValue)
+        result = ValidationResult.invalid(L.requiredValueMissing)
       }
     } else {
-      result = this._checks.validate(value)
+      result = this._checks.reduce((r, c) => r.mergeWith(c.validate(value)), ValidationResult.valid())
     }
     return result
   }
@@ -95,10 +85,6 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
   }
 
   public abstract makeMapper(): Mapper<T>
-
-  //endregion
-
-  //region Builder methods
 
   /**
    * Change the "blank" value used when creating new objects. If the value is *mutable* (e.g. if it is an object),
@@ -144,6 +130,10 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
    * used alongside {@link AnyValue.nullable} for JSON data.
    */
   public abstract get optional(): AnyData<T | undefined, unknown>
+
+  public and(...checks: Check<T>[]): Self {
+    return this.cloneAsSelf({ checks: [...this._checks, ...checks] })
+  }
 
   //endregion
 }

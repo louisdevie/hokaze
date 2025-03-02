@@ -1,6 +1,6 @@
 import type { Config, BadResponseHandler } from '.'
-import { defaultConfig } from '@module/config/default'
 import { ConfigOverride, DecoratorConfig } from '@module/config/decorator'
+import { defaultConfig } from '@module/config/default'
 
 class GlobalConfig implements Config {
   private _current: Config

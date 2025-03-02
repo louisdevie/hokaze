@@ -1,5 +1,5 @@
-import { Ref } from '@module/reference'
 import { fakeResource } from '@fake'
+import { Ref } from '@module/reference'
 
 test('a Ref created from a key is unloaded and has the corresponding key', () => {
   const res = fakeResource()

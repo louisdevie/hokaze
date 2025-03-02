@@ -1,7 +1,7 @@
-import { RequestPath } from '@module/requestPath'
-import type { CollectionResource, Key } from '@module/resources'
 import { fakeRequestPath } from './requestPath'
 import { number, object, string } from '@module'
+import { RequestPath } from '@module/requestPath'
+import type { CollectionResource, Key } from '@module/resources'
 
 export interface Fruit {
   id: number

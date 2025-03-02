@@ -1,9 +1,9 @@
 import { AnyData, AnyDataOptions } from '@module/data/base'
-import { isImplicitId, Likelihood } from '@module/inference'
-import { ValueMapper } from '@module/mappers/serialized'
 import { FieldRoleHints, KeyKind, ValueDescriptor } from '@module/data/serialized/index'
+import { isImplicitId, Likelihood } from '@module/inference'
+import L from '@module/locale'
+import { ValueMapper } from '@module/mappers/serialized'
 import { ValidationResult } from '@module/validation'
-import __ from '@module/locale'
 
 /**
  * Options shared by all descriptors.
@@ -67,7 +67,7 @@ export abstract class AnyValue<T, Self> extends AnyData<T, Self> implements Valu
       if (this._isNullable) {
         result = ValidationResult.valid()
       } else {
-        result = ValidationResult.invalid(__.missingValue)
+        result = ValidationResult.invalid(L.requiredValueMissing)
       }
     } else {
       result = super.validate(value)

@@ -1,3 +1,6 @@
+import type { HttpClient } from '@module/backend'
+import { DataDescriptor } from '@module/data'
+import { ObjectDescriptor } from '@module/data/serialized/object'
 import type {
   CustomRequestInit,
   EmptyCustomRequestInit,
@@ -5,12 +8,9 @@ import type {
   SpecificRequestType,
 } from '@module/requests'
 import { makeDeleteRequest, makeGetRequest, makePostRequest, makePutRequest } from '@module/requests/factory'
-import type { UrlTemplate } from '@module/url'
-import type { HttpClient } from '@module/backend'
-import { DataDescriptor } from '@module/data'
 import { CollectionResource, SingleResource, TypeOfData } from '@module/resources'
 import { makeCollectionResource, makeSingleResource } from '@module/resources/factory'
-import { ObjectDescriptor } from '@module/data/serialized/object'
+import type { UrlTemplate } from '@module/url'
 
 export interface RequestPathInit {
   baseUrl: UrlTemplate

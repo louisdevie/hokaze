@@ -1,10 +1,10 @@
 import type { CustomRequest } from '.'
+import { AuthScheme } from '@module/auth'
 import { AnyResponseType, HttpClient, RequestBodyOrParams, ResponseBody } from '@module/backend'
-import { UrlTemplate } from '@module/url'
 import { Mapper } from '@module/mappers'
 import { NoRequestBody } from '@module/mappers/noRequestBody'
+import { UrlTemplate } from '@module/url'
 import * as URL from 'node:url'
-import { AuthScheme } from '@module/auth'
 
 interface RequestParams<Q, R> {
   client: HttpClient

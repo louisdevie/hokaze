@@ -1,7 +1,7 @@
 import type { CreationResult } from '@module/backend'
-import type { Key } from '@module/resources'
-import { ObjectMapper } from '@module/mappers/serialized/object'
 import { KeyKind } from '@module/data/serialized'
+import { ObjectMapper } from '@module/mappers/serialized/object'
+import type { Key } from '@module/resources'
 
 export interface ConsumedCreationResult {
   location: string | null

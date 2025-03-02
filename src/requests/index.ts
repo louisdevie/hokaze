@@ -1,5 +1,5 @@
-import { DataDescriptor } from '@module/data'
 import { AuthScheme } from '@module/auth'
+import { DataDescriptor } from '@module/data'
 
 export interface EmptyCustomRequestInit {
   /**

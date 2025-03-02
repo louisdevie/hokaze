@@ -1,7 +1,7 @@
 import { CreationResult, HttpClient, RequestBodyOrParams, ResponseBody } from '@module/backend'
-import { UrlSearchArgs, UrlTemplate } from '@module/url'
 import { DefaultRequestPath, RequestPath } from '@module/requestPath'
 import { Key, ResourceRequestPath } from '@module/resources/index'
+import { UrlSearchArgs, UrlTemplate } from '@module/url'
 
 export class ResourceRequestBuilder implements ResourceRequestPath {
   private readonly _client: HttpClient

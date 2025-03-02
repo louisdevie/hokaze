@@ -1,16 +1,21 @@
 /**
  * The result of a check.
  */
-export class ValidationResult extends Error {
+export class ValidationResult {
   private readonly _errors: Record<string, string> | null
 
   private constructor(errors: Record<string, string> | null) {
-    super('Validation error')
     this._errors = errors
   }
 
   public get isValid(): boolean {
     return this._errors === null
+  }
+
+  public throwIfInvalid(): void {
+    if (this._errors !== null) {
+      throw new ValidationError(this._errors)
+    }
   }
 
   /**
@@ -62,5 +67,25 @@ export class ValidationResult extends Error {
     }
     const errors = { ...this._errors, ...nestedErrors }
     return new ValidationResult(Object.keys(errors).length > 0 ? errors : null)
+  }
+}
+
+/**
+ * An unsuccessful {@link ValidationResult} that was thrown.
+ */
+export class ValidationError extends Error {
+  private readonly _errors: Record<string, string>
+
+  public constructor(errors: Record<string, string>) {
+    super('Validation error')
+    this._errors = errors
+  }
+
+  public hasError(path: string): boolean {
+    return path in this._errors
+  }
+
+  public getError(path: string): string | undefined {
+    return this._errors[path]
   }
 }

@@ -1,8 +1,8 @@
 import { DataDescriptor } from '../index'
-import { Likelihood } from '@module/inference'
 import { BooleanValue } from '@module/data/serialized/boolean'
 import { NumberValue } from '@module/data/serialized/number'
 import { StringValue } from '@module/data/serialized/string'
+import { Likelihood } from '@module/inference'
 import { ValueMapper } from '@module/mappers/serialized'
 
 /**

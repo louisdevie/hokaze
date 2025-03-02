@@ -1,17 +1,17 @@
 import type { CollectionResource, Key, SingleResource } from '.'
-import { RequestPath } from '@module/requestPath'
-import { throwError } from '@module/errors'
-import __ from '@module/locale'
-import { ResourceRequestBuilder } from '@module/resources/requestBuilder'
-import { Mapper } from '@module/mappers'
 import { AnyResponseType, CreationResult } from '@module/backend'
 import { DataDescriptor } from '@module/data'
-import { UrlSearchArgs } from '@module/url'
-import { JsonArrayMapper } from '@module/mappers/serialized/json'
 import { ObjectDescriptor } from '@module/data/serialized/object'
+import { throwError } from '@module/errors'
+import L from '@module/locale'
+import { Mapper } from '@module/mappers'
 import { ValueMapper } from '@module/mappers/serialized'
+import { JsonArrayMapper } from '@module/mappers/serialized/json'
 import { consumeCreationResult, KeyExtractionMethod } from '@module/mappers/serialized/keyExtraction'
 import { ObjectMapper } from '@module/mappers/serialized/object'
+import { RequestPath } from '@module/requestPath'
+import { ResourceRequestBuilder } from '@module/resources/requestBuilder'
+import { UrlSearchArgs } from '@module/url'
 
 export type AllowedOperations = 'r' | 'w' | 'rw'
 
@@ -41,20 +41,20 @@ export class GenericSingleResource<T> implements SingleResource<T> {
   }
 
   public async get(): Promise<T> {
-    if (this._allowedOperations === 'w') throwError(__.writeOnlyResource)
+    if (this._allowedOperations === 'w') throwError(L.writeOnlyResource)
 
     const dto = await this._requestBuilder.getAll(this._mapper.expectedResponseType)
     return this._mapper.unpack(dto)
   }
 
   public create(): T {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
 
     return this._descriptor.makeBlankValue()
   }
 
   public async send(value: T): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
     const validationResult = this._descriptor.validate(value)
     if (!validationResult.isValid) throw validationResult
 
@@ -63,7 +63,7 @@ export class GenericSingleResource<T> implements SingleResource<T> {
   }
 
   public async save(value: T): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
     const validationResult = this._descriptor.validate(value)
     if (!validationResult.isValid) throw validationResult
 
@@ -72,7 +72,7 @@ export class GenericSingleResource<T> implements SingleResource<T> {
   }
 
   public async delete(): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
 
     await this._requestBuilder.deleteAll(AnyResponseType)
   }
@@ -123,21 +123,21 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   }
 
   public async get(key: Key): Promise<T> {
-    if (this._allowedOperations === 'w') throwError(__.writeOnlyResource)
+    if (this._allowedOperations === 'w') throwError(L.writeOnlyResource)
 
     const dto = await this._requestBuilder.getOne(key, this._itemMapper.expectedResponseType)
     return this._itemMapper.unpack(dto)
   }
 
   public async getAll(search?: UrlSearchArgs | undefined): Promise<T[]> {
-    if (this._allowedOperations === 'w') throwError(__.writeOnlyResource)
+    if (this._allowedOperations === 'w') throwError(L.writeOnlyResource)
 
     const dto = await this._requestBuilder.getAll(this._itemMapper.expectedResponseType, search)
     return this._arrayMapper.unpack(dto)
   }
 
   public create(): T {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
 
     const item = this._descriptor.makeBlankValue()
     this.setNewTagOf(item)
@@ -153,7 +153,7 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   }
 
   public async send(item: T): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
     const validationResult = this._descriptor.validate(item)
     if (!validationResult.isValid) throw validationResult
 
@@ -168,7 +168,7 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   }
 
   public async save(item: T): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
 
     if (this.isNew(item)) {
       await this.send(item)
@@ -183,7 +183,7 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   }
 
   public async delete(item: T): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
 
     if (!this.isNew(item)) {
       await this._requestBuilder.deleteOne(this.getKeyOf(item), AnyResponseType)
@@ -191,13 +191,13 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   }
 
   public async deleteKey(key: Key): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
 
     await this._requestBuilder.deleteOne(key, AnyResponseType)
   }
 
   public async deleteAll(search?: UrlSearchArgs | undefined): Promise<void> {
-    if (this._allowedOperations === 'r') throwError(__.readOnlyResource)
+    if (this._allowedOperations === 'r') throwError(L.readOnlyResource)
 
     await this._requestBuilder.deleteAll(AnyResponseType, search)
   }

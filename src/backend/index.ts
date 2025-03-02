@@ -1,6 +1,6 @@
 import type { AuthScheme } from '@module/auth'
-import { Config } from '@module/config'
 import { FetchHttpClient } from '@module/backend/fetch'
+import { Config } from '@module/config'
 
 export interface RequestBodyOrParams {
   intoBodyInit(): BodyInit | null

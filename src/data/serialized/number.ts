@@ -1,7 +1,7 @@
 import { AnyValue, AnyValueOptions } from './base'
-import { JsonNumberMapper } from '@module/mappers/serialized/json'
-import { ValueMapper } from '@module/mappers/serialized'
 import { KeyKind } from '@module/data/serialized/index'
+import { ValueMapper } from '@module/mappers/serialized'
+import { JsonNumberMapper } from '@module/mappers/serialized/json'
 
 interface NumberValueOpts<N> extends AnyValueOptions<number | N> {
   integer?: boolean

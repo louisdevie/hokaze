@@ -1,8 +1,13 @@
 # messages d'erreur des champs, pas de majuscule ni de point ===========================================================
 
-missingValue = 'required'
+requiredValueMissing = 'obligatoire'
+stringTooShort = "minimum {n} caractères"
 stringTooLong = "maximum {n} caractères"
 stringEmpty = "ne doit pas être vide"
+mustBeGreaterThan = "doit être strictement supérieur à {n}"
+mustBeLessThan = "doit être strictement inférieur à {n}"
+mustBeGreaterThanOrEqualTo = "doit être au moins {n}"
+mustBeLessThanOrEqualTo = "ne doit pas dépasser {n}"
 
 # ======================================================================================================================
 
@@ -28,3 +33,5 @@ invalidRequestPathDefault = 'Un chemin de requête invalide ne peut pas être ut
 childUsedWithoutKey = 'Une requête fille ne peut pas être utilisée sans clé.'
 
 objectInUrlNotAllowed = "Les objets ne sont pas autorisés dans les paramètres d'URL."
+
+minGreaterThanMax = "La limite inférieure ne peut pas être égale à ou plus grande que la limite supérieure."

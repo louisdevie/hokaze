@@ -1,10 +1,10 @@
 import { AnyValue, AnyValueOptions } from './base'
-import { ObjectMapper } from '@module/mappers/serialized/object'
-import { JsonObjectMapper } from '@module/mappers/serialized/json/object'
 import { KeyKind, ValueDescriptor } from '@module/data/serialized/index'
-import { Likelihood } from '@module/inference'
 import { throwError } from '@module/errors'
-import __ from '@module/locale/gen'
+import { Likelihood } from '@module/inference'
+import L from '@module/locale/gen'
+import { JsonObjectMapper } from '@module/mappers/serialized/json/object'
+import { ObjectMapper } from '@module/mappers/serialized/object'
 import { ValidationResult } from '@module/validation'
 
 // inverse of ObjectType
@@ -52,7 +52,7 @@ export class ObjectValue<O extends Record<string, unknown>, N>
 
   public validate(value: O): ValidationResult {
     let result = super.validate(value)
-    if (result.isValid) {
+    if (result.isValid && typeof value === 'object' && value !== null) {
       for (const [name, descriptor] of this._fields) {
         result = result.mergeWithProperty(name, descriptor.validate(value[name]))
       }
@@ -78,14 +78,14 @@ export class ObjectValue<O extends Record<string, unknown>, N>
     }
 
     if (possibleKeys.length !== 1 || !highestLikelihood.isMoreLikelyThan(Likelihood.implicit(0))) {
-      throwError(__.couldNotInferKey(resourceName))
+      throwError(L.couldNotInferKey(resourceName))
     }
 
     const [keyProperty, keyDescriptor] = this._fields[possibleKeys[0]]
-    if (keyDescriptor.keyKind == null) throwError(__.badKeyType(resourceName, keyProperty))
-    if (keyDescriptor.isOptional) throwError(__.optionalKey(resourceName, keyProperty))
-    if (keyDescriptor.isNullable) throwError(__.nullableKey(resourceName, keyProperty))
-    if (!keyDescriptor.isReadable) throwError(__.unreadableKey(resourceName, keyProperty))
+    if (keyDescriptor.keyKind == null) throwError(L.badKeyType(resourceName, keyProperty))
+    if (keyDescriptor.isOptional) throwError(L.optionalKey(resourceName, keyProperty))
+    if (keyDescriptor.isNullable) throwError(L.nullableKey(resourceName, keyProperty))
+    if (!keyDescriptor.isReadable) throwError(L.unreadableKey(resourceName, keyProperty))
     const kind = keyDescriptor.keyKind
 
     return { property: keyProperty, kind }

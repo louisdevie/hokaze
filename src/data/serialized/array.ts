@@ -1,6 +1,6 @@
+import { AnyValue, AnyValueOptions } from '@module/data/serialized/base'
 import { ValueDescriptor } from '@module/data/serialized/index'
 import { ValueMapper } from '@module/mappers/serialized'
-import { AnyValue, AnyValueOptions } from '@module/data/serialized/base'
 import { JsonArrayMapper } from '@module/mappers/serialized/json'
 import { ValidationResult } from '@module/validation'
 
@@ -33,7 +33,7 @@ export class ArrayValue<E, N> extends AnyValue<E[] | N, ArrayValue<E, N>> {
 
   public validate(value: E[]): ValidationResult {
     let result = super.validate(value)
-    if (result.isValid) {
+    if (result.isValid && Array.isArray(value)) {
       value.forEach((elt, i) => (result = result.mergeWithItem(i, this._element.validate(elt))))
     }
     return result

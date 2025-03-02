@@ -1,7 +1,7 @@
-import type { RequestPath } from '@module/requestPath'
 import type { DataDescriptor } from '@module/data'
-import { UrlSearchArgs } from '@module/url'
 import { ObjectDescriptor } from '@module/data/serialized/object'
+import type { RequestPath } from '@module/requestPath'
+import { UrlSearchArgs } from '@module/url'
 
 /**
  * The types allowed as resource keys.
@@ -85,7 +85,7 @@ export interface CollectionResource<T> {
   create(): T
 
   /**
-   * Checks if an item was newly created. The value returned by this method determines the behavior of {@link save} and
+   * Check if an item was newly created. The value returned by this method determines the behavior of {@link save} and
    * {@link delete}. It returns `true` in two and only two situations : when the value was created using the
    * {@link create} method and was never sent nor saved; or when its key property is `null` or `undefined`.
    * @param item The item to check.

@@ -1,8 +1,8 @@
-import { ValueMapper } from '@module/mappers/serialized'
-import { Ref } from '@module/reference'
 import { ReferenceForm } from '@module/data/serialized/ref'
-import { CollectionResource, Key } from '@module/resources'
+import { ValueMapper } from '@module/mappers/serialized'
 import { ObjectMapper } from '@module/mappers/serialized/object'
+import { Ref } from '@module/reference'
+import { CollectionResource, Key } from '@module/resources'
 
 export class JsonRefMapper<R, N> extends ValueMapper<Ref<R> | N> {
   private readonly _form: ReferenceForm

@@ -1,5 +1,5 @@
-import { HttpClient, CreationResult, RequestBodyOrParams, ResponseBody } from '@module/backend'
 import { jest } from '@jest/globals'
+import { HttpClient, CreationResult, RequestBodyOrParams, ResponseBody } from '@module/backend'
 
 type Mock<R, P extends unknown[], T> = jest.Mock<(this: T, ...args: P) => R>
 

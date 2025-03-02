@@ -1,17 +1,17 @@
-import { UrlTemplate } from '@module/url'
-import { DataDescriptor } from '@module/data'
 import { HttpClient } from '@module/backend'
-import { AllowedOperations, GenericCollectionResource, GenericSingleResource } from '@module/resources/generic'
-import { ResourceRequestBuilder } from '@module/resources/requestBuilder'
-import { throwError } from '@module/errors'
-import __ from '@module/locale'
-import { CollectionResource } from '@module/resources'
+import { DataDescriptor } from '@module/data'
 import { ObjectDescriptor } from '@module/data/serialized/object'
+import { throwError } from '@module/errors'
+import L from '@module/locale'
 import {
   ExtractFromKeyBody,
   ExtractFromLocationUrl,
   ExtractFromObjectBody,
 } from '@module/mappers/serialized/keyExtraction'
+import { CollectionResource } from '@module/resources'
+import { AllowedOperations, GenericCollectionResource, GenericSingleResource } from '@module/resources/generic'
+import { ResourceRequestBuilder } from '@module/resources/requestBuilder'
+import { UrlTemplate } from '@module/url'
 
 export interface ResourceInit<T> {
   baseUrl: UrlTemplate
@@ -62,7 +62,7 @@ function getAllowedOperations(init: ResourceInit<unknown>): AllowedOperations {
     if (init.descriptor.isWritable) {
       ops = 'w'
     } else {
-      throwError(__.bothReadOnlyAndWriteOnly)
+      throwError(L.bothReadOnlyAndWriteOnly)
     }
   }
 

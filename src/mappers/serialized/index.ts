@@ -1,5 +1,5 @@
-import { Mapper } from '@module/mappers'
 import { RequestBodyOrParams, ResponseBody } from '@module/backend'
+import { Mapper } from '@module/mappers'
 import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
 
 export abstract class ValueMapper<T> implements Mapper<T> {

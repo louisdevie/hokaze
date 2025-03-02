@@ -1,7 +1,7 @@
 import { FetchHttpClient } from '@module/backend/fetch'
-import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
-import { NoRequestBody } from '@module/mappers/noRequestBody'
 import { defaultConfig } from '@module/config/default'
+import { NoRequestBody } from '@module/mappers/noRequestBody'
+import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
 
 const fetchMock = jest.spyOn(global, 'fetch')
 

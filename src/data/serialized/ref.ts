@@ -1,8 +1,8 @@
 import { AnyValue, AnyValueOptions } from './base'
-import { Ref } from '@module/reference'
-import type { CollectionResource } from '@module/resources'
 import { ValueMapper } from '@module/mappers/serialized'
 import { JsonRefMapper } from '@module/mappers/serialized/json'
+import { Ref } from '@module/reference'
+import type { CollectionResource } from '@module/resources'
 import { ValidationResult } from '@module/validation'
 
 export type ReferenceForm = 'id' | 'idObject' | 'fullObject'

@@ -1,8 +1,8 @@
 import { CustomRequest, CustomRequestInit } from '.'
-import { UrlTemplate } from '@module/url'
-import { HttpClient } from '@module/backend'
 import { GenericDeleteRequest, GenericGetRequest, GenericPostRequest, GenericPutRequest } from './generic'
+import { HttpClient } from '@module/backend'
 import { Mapper } from '@module/mappers'
+import { UrlTemplate } from '@module/url'
 
 export function makeGetRequest<Q, R>(
   baseUrl: UrlTemplate,

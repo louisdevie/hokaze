@@ -2,9 +2,14 @@
 
 # field error messages, do not use capital letters at the start nor periods ============================================
 
-missingValue = 'required'
+requiredValueMissing = 'required'
+stringTooShort = '{n} characters minimum'
 stringTooLong = '{n} characters maximum'
 stringEmpty = 'cannot be empty'
+mustBeGreaterThan = "must be greater than {n}"
+mustBeLessThan = "must be less than {n}"
+mustBeGreaterThanOrEqualTo = "cannot be less than {n}"
+mustBeLessThanOrEqualTo = "cannot be greater than {n}"
 
 # ======================================================================================================================
 
@@ -30,3 +35,5 @@ invalidRequestPathDefault = 'Invalid request path used.'
 childUsedWithoutKey = 'A child request was used on a item that has no key.'
 
 objectInUrlNotAllowed = "An object can't be used in URL query parameters."
+
+minGreaterThanMax = "The lower bound cannot be equal to or greater than the upper bound."
