@@ -69,7 +69,7 @@ export class ConvertedData<V, T> implements DataDescriptor<V> {
     if (factoryOrValue instanceof Function) {
       blankValueFactory = factoryOrValue
     } else {
-      blankValueFactory = () => factoryOrValue
+      blankValueFactory = (): V => factoryOrValue
     }
     return new ConvertedData(this._baseData, this._converter, blankValueFactory)
   }

@@ -6,7 +6,7 @@ export class WrappedMapper<V, T> implements Mapper<V> {
   private _converter: Converter<V, T>
   private _mapper: Mapper<T>
 
-  constructor(converter: Converter<V, T>, mapper: Mapper<T>) {
+  public constructor(converter: Converter<V, T>, mapper: Mapper<T>) {
     this._converter = converter
     this._mapper = mapper
   }

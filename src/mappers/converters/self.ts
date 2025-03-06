@@ -14,6 +14,8 @@ export class SelfConverterAdapter<C extends OutputSelfConverter<T>, T> implement
   public pack(instance: C): T {
     const primitive = instance.valueOf()
     if (primitive instanceof this._cls) {
+      // if the class doesn't override valueOf, its is expected to implement toString instead
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       return instance.toString() as T
     } else {
       return primitive as T
@@ -24,7 +26,7 @@ export class SelfConverterAdapter<C extends OutputSelfConverter<T>, T> implement
 export class TransparentSelfConverterAdapter<C extends T, T> implements Converter<C, T> {
   private readonly _cls: TransparentSelfConverter<C, T>
 
-  constructor(cls: TransparentSelfConverter<C, T>) {
+  public constructor(cls: TransparentSelfConverter<C, T>) {
     this._cls = cls
   }
 

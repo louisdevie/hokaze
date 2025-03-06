@@ -168,6 +168,7 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
    * Adds an output converter to this descriptor. The resulting value type must be assignable from the original type.
    * @param converter A converter object with a pack operation.
    */
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
   public converted<V>(converter: T extends V ? OutputConverter<V, T> : never): ConvertedData<V, T>
   public converted<V>(converter: AnyConverter<V, T>): ConvertedData<V, T> {
     return new ConvertedData(this, resolveConverter(converter), null)

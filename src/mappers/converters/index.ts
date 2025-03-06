@@ -1,5 +1,3 @@
-import { resolveConverter } from '@module/mappers/converters/factory'
-
 /**
  * A converter object that implements a conversion both for input and output.
  */

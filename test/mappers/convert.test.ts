@@ -1,10 +1,10 @@
 import { number, object, string } from '@module'
 
 describe('convert to another value of the same type', () => {
-  function uppercase(value: string) {
+  function uppercase(value: string): string {
     return value.toUpperCase()
   }
-  function lowercase(value: string) {
+  function lowercase(value: string): string {
     return value.toLowerCase()
   }
 
@@ -31,15 +31,16 @@ describe('convert to another value of the same type', () => {
 })
 
 test('convert to another value of a different type', async () => {
+  const mapper = string.converted({ unpack: Number, pack: String }).makeMapper()
   // two ways of keeping the number type
-  const mapperA = string.converted<number>({ unpack: Number, pack: String }).makeMapper()
-  const mapperB = string.converted({ unpack: Number, pack: (n: number) => String(n) }).makeMapper()
+  // const mapper = string.converted<number>({ unpack: Number, pack: String }).makeMapper()
+  // const mapper = string.converted({ unpack: Number, pack: (n: number) => String(n) }).makeMapper()
 
-  await expect(mapperA.unpack(Response.json('45'))).resolves.toEqual(45)
-  expect(mapperA.pack(67).intoBodyInit()).toEqual(JSON.stringify('67'))
+  await expect(mapper.unpack(Response.json('45'))).resolves.toEqual(45)
+  expect(mapper.pack(67).intoBodyInit()).toEqual(JSON.stringify('67'))
 })
 
-test("accept any type as long as the 'out' operation can convert it", async () => {
+test("accept any type as long as the 'out' operation can convert it", () => {
   const mapper = string.converted({ pack: String }).makeMapper()
 
   // anything cant be sent through the String constructor

@@ -3,17 +3,17 @@ import { SelfConverterAdapter, TransparentSelfConverterAdapter } from './self'
 import { throwError } from '@module/errors'
 import L from '@module/locale'
 
-const identity = <A>(a: A) => a
+const identity = <A>(a: A): A => a
 
 export function resolveConverter<V, T>(converter: AnyConverter<V, T>): Converter<V, T> {
   if ('unpack' in converter) {
     if ('pack' in converter) {
       return converter
     } else {
-      return { unpack: converter.unpack, pack: identity<V & T> }
+      return { unpack: converter.unpack.bind(converter), pack: identity<V & T> }
     }
   } else if ('pack' in converter) {
-    return { unpack: identity<V & T>, pack: converter.pack }
+    return { unpack: identity<V & T>, pack: converter.pack.bind(converter) }
   } else {
     throwError(L.emptyConverter)
   }
