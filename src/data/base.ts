@@ -1,7 +1,22 @@
 import { DataDescriptor } from '.'
 import { Check } from '@module/checks'
+import { ConvertedData } from '@module/data/converted'
 import L from '@module/locale'
 import { Mapper } from '@module/mappers'
+import {
+  AnyConverter,
+  Converter,
+  InputConverter,
+  InputSelfConverter,
+  OutputConverter,
+  OutputSelfConverter,
+  TransparentSelfConverter,
+} from '@module/mappers/converters'
+import {
+  resolveConverter,
+  resolveSelfConverter,
+  resolveTransparentSelfConverter,
+} from '@module/mappers/converters/factory'
 import { ValidationResult } from '@module/validation'
 
 /**
@@ -131,9 +146,46 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
    */
   public abstract get optional(): AnyData<T | undefined, unknown>
 
+  /**
+   * Adds one or more validators to be run on the data before it is sent.
+   * @param checks The checks to add to the descriptor.
+   */
   public and(...checks: Check<T>[]): Self {
     return this.cloneAsSelf({ checks: [...this._checks, ...checks] })
   }
 
-  //endregion
+  /**
+   * Adds an input-output converter to this descriptor. The resulting value type can be anything.
+   * @param converter A converter object with both unpack and pack operations.
+   */
+  public converted<V>(converter: Converter<V, T>): ConvertedData<V, T>
+  /**
+   * Adds an input converter to this descriptor. The resulting value type must be assignable to the original type.
+   * @param converter A converter object with an unpack operation.
+   */
+  public converted<V extends T>(converter: InputConverter<V, T>): ConvertedData<V, T>
+  /**
+   * Adds an output converter to this descriptor. The resulting value type must be assignable from the original type.
+   * @param converter A converter object with a pack operation.
+   */
+  public converted<V>(converter: T extends V ? OutputConverter<V, T> : never): ConvertedData<V, T>
+  public converted<V>(converter: AnyConverter<V, T>): ConvertedData<V, T> {
+    return new ConvertedData(this, resolveConverter(converter), null)
+  }
+
+  /**
+   * Adds a self-converter to this descriptor.
+   * @param cls A constructor that is used to convert the value on input.
+   */
+  public convertedInto<C extends OutputSelfConverter<T>>(cls: InputSelfConverter<C, T>): ConvertedData<C, T> {
+    return new ConvertedData(this, resolveSelfConverter(cls), null)
+  }
+
+  /**
+   * Adds a self-converter that extends the original type to this descriptor.
+   * @param cls A constructor that is used to convert the value on input.
+   */
+  public asInstanceOf<C extends T>(cls: TransparentSelfConverter<C, T>): ConvertedData<C, T> {
+    return new ConvertedData(this, resolveTransparentSelfConverter(cls), null)
+  }
 }

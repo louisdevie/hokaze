@@ -37,3 +37,5 @@ childUsedWithoutKey = 'A child request was used on a item that has no key.'
 objectInUrlNotAllowed = "An object can't be used in URL query parameters."
 
 minGreaterThanMax = "The lower bound cannot be equal to or greater than the upper bound."
+
+emptyConverter = "A converter must defined at least an 'unpack' or a 'pack' operation."
