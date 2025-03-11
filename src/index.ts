@@ -8,6 +8,8 @@ export { ValidationResult } from './validation'
 export { BasicAuth, BearerToken } from './auth'
 export { setLocale } from './locale'
 export * from './checks'
+export type { Config, BadResponseHandler } from './config'
+export type { ConfigOverride } from './config/decorator'
 
 /* FOR PLUGINS */
 export type { Likelihood } from './inference'
