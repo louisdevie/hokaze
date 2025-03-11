@@ -1,6 +1,6 @@
 {
   "name": "@hokaze/dayjs",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Dayjs extension for Hokaze",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -19,14 +19,14 @@
   "license": "MIT",
   "devDependencies": {
     "prettier": "^3.2.3",
-    "tsup": "^8.0.1",
+    "tsup": "^8.4.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {
     "dayjs": "^1.11.10"
   },
   "peerDependencies": {
-    "@hokaze/core": "^0.1.0"
+    "@hokaze/core": "^0.2.0"
   },
   "tsup": {
     "entry": ["./index.ts"],
