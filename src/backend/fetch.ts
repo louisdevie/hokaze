@@ -16,7 +16,17 @@ export class FetchHttpClient implements HttpClient {
   private _globalAuth?: AuthScheme
 
   private async fetch(input: string | URL | globalThis.Request, init?: RequestInit): Promise<Response> {
-    let response = await fetch(input, init)
+    let response
+    try {
+      response = await fetch(input, init)
+    } catch (error) {
+      const errorResponse = this._config.failedRequestHandler.onFailedRequest(error)
+      if (errorResponse instanceof Promise) {
+        response = await errorResponse
+      } else {
+        response = errorResponse
+      }
+    }
     if (!response.ok) {
       const processedResponse = this._config.badResponseHandler.onBadResponse(response)
       if (processedResponse instanceof Promise) {

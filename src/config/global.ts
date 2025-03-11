@@ -1,4 +1,4 @@
-import type { Config, BadResponseHandler } from '.'
+import type { Config, BadResponseHandler, FailedRequestHandler } from '.'
 import { ConfigOverride, DecoratorConfig } from '@module/config/decorator'
 import { defaultConfig } from '@module/config/default'
 
@@ -15,6 +15,10 @@ class GlobalConfig implements Config {
 
   public get badResponseHandler(): BadResponseHandler {
     return this._current.badResponseHandler
+  }
+
+  public get failedRequestHandler(): FailedRequestHandler {
+    return this._current.failedRequestHandler
   }
 }
 
