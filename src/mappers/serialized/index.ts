@@ -8,7 +8,12 @@ export abstract class ValueMapper<T> implements Mapper<T> {
   }
 
   public async unpack(response: ResponseBody): Promise<T> {
-    return this.unpackValue(await response.json())
+    const responseText = await response.text()
+    if (!responseText || responseText.trim().length == 0) {
+      return undefined as T
+    } else {
+      return this.unpackValue(JSON.parse(responseText))
+    }
   }
 
   public get expectedResponseType(): string {

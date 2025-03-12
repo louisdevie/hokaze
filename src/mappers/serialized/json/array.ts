@@ -9,7 +9,11 @@ export class JsonArrayMapper<E, N> extends ValueMapper<E[] | N> {
   }
 
   public packValue(value: E[]): unknown {
-    return value.map((e) => this._elementMapper.packValue(e))
+    if (Array.isArray(value)) {
+      return value.map((e) => this._elementMapper.packValue(e))
+    } else {
+      return value
+    }
   }
 
   public unpackValue(response: unknown): E[] | N {

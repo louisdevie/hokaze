@@ -11,6 +11,6 @@ export class JsonRequestBody implements RequestBodyOrParams {
   public readonly type = 'application/json'
 
   public intoBodyInit(): BodyInit | null {
-    return JSON.stringify(this._value)
+    return JSON.stringify(this._value) ?? null
   }
 }

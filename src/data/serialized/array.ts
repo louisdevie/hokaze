@@ -31,9 +31,9 @@ export class ArrayValue<E, N> extends AnyValue<E[] | N, ArrayValue<E, N>> {
     return new JsonArrayMapper(this._element.makeMapper())
   }
 
-  public validate(value: E[]): ValidationResult {
+  public validate(value: E[] | N): ValidationResult {
     let result = super.validate(value)
-    if (result.isValid && Array.isArray(value)) {
+    if (Array.isArray(value)) {
       value.forEach((elt, i) => (result = result.mergeWithItem(i, this._element.validate(elt))))
     }
     return result

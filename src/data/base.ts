@@ -27,7 +27,7 @@ export interface AnyDataOptions<T> {
   isReadable?: boolean
   isWritable?: boolean
   isOptional?: boolean
-  checks?: Check<T>[]
+  checks?: Check<NonNullable<T>>[]
 }
 
 /**
@@ -40,7 +40,7 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
   private readonly _isReadable: boolean
   private readonly _isWritable: boolean
   private readonly _isOptional: boolean
-  private readonly _checks: Check<T>[]
+  private readonly _checks: Check<NonNullable<T>>[]
 
   /**
    * Creates a base descriptor.
@@ -82,7 +82,7 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
         result = ValidationResult.invalid(L.requiredValueMissing)
       }
     } else {
-      result = this._checks.reduce((r, c) => r.mergeWith(c.validate(value)), ValidationResult.valid())
+      result = this._checks.reduce((r, c) => r.mergeWith(c.validate(value as NonNullable<T>)), ValidationResult.valid())
     }
     return result
   }
@@ -150,7 +150,7 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
    * Adds one or more validators to be run on the data before it is sent.
    * @param checks The checks to add to the descriptor.
    */
-  public and(...checks: Check<T>[]): Self {
+  public and(...checks: Check<NonNullable<T>>[]): Self {
     return this.cloneAsSelf({ checks: [...this._checks, ...checks] })
   }
 

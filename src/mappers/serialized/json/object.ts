@@ -17,12 +17,16 @@ export class JsonObjectMapper<O, N> extends ValueMapper<O | N> implements Object
     this._keyFieldIndex = this._fieldMappers.findIndex(([property]) => property === value)
   }
 
-  public packValue(value: O): unknown {
-    const obj: { [p in keyof O]?: unknown } = {}
-    for (const [field, mapper] of this._fieldMappers) {
-      obj[field] = mapper.packValue(value[field])
+  public packValue(value: O | N): unknown {
+    if (typeof value === 'object' && value !== null) {
+      const obj: { [p in keyof O]?: unknown } = {}
+      for (const [field, mapper] of this._fieldMappers) {
+        obj[field] = mapper.packValue((value as O)[field])
+      }
+      return obj
+    } else {
+      return value
     }
-    return obj
   }
 
   public unpackValue(response: unknown): O | N {

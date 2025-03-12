@@ -50,12 +50,12 @@ export class ObjectValue<O extends Record<string, unknown>, N>
     return new JsonObjectMapper<O, N>(this._fields.map(([property, descriptor]) => [property, descriptor.makeMapper()]))
   }
 
-  public validate(value: O): ValidationResult {
+  public validate(value: O | N): ValidationResult {
     let result = super.validate(value)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (result.isValid && typeof value === 'object' && value !== null) {
+    if (typeof value === 'object' && value !== null) {
       for (const [name, descriptor] of this._fields) {
-        result = result.mergeWithProperty(name, descriptor.validate(value[name]))
+        result = result.mergeWithProperty(name, descriptor.validate((value as O)[name]))
       }
     }
     return result
