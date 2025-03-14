@@ -9,7 +9,7 @@ export interface ConsumedCreationResult {
 }
 
 export interface KeyExtractionMethod {
-  tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined>
+  tryToExtractKey(postResult: ConsumedCreationResult): Key | undefined
 }
 
 export async function consumeCreationResult(result: CreationResult): Promise<ConsumedCreationResult> {
@@ -28,7 +28,7 @@ export class ExtractFromObjectBody implements KeyExtractionMethod {
     this._mapper = mapper
   }
 
-  public tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
+  public tryToExtractKey(postResult: ConsumedCreationResult): Key | undefined {
     return this._mapper.tryToUnpackKey(postResult.responseBody)
   }
 }
@@ -40,7 +40,7 @@ export class ExtractFromKeyBody implements KeyExtractionMethod {
     this._keyKind = keyKind
   }
 
-  public tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
+  public tryToExtractKey(postResult: ConsumedCreationResult): Key | undefined {
     let keyFound: unknown = undefined
 
     try {
@@ -55,7 +55,7 @@ export class ExtractFromKeyBody implements KeyExtractionMethod {
       }
     }
 
-    return Promise.resolve(keyFound as Key | undefined)
+    return keyFound as Key | undefined
   }
 }
 
@@ -68,7 +68,7 @@ export class ExtractFromLocationUrl implements KeyExtractionMethod {
     this._keyKind = keyKind
   }
 
-  public tryToExtractKey(postResult: ConsumedCreationResult): Promise<Key | undefined> {
+  public tryToExtractKey(postResult: ConsumedCreationResult): Key | undefined {
     let keyFound = undefined
 
     if (postResult.location !== null) {
@@ -92,6 +92,6 @@ export class ExtractFromLocationUrl implements KeyExtractionMethod {
       }
     }
 
-    return Promise.resolve(keyFound)
+    return keyFound
   }
 }
