@@ -1,4 +1,3 @@
-import { RequestBodyOrParams } from '@module/backend'
 import { DataDescriptor } from '@module/data'
 import { Mapper } from '@module/mappers'
 
