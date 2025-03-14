@@ -1,7 +1,7 @@
 import type { ObjectDescriptor, FieldRoleHints, Likelihood } from '@module'
 import { KeyKind } from '@module/data/serialized'
 import { ObjectValue } from '@module/data/serialized/object'
-import { type Converter, WrappedMapper } from '@module/mappers/converters'
+import { type Converter } from '@module/mappers/converters'
 import { WrappedObjectMapper } from '@module/mappers/converters/wrapped'
 import { ObjectMapper } from '@module/mappers/serialized/object'
 import type { ValidationResult } from '@module/validation'
