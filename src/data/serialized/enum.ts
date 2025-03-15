@@ -1,7 +1,6 @@
 import { AnyValue, AnyValueOptions } from './base'
 import { ValueMapper } from '@module/mappers/serialized'
 import { JsonEnumMapper } from '@module/mappers/serialized/json'
-import console from 'node:console'
 
 interface EnumValueOpts<E, N> extends AnyValueOptions<E | N> {
   useNames?: boolean
