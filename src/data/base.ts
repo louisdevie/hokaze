@@ -10,13 +10,8 @@ import {
   InputSelfConverter,
   OutputConverter,
   OutputSelfConverter,
-  TransparentSelfConverter,
 } from '@module/mappers/converters'
-import {
-  resolveConverter,
-  resolveSelfConverter,
-  resolveTransparentSelfConverter,
-} from '@module/mappers/converters/factory'
+import { resolveConverter, resolveSelfConverter } from '@module/mappers/converters/factory'
 import { ValidationResult } from '@module/validation'
 
 /**
@@ -180,13 +175,5 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
    */
   public convertedInto<C extends OutputSelfConverter<T>>(cls: InputSelfConverter<C, T>): ConvertedData<C, T> {
     return new ConvertedData(this, resolveSelfConverter(cls), null)
-  }
-
-  /**
-   * Adds a self-converter that extends the original type to this descriptor.
-   * @param cls A constructor that is used to convert the value on input.
-   */
-  public asInstanceOf<C extends T>(cls: TransparentSelfConverter<C, T>): ConvertedData<C, T> {
-    return new ConvertedData(this, resolveTransparentSelfConverter(cls), null)
   }
 }

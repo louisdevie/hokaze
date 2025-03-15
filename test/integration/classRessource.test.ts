@@ -1,88 +1,184 @@
 import { fakeHttpClient, fakeService } from '@fake'
-import { number, object } from '@module'
+import { number, object, string } from '@module'
 import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
 
-class TimeSpan {
-  private readonly _totalMinutes: number
+class Weapon {
+  public id!: number
+  public type!: string
+  public variant!: string
+  public baseDamage!: number
 
-  public constructor(init?: number | { minutes?: number; hours?: number; days?: number }) {
-    if (init === undefined) {
-      this._totalMinutes = 0
-    } else if (typeof init === 'number') {
-      this._totalMinutes = init
-    } else {
-      this._totalMinutes = (init.minutes ?? 0) + (init.hours ?? 0) * 60 + (init.days ?? 0) * 1440
-    }
-  }
-
-  public get minutes(): number {
-    return this._totalMinutes % 60
-  }
-
-  public get hours(): number {
-    return Math.floor(this._totalMinutes / 60) % 24
-  }
-
-  public get days(): number {
-    return Math.floor(this._totalMinutes / 1440)
+  public constructor(init?: Partial<Weapon>) {
+    if (init) Object.assign(this, init)
   }
 }
 
-describe('creating a single resource that is mapped to a class', () => {
+describe('creating a collection resource from a service', () => {
   const http = fakeHttpClient()
-  const ws = fakeService('https://some-api.com/', http)
-  const single = ws.single(
-    'time-since-last-js-framework',
-    object({ minutes: number.optional, hours: number.optional, days: number.optional }).asInstanceOf(TimeSpan),
+  const ws = fakeService('https://ultrapi.dev/', http)
+  const collection = ws.collection(
+    'weapons',
+    object({
+      id: number.withBlankValue(-1),
+      type: string,
+      variant: string,
+      baseDamage: number,
+    }).asInstanceOf(Weapon),
   )
 
-  test('to read the value', async () => {
-    http.get.mockResolvedValueOnce(Response.json({ hours: 5 }))
-    const res = await single.get()
+  test('to read a value', async () => {
+    const data = { id: 1, type: 'revolver', variant: 'piercer', baseDamage: 1 }
+    http.get.mockClear()
+    http.get.mockResolvedValueOnce(Response.json(data))
+    const res = await collection.get(1)
 
-    expect(http.get).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/time-since-last-js-framework'),
-      'application/json',
-    )
-    expect(res).toEqual(new TimeSpan(300))
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons/1'), 'application/json')
+    expect(res).toStrictEqual(new Weapon(data))
+  })
+
+  test('to read all values', async () => {
+    const data = [
+      { id: 1, type: 'revolver', variant: 'piercer', baseDamage: 1 },
+      { id: 2, type: 'shotgun', variant: 'core eject', baseDamage: 3 },
+      { id: 14, type: 'rocket launcher', variant: 's.r.s cannon', baseDamage: 3.5 },
+    ]
+    http.get.mockClear()
+    http.get.mockResolvedValueOnce(Response.json(data))
+    const res = await collection.getAll()
+
+    expect(http.get).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons'), 'application/json')
+    expect(res).toStrictEqual(data.map((w) => new Weapon(w)))
   })
 
   test('to create a new value to send', () => {
-    expect(single.create()).toEqual(new TimeSpan(0))
+    expect(collection.create()).toMatchObject({ id: -1, type: '', variant: '', baseDamage: 0 })
   })
 
   test('to send a value', async () => {
+    const data = new Weapon()
+    data.id = -1
+    data.type = 'rocket launcher'
+    data.variant = 'firestarter'
+    data.baseDamage = 3.5
+
+    http.post.mockClear()
     http.post.mockResolvedValueOnce({
       responseBody: new Response(),
       location: null,
     })
-    await single.send(new TimeSpan({ minutes: 200 }))
+    await collection.send(data)
 
     expect(http.post).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/time-since-last-js-framework'),
-      new JsonRequestBody({ minutes: 20, hours: 3, days: 0 }),
+      new URL('https://ultrapi.dev/weapons'),
+      new JsonRequestBody(data),
       '*/*',
     )
   })
 
-  test('to update the value', async () => {
+  test('to save a new value', async () => {
+    const data = collection.create()
+    data.type = 'shotgun'
+    data.variant = 'pump charge'
+    http.post.mockClear()
+    http.post.mockResolvedValueOnce({
+      responseBody: new Response(),
+      location: null,
+    })
+    await collection.save(data)
+
+    expect(http.post).toHaveBeenCalledExactlyOnceWith(
+      new URL('https://ultrapi.dev/weapons'),
+      new JsonRequestBody(data),
+      '*/*',
+    )
+  })
+
+  describe('to save a new value and get its ID', () => {
+    test('through the Location header', async () => {
+      const data = collection.create()
+      data.type = 'shotgun'
+      data.variant = 'pump charge'
+      http.post.mockClear()
+      http.post.mockResolvedValueOnce({
+        responseBody: new Response(),
+        location: 'https://ultrapi.dev/weapons/4593',
+      })
+      await collection.save(data)
+
+      expect(http.post).toHaveBeenCalledExactlyOnceWith(
+        new URL('https://ultrapi.dev/weapons'),
+        new JsonRequestBody({ baseDamage: 0, id: -1, type: 'shotgun', variant: 'pump charge' }),
+        '*/*',
+      )
+      expect(data.id).toStrictEqual(4593)
+    })
+    test('through a response body containing the object', async () => {
+      const data = collection.create()
+      data.type = 'shotgun'
+      data.variant = 'pump charge'
+      http.post.mockClear()
+      http.post.mockResolvedValueOnce({
+        responseBody: new Response(
+          JSON.stringify({ baseDamage: 0, id: 4593, type: 'shotgun', variant: 'pump charge' }),
+        ),
+        location: null,
+      })
+      await collection.save(data)
+
+      expect(http.post).toHaveBeenCalledExactlyOnceWith(
+        new URL('https://ultrapi.dev/weapons'),
+        new JsonRequestBody({ baseDamage: 0, id: -1, type: 'shotgun', variant: 'pump charge' }),
+        '*/*',
+      )
+      expect(data.id).toStrictEqual(4593)
+    })
+    test('through a response body containing the ID', async () => {
+      const data = collection.create()
+      data.type = 'shotgun'
+      data.variant = 'pump charge'
+
+      http.post.mockClear()
+      http.post.mockResolvedValueOnce({
+        responseBody: new Response('4593'),
+        location: null,
+      })
+      await collection.save(data)
+
+      expect(http.post).toHaveBeenCalledExactlyOnceWith(
+        new URL('https://ultrapi.dev/weapons'),
+        new JsonRequestBody({ baseDamage: 0, id: -1, type: 'shotgun', variant: 'pump charge' }),
+        '*/*',
+      )
+      expect(data.id).toStrictEqual(4593)
+    })
+  })
+
+  test('to save an existing value', async () => {
+    const data = new Weapon()
+    data.id = 4
+    data.type = 'shotgun'
+    data.variant = 'pump charge'
+    data.baseDamage = 2.5
+
+    http.put.mockClear()
     http.put.mockResolvedValueOnce(new Response())
-    await single.save(new TimeSpan({ hours: 1.5 }))
+    await collection.save(data)
 
     expect(http.put).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/time-since-last-js-framework'),
-      new JsonRequestBody({ minutes: 30, hours: 1, days: 0 }),
+      new URL('https://ultrapi.dev/weapons/4'),
+      new JsonRequestBody(data),
       '*/*',
     )
   })
 
-  test('to delete the value', async () => {
-    http.delete.mockResolvedValueOnce(new Response())
-    await single.delete()
+  test('to delete a value', async () => {
+    const data = new Weapon()
+    data.id = 4
 
-    expect(http.delete).toHaveBeenCalledExactlyOnceWith(
-      new URL('https://some-api.com/time-since-last-js-framework'),
-      '*/*',
-    )
+    http.delete.mockClear()
+    http.delete.mockResolvedValueOnce(new Response())
+    await collection.delete(data)
+
+    expect(http.delete).toHaveBeenCalledExactlyOnceWith(new URL('https://ultrapi.dev/weapons/4'), '*/*')
   })
 })

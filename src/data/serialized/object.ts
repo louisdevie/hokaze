@@ -1,8 +1,11 @@
 import { AnyValue, AnyValueOptions } from './base'
+import { ConvertedObject } from '@module/data/serialized/converted'
 import { KeyKind, ValueDescriptor } from '@module/data/serialized/index'
 import { throwError } from '@module/errors'
 import { Likelihood } from '@module/inference'
 import L from '@module/locale/gen'
+import { TransparentSelfConverter } from '@module/mappers/converters'
+import { resolveTransparentSelfConverter } from '@module/mappers/converters/factory'
 import { JsonObjectMapper } from '@module/mappers/serialized/json/object'
 import { ObjectMapper } from '@module/mappers/serialized/object'
 import { ValidationResult } from '@module/validation'
@@ -92,8 +95,6 @@ export class ObjectValue<O extends Record<string, unknown>, N>
     return { property: keyProperty, kind }
   }
 
-  //region Builder methods
-
   public override get optional(): ObjectValue<O, N | undefined> {
     return new ObjectValue<O, N | undefined>(this._fields, this, {
       isOptional: true,
@@ -107,7 +108,13 @@ export class ObjectValue<O extends Record<string, unknown>, N>
     })
   }
 
-  //endregion
+  /**
+   * Adds a self-converter that extends the original type to this descriptor.
+   * @param cls A constructor that is used to convert the value on input.
+   */
+  public asInstanceOf<C extends O>(cls: TransparentSelfConverter<C, O>): ConvertedObject<C, O> {
+    return new ConvertedObject(this as unknown as ObjectValue<O, never>, resolveTransparentSelfConverter(cls), null)
+  }
 }
 
 type FieldDescriptors = Record<string, ValueDescriptor<unknown>>
