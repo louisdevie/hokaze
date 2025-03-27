@@ -1,5 +1,6 @@
 import { fakeRequestPath } from './requestPath'
 import { number, object, string } from '@module'
+import { Referencable } from '@module/reference'
 import { RequestPath } from '@module/requestPath'
 import type { CollectionResource, Key } from '@module/resources'
 
@@ -22,7 +23,17 @@ class FruitsResourceImpl implements CollectionResource<Fruit> {
 
   public readonly keyProperty: keyof Fruit = 'id'
 
-  public readonly descriptor = object({ id: number, name: string })
+  public get asReferencable(): Referencable<Fruit> {
+    const desc = object({ id: number, name: string })
+    const mapper = desc.makeMapper()
+    mapper.setKeyProperty('id')
+    return {
+      keyProperty: 'id',
+      validate: (value) => desc.validate(value),
+      getMapper: () => mapper,
+      get: (key) => this.get(key),
+    }
+  }
 
   public readonly asPath: RequestPath = fakeRequestPath()
 

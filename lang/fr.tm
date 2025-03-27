@@ -35,3 +35,7 @@ childUsedWithoutKey = 'Une requête fille ne peut pas être utilisée sans clé.
 objectInUrlNotAllowed = "Les objets ne sont pas autorisés dans les paramètres d'URL."
 
 minGreaterThanMax = "La limite inférieure ne peut pas être égale à ou plus grande que la limite supérieure."
+
+emptyConverter = "Un convertisseur doit posséder au moins une méthode 'unpack' ou 'pack'."
+
+refIsUnloaded = "Impossible de sérialiser une référence comme un objet complet si elle n'est pas chargée."

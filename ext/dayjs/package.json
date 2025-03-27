@@ -1,6 +1,6 @@
 {
   "name": "@hokaze/dayjs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Dayjs extension for Hokaze",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -26,7 +26,7 @@
     "dayjs": "^1.11.10"
   },
   "peerDependencies": {
-    "@hokaze/core": "^0.2.0"
+    "@hokaze/core": "^0.3.0"
   },
   "tsup": {
     "entry": ["./index.ts"],

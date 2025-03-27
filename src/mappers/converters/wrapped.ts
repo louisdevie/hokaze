@@ -2,6 +2,7 @@ import { Converter } from '.'
 import { Key } from '@module'
 import { RequestBodyOrParams, ResponseBody } from '@module/backend'
 import { Mapper } from '@module/mappers'
+import { type EagerReferenceLoader } from '@module/mappers/serialized'
 import { ObjectMapper, RefDataResult } from '@module/mappers/serialized/object'
 
 export class WrappedMapper<V, T> implements Mapper<V> {
@@ -55,8 +56,8 @@ export class WrappedObjectMapper<V, T> implements ObjectMapper<V> {
     return this._mapper.packValue(this._converter.pack(value))
   }
 
-  public unpackValue(response: unknown): V {
-    return this._converter.unpack(this._mapper.unpackValue(response))
+  public unpackValue(response: unknown, refLoader: EagerReferenceLoader): V {
+    return this._converter.unpack(this._mapper.unpackValue(response, refLoader))
   }
 
   public setKeyProperty(value: string): void {
@@ -67,8 +68,8 @@ export class WrappedObjectMapper<V, T> implements ObjectMapper<V> {
     return this._mapper.tryToUnpackKey(responseBody)
   }
 
-  public tryToUnpackRef(responseValue: unknown): RefDataResult<V> {
-    const rawResult: RefDataResult<T> = this._mapper.tryToUnpackRef(responseValue)
+  public tryToUnpackRef(responseValue: unknown, refLoader: EagerReferenceLoader): RefDataResult<V> {
+    const rawResult: RefDataResult<T> = this._mapper.tryToUnpackRef(responseValue, refLoader)
     let convertedResult: RefDataResult<V>
 
     if (rawResult.found === 'value') {

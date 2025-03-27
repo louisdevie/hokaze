@@ -1,5 +1,5 @@
 import type { DataDescriptor } from '@module/data'
-import { ObjectDescriptor } from '@module/data/serialized/object'
+import { Referencable } from '@module/reference'
 import type { RequestPath } from '@module/requestPath'
 import { UrlSearchArgs } from '@module/url'
 
@@ -61,9 +61,7 @@ export interface SingleResource<T> {
 export interface CollectionResource<T> {
   readonly asPath: RequestPath
 
-  readonly descriptor: ObjectDescriptor<T>
-
-  readonly keyProperty: keyof T
+  readonly asReferencable: Referencable<T>
 
   /**
    * Reads one item from the resource.

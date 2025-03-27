@@ -1,6 +1,6 @@
-import __dayjs, { Dayjs } from 'dayjs'
-import { AnyValue, AnyValueOptions, ValueMapper, ValueDescriptor } from '@hokaze/core'
 import { JsonDayjsMapper } from './json'
+import { AnyValue, AnyValueOptions, ValueMapper, ValueDescriptor } from '@hokaze/core'
+import __dayjs, { Dayjs } from 'dayjs'
 
 export interface DayjsValuePublicAPI<N> extends ValueDescriptor<Dayjs | N> {
   withBlankValue(value: Dayjs): DayjsValue<N>

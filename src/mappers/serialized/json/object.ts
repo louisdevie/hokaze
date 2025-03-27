@@ -1,4 +1,4 @@
-import { ValueMapper } from '@module/mappers/serialized'
+import { EagerReferenceLoader, ValueMapper } from '@module/mappers/serialized'
 import { ObjectMapper, RefDataResult } from '@module/mappers/serialized/object'
 import { Key } from '@module/resources'
 
@@ -29,13 +29,13 @@ export class JsonObjectMapper<O, N> extends ValueMapper<O | N> implements Object
     }
   }
 
-  public unpackValue(response: unknown): O | N {
+  public unpackValue(response: unknown, refLoader: EagerReferenceLoader): O | N {
     if (response === undefined) return undefined as N
     if (response === null) return null as N
     if (typeof response !== 'object') throw new Error(`Expected an object, got ${JSON.stringify(response)}`)
     const obj: Partial<O> = {}
     for (const [field, mapper] of this._fieldMappers) {
-      obj[field] = mapper.unpackValue((response as Record<keyof O, unknown>)[field])
+      obj[field] = mapper.unpackValue((response as Record<keyof O, unknown>)[field], refLoader)
     }
     return obj as O
   }
@@ -51,13 +51,13 @@ export class JsonObjectMapper<O, N> extends ValueMapper<O | N> implements Object
       }
       if (typeof dto === 'object' && dto !== null) {
         const [property, mapper] = this._fieldMappers[this._keyFieldIndex]
-        key = mapper.unpackValue((dto as Record<keyof O, unknown>)[property])
+        key = mapper.unpackValue((dto as Record<keyof O, unknown>)[property], new EagerReferenceLoader())
       }
     }
     return key as Key | undefined
   }
 
-  public tryToUnpackRef(dto: unknown): RefDataResult<O> {
+  public tryToUnpackRef(dto: unknown, refLoader: EagerReferenceLoader): RefDataResult<O> {
     if (typeof dto !== 'object' || dto === null) {
       return { found: 'nothing' }
     }
@@ -68,13 +68,13 @@ export class JsonObjectMapper<O, N> extends ValueMapper<O | N> implements Object
     const props = Object.keys(dto)
     const [keyProperty, keyMapper] = this._fieldMappers[this._keyFieldIndex]
     if (props.length === 1 && props[0] === keyProperty) {
-      const key = keyMapper.unpackValue((dto as Record<keyof O, unknown>)[keyProperty])
+      const key = keyMapper.unpackValue((dto as Record<keyof O, unknown>)[keyProperty], new EagerReferenceLoader())
       return { found: 'key', key }
     }
 
     const obj: Partial<O> = {}
     for (const [field, mapper] of this._fieldMappers) {
-      obj[field] = mapper.unpackValue((dto as Record<keyof O, unknown>)[field])
+      obj[field] = mapper.unpackValue((dto as Record<keyof O, unknown>)[field], refLoader)
     }
     return { found: 'value', value: obj as O }
   }

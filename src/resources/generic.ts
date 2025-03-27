@@ -9,6 +9,7 @@ import { ValueMapper } from '@module/mappers/serialized'
 import { JsonArrayMapper } from '@module/mappers/serialized/json'
 import { consumeCreationResult, KeyExtractionMethod } from '@module/mappers/serialized/keyExtraction'
 import { ObjectMapper } from '@module/mappers/serialized/object'
+import { Referencable } from '@module/reference'
 import { RequestPath } from '@module/requestPath'
 import { ResourceRequestBuilder } from '@module/resources/requestBuilder'
 import { UrlSearchArgs } from '@module/url'
@@ -84,7 +85,7 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
   private readonly _requestBuilder: ResourceRequestBuilder
   private readonly _descriptor: ObjectDescriptor<T>
   private readonly _keyProperty: keyof T
-  private readonly _itemMapper: ValueMapper<T>
+  private readonly _itemMapper: ObjectMapper<T>
   private readonly _arrayMapper: ValueMapper<T[]>
   private readonly _allowedOperations: AllowedOperations
   private _keyExtractionMethods: KeyExtractionMethod[]
@@ -112,8 +113,13 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
     return this._requestBuilder.resourcePath
   }
 
-  public get descriptor(): ObjectDescriptor<T> {
-    return this._descriptor
+  public get asReferencable(): Referencable<T> {
+    return {
+      keyProperty: this._keyProperty,
+      validate: (value) => this._descriptor.validate(value),
+      getMapper: () => this._itemMapper,
+      get: (key) => this.get(key),
+    }
   }
 
   public get keyProperty(): keyof T {

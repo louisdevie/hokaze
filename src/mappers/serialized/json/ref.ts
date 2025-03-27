@@ -1,22 +1,26 @@
-import { ReferenceForm } from '@module/data/serialized/ref'
-import { ValueMapper } from '@module/mappers/serialized'
+import { RefLoadingStrategy, RefSerializationForm } from '@module/data/serialized/ref'
+import { throwError } from '@module/errors'
+import L from '@module/locale'
+import { type EagerReferenceLoader, ValueMapper } from '@module/mappers/serialized'
 import { ObjectMapper } from '@module/mappers/serialized/object'
-import { Ref } from '@module/reference'
-import { CollectionResource, Key } from '@module/resources'
+import { Ref, Referencable } from '@module/reference'
+import { Key } from '@module/resources'
 
 export class JsonRefMapper<R, N> extends ValueMapper<Ref<R> | N> {
-  private readonly _form: ReferenceForm
-  private readonly _resource: CollectionResource<R>
+  private readonly _form: RefSerializationForm
+  private readonly _resource: Referencable<R>
+  private readonly _loading: RefLoadingStrategy
   private _itemMapper?: ObjectMapper<R>
 
-  public constructor(form: ReferenceForm, resource: CollectionResource<R>) {
+  public constructor(resource: Referencable<R>, form: RefSerializationForm, loading: RefLoadingStrategy) {
     super()
-    this._form = form
     this._resource = resource
+    this._form = form
+    this._loading = loading
   }
 
   private get objectMapper(): ObjectMapper<R> {
-    this._itemMapper ??= this._resource.descriptor.makeMapper()
+    this._itemMapper ??= this._resource.getMapper()
     return this._itemMapper
   }
 
@@ -30,7 +34,7 @@ export class JsonRefMapper<R, N> extends ValueMapper<Ref<R> | N> {
           return { [this._resource.keyProperty]: value.key }
 
         case 'fullObject':
-          if (value.value === undefined) throw new Error('Cannot serialize ref as a full object if it not loaded.')
+          if (value.value === undefined) throwError(L.refIsUnloaded)
           return this.objectMapper.packValue(value.value)
       }
     } else {
@@ -38,20 +42,25 @@ export class JsonRefMapper<R, N> extends ValueMapper<Ref<R> | N> {
     }
   }
 
-  public unpackValue(response: unknown): Ref<R> | N {
+  public unpackValue(response: unknown, refLoader: EagerReferenceLoader): Ref<R> | N {
+    let unpacked
     if (response === undefined || response === null) {
-      return response as N
+      unpacked = response as N
     } else if (typeof response === 'string' || typeof response === 'number') {
-      return Ref.fromKey(this._resource, response)
+      unpacked = Ref.fromKey(this._resource, response)
     } else {
-      const ref = this.objectMapper.tryToUnpackRef(response)
+      const ref = this.objectMapper.tryToUnpackRef(response, refLoader)
       if (ref.found === 'key') {
-        return Ref.fromKey(this._resource, ref.key as Key)
+        unpacked = Ref.fromKey(this._resource, ref.key as Key)
       } else if (ref.found === 'value') {
-        return Ref.fromValue(this._resource, ref.value)
+        unpacked = Ref.fromValue(this._resource, ref.value)
       } else {
         throw new Error(`Expected a reference, got ${JSON.stringify(response)}`)
       }
     }
+    if (this._loading === 'eager' && unpacked instanceof Ref) {
+      refLoader.register(unpacked)
+    }
+    return unpacked
   }
 }

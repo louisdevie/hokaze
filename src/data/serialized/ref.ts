@@ -1,30 +1,35 @@
 import { AnyValue, AnyValueOptions } from './base'
 import { ValueMapper } from '@module/mappers/serialized'
 import { JsonRefMapper } from '@module/mappers/serialized/json'
-import { Ref } from '@module/reference'
+import { Ref, Referencable } from '@module/reference'
 import type { CollectionResource } from '@module/resources'
 import { ValidationResult } from '@module/validation'
 
-export type ReferenceForm = 'id' | 'idObject' | 'fullObject'
+export type RefSerializationForm = 'id' | 'idObject' | 'fullObject'
+
+export type RefLoadingStrategy = 'lazy' | 'eager'
 
 interface RefValueOpts<R, N> extends AnyValueOptions<Ref<R> | N> {
-  serializeAs?: ReferenceForm
+  serializeAs?: RefSerializationForm
+  loading?: RefLoadingStrategy
 }
 
 /**
  * Describes a serialized value that is a reference to another resource.
  *
- * @template R The type of the resource referenced.
+ * @template R The type of the referenced resource.
  * @template N Additional values the field can hold.
  */
 export class RefValue<R, N> extends AnyValue<Ref<R> | N, RefValue<R, N>> {
-  private readonly _resource: CollectionResource<R>
-  private readonly _serializeAs: ReferenceForm
+  private readonly _resource: Referencable<R>
+  private readonly _serializeAs: RefSerializationForm
+  private readonly _loading: RefLoadingStrategy
 
-  public constructor(resource: CollectionResource<R>, copyFrom?: RefValue<R, N>, options?: RefValueOpts<R, N>) {
+  public constructor(resource: Referencable<R>, copyFrom?: RefValue<R, N>, options?: RefValueOpts<R, N>) {
     super(copyFrom, options)
     this._resource = resource
-    this._serializeAs = copyFrom?._serializeAs ?? options?.serializeAs ?? 'id'
+    this._serializeAs = options?.serializeAs ?? copyFrom?._serializeAs ?? 'id'
+    this._loading = options?.loading ?? copyFrom?._loading ?? 'lazy'
   }
 
   protected makeDefaultBlankValue(): Ref<R> | N {
@@ -36,21 +41,19 @@ export class RefValue<R, N> extends AnyValue<Ref<R> | N, RefValue<R, N>> {
   }
 
   public makeMapper(): ValueMapper<Ref<R> | N> {
-    return new JsonRefMapper(this._serializeAs, this._resource)
+    return new JsonRefMapper(this._resource, this._serializeAs, this._loading)
   }
 
   public validate(value: Ref<R>): ValidationResult {
     let result = super.validate(value)
     if (result.isValid && value.value !== undefined) {
-      result = this._resource.descriptor.validate(value.value)
+      result = this._resource.validate(value.value)
     }
     return result
   }
 
-  // region Builder methods
-
   /**
-   * Serialize the referenced item as an object containing only the key property.
+   * Serialize the resource item as an object containing only the key property.
    * This overrides the default behavior of serializing the reference as the key.
    */
   public get inObject(): RefValue<R, N> {
@@ -58,11 +61,18 @@ export class RefValue<R, N> extends AnyValue<Ref<R> | N, RefValue<R, N>> {
   }
 
   /**
-   * Serialize the referenced item as an object containing all the data of the referenced object.
+   * Serialize the resource item as an object containing all the data of the resource object.
    * This overrides the default behavior of serializing the reference as the key.
    */
   public get asObject(): RefValue<R, N> {
     return this.cloneAsSelf({ serializeAs: 'fullObject' })
+  }
+
+  /**
+   * Always load the referenced resource as soon as possible.
+   */
+  public get eager(): RefValue<R, N> {
+    return this.cloneAsSelf({ loading: 'eager' })
   }
 
   public override get optional(): RefValue<R, N | undefined> {
@@ -77,13 +87,11 @@ export class RefValue<R, N> extends AnyValue<Ref<R> | N, RefValue<R, N>> {
       blankValueFactory: () => null,
     })
   }
-
-  // endregion
 }
 
 /**
  * Describes a JSON value that is a reference to another resource.
  */
 export function jsonRefFactory<R>(resource: CollectionResource<R>): RefValue<R, never> {
-  return new RefValue<R, never>(resource)
+  return new RefValue<R, never>(resource.asReferencable)
 }

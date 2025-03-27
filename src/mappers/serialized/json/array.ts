@@ -1,4 +1,4 @@
-import { ValueMapper } from '@module/mappers/serialized'
+import { type EagerReferenceLoader, ValueMapper } from '@module/mappers/serialized'
 
 export class JsonArrayMapper<E, N> extends ValueMapper<E[] | N> {
   private _elementMapper: ValueMapper<E>
@@ -16,10 +16,10 @@ export class JsonArrayMapper<E, N> extends ValueMapper<E[] | N> {
     }
   }
 
-  public unpackValue(response: unknown): E[] | N {
+  public unpackValue(response: unknown, refLoader: EagerReferenceLoader): E[] | N {
     if (response === undefined) return undefined as N
     if (response === null) return null as N
     if (!Array.isArray(response)) throw new Error(`Expected an array, got ${JSON.stringify(response)}`)
-    return response.map((e) => this._elementMapper.unpackValue(e))
+    return response.map((e) => this._elementMapper.unpackValue(e, refLoader))
   }
 }

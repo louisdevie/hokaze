@@ -2,7 +2,7 @@
 export { type Service, service } from './service'
 export type { TxOnlyCustomRequest, EmptyCustomRequest, RxOnlyCustomRequest, CustomRequest } from './requests'
 export type { CollectionResource, SingleResource, Key } from './resources'
-export { string, boolean, number, /*ref,*/ array, enumeration, object } from './data/serialized'
+export { string, boolean, number, ref, array, enumeration, object } from './data/serialized'
 export { plainText } from './data/plainText'
 export { ValidationResult } from './validation'
 export { BasicAuth, BearerToken } from './auth'
@@ -10,6 +10,7 @@ export { setLocale } from './locale'
 export * from './checks'
 export type { Config, BadResponseHandler, FailedRequestHandler } from './config'
 export type { ConfigOverride } from './config/decorator'
+export { Ref } from './reference'
 
 /* FOR PLUGINS */
 export type { Likelihood } from './inference'

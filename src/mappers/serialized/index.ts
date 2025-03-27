@@ -1,6 +1,7 @@
 import { RequestBodyOrParams, ResponseBody } from '@module/backend'
 import { Mapper } from '@module/mappers'
 import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
+import { Ref } from '@module/reference'
 
 export abstract class ValueMapper<T> implements Mapper<T> {
   public pack(value: T): RequestBodyOrParams {
@@ -12,7 +13,10 @@ export abstract class ValueMapper<T> implements Mapper<T> {
     if (!responseText || responseText.trim().length == 0) {
       return undefined as T
     } else {
-      return this.unpackValue(JSON.parse(responseText))
+      const refLoader = new EagerReferenceLoader()
+      const unpacked = this.unpackValue(JSON.parse(responseText), refLoader)
+      await refLoader.loadAll()
+      return unpacked
     }
   }
 
@@ -22,5 +26,21 @@ export abstract class ValueMapper<T> implements Mapper<T> {
 
   public abstract packValue(value: T): unknown
 
-  public abstract unpackValue(response: unknown): T
+  public abstract unpackValue(response: unknown, refLoader: EagerReferenceLoader): T
+}
+
+export class EagerReferenceLoader {
+  private _refsToLoad: Ref<unknown>[]
+
+  public constructor() {
+    this._refsToLoad = []
+  }
+
+  public register<R>(ref: Ref<R>): void {
+    this._refsToLoad.push(ref as Ref<unknown>)
+  }
+
+  public async loadAll(): Promise<void> {
+    await Promise.all(this._refsToLoad.map((ref) => ref.get()))
+  }
 }
