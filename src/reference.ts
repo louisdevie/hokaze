@@ -1,6 +1,4 @@
-import type { ObjectMapper } from '@module/mappers/serialized/object'
 import type { Key } from '@module/resources'
-import type { ValidationResult } from '@module/validation'
 
 export interface Referencable<T> {
   keyProperty: keyof T

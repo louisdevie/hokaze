@@ -1,8 +1,7 @@
 import type { DataDescriptor } from '@module/data'
-import { Referencable } from '@module/reference'
+import { ReferencableValue } from '@module/data/serialized/ref'
 import type { RequestPath } from '@module/requestPath'
 import { UrlSearchArgs } from '@module/url'
-import {ReferencableValue} from "@module/data/serialized/ref";
 
 /**
  * The types allowed as resource keys.

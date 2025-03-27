@@ -2,6 +2,7 @@ import type { CollectionResource, Key, SingleResource } from '.'
 import { AnyResponseType, CreationResult } from '@module/backend'
 import { DataDescriptor } from '@module/data'
 import { ObjectDescriptor } from '@module/data/serialized/object'
+import { ReferencableValue } from '@module/data/serialized/ref'
 import { throwError } from '@module/errors'
 import L from '@module/locale'
 import { Mapper } from '@module/mappers'
@@ -9,7 +10,6 @@ import { ValueMapper } from '@module/mappers/serialized'
 import { JsonArrayMapper } from '@module/mappers/serialized/json'
 import { consumeCreationResult, KeyExtractionMethod } from '@module/mappers/serialized/keyExtraction'
 import { ObjectMapper } from '@module/mappers/serialized/object'
-import { Referencable } from '@module/reference'
 import { RequestPath } from '@module/requestPath'
 import { ResourceRequestBuilder } from '@module/resources/requestBuilder'
 import { UrlSearchArgs } from '@module/url'
@@ -113,7 +113,7 @@ export class GenericCollectionResource<T> implements CollectionResource<T> {
     return this._requestBuilder.resourcePath
   }
 
-  public get asReferencable(): Referencable<T> {
+  public get asReferencable(): ReferencableValue<T> {
     return {
       keyProperty: this._keyProperty,
       validate: (value) => this._descriptor.validate(value),
