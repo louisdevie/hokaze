@@ -2,6 +2,7 @@ import type { DataDescriptor } from '@module/data'
 import { Referencable } from '@module/reference'
 import type { RequestPath } from '@module/requestPath'
 import { UrlSearchArgs } from '@module/url'
+import {ReferencableValue} from "@module/data/serialized/ref";
 
 /**
  * The types allowed as resource keys.
@@ -61,7 +62,7 @@ export interface SingleResource<T> {
 export interface CollectionResource<T> {
   readonly asPath: RequestPath
 
-  readonly asReferencable: Referencable<T>
+  readonly asReferencable: ReferencableValue<T>
 
   /**
    * Reads one item from the resource.

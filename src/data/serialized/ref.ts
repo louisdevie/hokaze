@@ -1,6 +1,7 @@
 import { AnyValue, AnyValueOptions } from './base'
 import { ValueMapper } from '@module/mappers/serialized'
 import { JsonRefMapper } from '@module/mappers/serialized/json'
+import { ObjectMapper } from '@module/mappers/serialized/object'
 import { Ref, Referencable } from '@module/reference'
 import type { CollectionResource } from '@module/resources'
 import { ValidationResult } from '@module/validation'
@@ -14,6 +15,11 @@ interface RefValueOpts<R, N> extends AnyValueOptions<Ref<R> | N> {
   loading?: RefLoadingStrategy
 }
 
+export interface ReferencableValue<T> extends Referencable<T> {
+  validate(value: T): ValidationResult
+  getMapper(): ObjectMapper<T>
+}
+
 /**
  * Describes a serialized value that is a reference to another resource.
  *
@@ -21,11 +27,11 @@ interface RefValueOpts<R, N> extends AnyValueOptions<Ref<R> | N> {
  * @template N Additional values the field can hold.
  */
 export class RefValue<R, N> extends AnyValue<Ref<R> | N, RefValue<R, N>> {
-  private readonly _resource: Referencable<R>
+  private readonly _resource: ReferencableValue<R>
   private readonly _serializeAs: RefSerializationForm
   private readonly _loading: RefLoadingStrategy
 
-  public constructor(resource: Referencable<R>, copyFrom?: RefValue<R, N>, options?: RefValueOpts<R, N>) {
+  public constructor(resource: ReferencableValue<R>, copyFrom?: RefValue<R, N>, options?: RefValueOpts<R, N>) {
     super(copyFrom, options)
     this._resource = resource
     this._serializeAs = options?.serializeAs ?? copyFrom?._serializeAs ?? 'id'

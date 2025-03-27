@@ -5,8 +5,6 @@ import type { ValidationResult } from '@module/validation'
 export interface Referencable<T> {
   keyProperty: keyof T
   get(key: Key): Promise<T>
-  validate(value: T): ValidationResult
-  getMapper(): ObjectMapper<T>
 }
 
 type RefState<T> = { loaded: false } | { loaded: true; value: T }

@@ -1,18 +1,18 @@
-import { RefLoadingStrategy, RefSerializationForm } from '@module/data/serialized/ref'
+import type { ReferencableValue, RefLoadingStrategy, RefSerializationForm } from '@module/data/serialized/ref'
 import { throwError } from '@module/errors'
 import L from '@module/locale'
 import { type EagerReferenceLoader, ValueMapper } from '@module/mappers/serialized'
-import { ObjectMapper } from '@module/mappers/serialized/object'
-import { Ref, Referencable } from '@module/reference'
-import { Key } from '@module/resources'
+import type { ObjectMapper } from '@module/mappers/serialized/object'
+import { Ref } from '@module/reference'
+import type { Key } from '@module/resources'
 
 export class JsonRefMapper<R, N> extends ValueMapper<Ref<R> | N> {
   private readonly _form: RefSerializationForm
-  private readonly _resource: Referencable<R>
+  private readonly _resource: ReferencableValue<R>
   private readonly _loading: RefLoadingStrategy
   private _itemMapper?: ObjectMapper<R>
 
-  public constructor(resource: Referencable<R>, form: RefSerializationForm, loading: RefLoadingStrategy) {
+  public constructor(resource: ReferencableValue<R>, form: RefSerializationForm, loading: RefLoadingStrategy) {
     super()
     this._resource = resource
     this._form = form
