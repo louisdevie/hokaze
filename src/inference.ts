@@ -1,5 +1,3 @@
-import { FieldRoleHints } from '@module/data/serialized'
-
 /**
  * Likelihood for inferred properties.
  */
@@ -66,6 +64,14 @@ export class Likelihood {
 }
 
 const IDENTIFIER_KEYWORD = 'id'
+
+/**
+ * Hints used to determine the role of a field in an object.
+ */
+export interface FieldRoleHints {
+  fieldName: string
+  resourceName: string
+}
 
 /**
  * Determines the likelihood of a field being the identifier of a given resource.

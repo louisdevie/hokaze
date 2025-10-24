@@ -41,19 +41,27 @@ export type CustomRequestInit<Q, R> =
   | AsymmetricCustomRequestInit<Q, R>
   | SymmetricCustomRequestInit<Q & R>
 
+/**
+ * A custom HTTP request.
+ */
 export interface CustomRequest<Q, R> {
+  /**
+   * Sends the request.
+   * @param request The value to put in the request body.
+   * @returns The value extracted from the response body.
+   */
   send(request: Q): Promise<R>
 
   /**
-   * Append the given headers to the request. If one of the headers doesn't accept multiple values,
+   * Appends the given headers to the request. If one of the headers doesn't accept multiple values,
    * any value already present will be replaced.
    * @param init The headers to add.
    */
   withHeaders(init: HeadersInit): CustomRequest<Q, R>
 
   /**
-   * Appends an `Authorization` header to the request.
-   * @param auth The value of the header to add.
+   * Appends authorization headers to the request.
+   * @param auth An {@link AuthScheme} to use for this request, or a string to put in the `Authorization` header.
    */
   withAuth(auth: AuthScheme | string): CustomRequest<Q, R>
 
@@ -70,6 +78,9 @@ export interface CustomRequest<Q, R> {
   withoutHeaders(...keys: string[]): CustomRequest<Q, R>
 }
 
+/**
+ * A custom HTTP request without request and response bodies.
+ */
 export interface EmptyCustomRequest extends CustomRequest<undefined, void> {
   send(): Promise<void>
   withHeaders(init: HeadersInit): EmptyCustomRequest
@@ -78,8 +89,19 @@ export interface EmptyCustomRequest extends CustomRequest<undefined, void> {
   withoutHeaders(...keys: string[]): EmptyCustomRequest
 }
 
-export interface TxOnlyCustomRequest<Q> extends CustomRequest<Q, void> {}
+/**
+ * A custom HTTP request with only a request body.
+ */
+export interface TxOnlyCustomRequest<Q> extends CustomRequest<Q, void> {
+  withHeaders(init: HeadersInit): TxOnlyCustomRequest<Q>
+  withAuth(auth: AuthScheme | string): TxOnlyCustomRequest<Q>
+  withExactHeaders(init: HeadersInit): TxOnlyCustomRequest<Q>
+  withoutHeaders(...keys: string[]): TxOnlyCustomRequest<Q>
+}
 
+/**
+ * A custom HTTP request with only a response body.
+ */
 export interface RxOnlyCustomRequest<R> extends CustomRequest<undefined, R> {
   send(): Promise<R>
   withHeaders(init: HeadersInit): RxOnlyCustomRequest<R>

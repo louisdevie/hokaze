@@ -12,6 +12,8 @@ export default tsESLint.config(
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/consistent-generic-constructors': ['error', 'type-annotation'],
       '@typescript-eslint/explicit-member-accessibility': 'error',
+      '@typescript-eslint/consistent-type-exports': 'error',
+      'import/no-internal-modules': ['error', {}],
     },
   },
 )

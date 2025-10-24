@@ -1,4 +1,4 @@
-import { RequestBodyOrParams } from '@module/backend'
+import { RequestBodyOrParams } from '../../../http'
 
 /** @internal */
 export class JsonRequestBody implements RequestBodyOrParams {

@@ -1,4 +1,4 @@
-import { HttpClient } from '@module/backend'
+import { HttpClient } from '../http'
 import { DataDescriptor } from '@module/data'
 import { ObjectDescriptor } from '@module/data/serialized/object'
 import { throwError } from '@module/errors'
@@ -45,7 +45,7 @@ export function makeCollectionResource<T>(init: CollectionResourceInit<T>): Coll
 }
 
 export function makeSingleResource<T>(init: ResourceInit<T>): GenericSingleResource<T> {
-  const requestBuilder = new ResourceRequestBuilder(init.httpClient, init.baseUrl, init.name)
+  const requestBuilder
   return new GenericSingleResource(requestBuilder, init.descriptor, getAllowedOperations(init))
 }
 

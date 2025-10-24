@@ -1,10 +1,9 @@
 import type { CustomRequest } from '.'
 import { AuthScheme } from '@module/auth'
-import { AnyResponseType, HttpClient, RequestBodyOrParams, ResponseBody } from '@module/backend'
+import { HttpClient, HttpRequest } from '../http'
 import { Mapper } from '@module/mappers'
 import { NoRequestBody } from '@module/mappers/noRequestBody'
 import { UrlTemplate } from '@module/url'
-import * as URL from 'node:url'
 
 interface RequestParams<Q, R> {
   client: HttpClient
@@ -14,13 +13,13 @@ interface RequestParams<Q, R> {
   responseMapper: Mapper<R> | null
 }
 
-export type GenericRequestInit<Q, R> = GenericBaseRequest<Q, R> | RequestParams<Q, R>
+export type GenericRequestInit<Q, R> = GenericCustomRequest<Q, R> | RequestParams<Q, R>
 
 export interface RequestOptions {
   headers?: Headers
 }
 
-abstract class GenericBaseRequest<Q, R> implements CustomRequest<Q, R> {
+class GenericCustomRequest<Q, R> implements CustomRequest<Q, R> {
   private readonly _client: HttpClient
   private readonly _baseUrl: UrlTemplate
   private readonly _path: string
@@ -29,7 +28,7 @@ abstract class GenericBaseRequest<Q, R> implements CustomRequest<Q, R> {
   private readonly _responseMapper: Mapper<R> | null
 
   public constructor(init: GenericRequestInit<Q, R>, options?: RequestOptions) {
-    if (init instanceof GenericBaseRequest) {
+    if (init instanceof GenericCustomRequest) {
       this._client = init._client
       this._baseUrl = init._baseUrl
       this._path = init._path
@@ -62,20 +61,18 @@ abstract class GenericBaseRequest<Q, R> implements CustomRequest<Q, R> {
     return this._baseUrl.getUrlForResource(this._path, {})
   }
 
-  protected abstract sendRaw(request: RequestBodyOrParams): Promise<ResponseBody>
-
   public async send(request: Q): Promise<R> {
-    let mappedRequest: RequestBodyOrParams = new NoRequestBody()
+    let mappedRequest: HttpRequest = new NoRequestBody()
     if (this._requestMapper !== null) {
       mappedRequest = this._requestMapper.pack(request)
     }
 
-    const response = await this.sendRaw(mappedRequest)
+    const response = await this._client.send(mappedRequest)
 
     let mappedResponse = undefined
     if (this._responseMapper !== null) {
       mappedResponse = this._responseMapper.unpack(response)
-    }
+    }>
 
     return mappedResponse as R
   }
@@ -110,46 +107,5 @@ abstract class GenericBaseRequest<Q, R> implements CustomRequest<Q, R> {
     const newHeaders = new Headers(this._headers)
     for (const key of keys) newHeaders.delete(key)
     return this.cloneWithOptions({ headers: newHeaders })
-  }
-}
-
-export class GenericGetRequest<Q, R> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(): Promise<ResponseBody> {
-    return this.client.get(this.buildUrl(), this.expectedResponseType, this.headers)
-  }
-
-  protected cloneWithOptions(options: RequestOptions): CustomRequest<Q, R> {
-    return new GenericGetRequest(this, options)
-  }
-}
-
-export class GenericPostRequest<Q, R> extends GenericBaseRequest<Q, R> {
-  protected async sendRaw(request: RequestBodyOrParams): Promise<ResponseBody> {
-    const creationResult = await this.client.post(this.buildUrl(), request, this.expectedResponseType, this.headers)
-    return creationResult.responseBody
-  }
-
-  protected cloneWithOptions(options: RequestOptions): CustomRequest<Q, R> {
-    return new GenericPostRequest(this, options)
-  }
-}
-
-export class GenericPutRequest<Q, R> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(request: RequestBodyOrParams): Promise<ResponseBody> {
-    return this.client.put(this.buildUrl(), request, this.expectedResponseType, this.headers)
-  }
-
-  protected cloneWithOptions(options: RequestOptions): CustomRequest<Q, R> {
-    return new GenericPutRequest(this, options)
-  }
-}
-
-export class GenericDeleteRequest<Q, R> extends GenericBaseRequest<Q, R> {
-  protected sendRaw(): Promise<ResponseBody> {
-    return this.client.delete(this.buildUrl(), this.expectedResponseType, this.headers)
-  }
-
-  protected cloneWithOptions(options: RequestOptions): CustomRequest<Q, R> {
-    return new GenericDeleteRequest(this, options)
   }
 }

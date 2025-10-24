@@ -1,4 +1,4 @@
-import { RequestBodyOrParams, ResponseBody } from '@module/backend'
+import { RequestBodyOrParams, ResponseBody } from '../../http'
 import { Mapper } from '@module/mappers'
 import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
 import { Ref } from '@module/reference'

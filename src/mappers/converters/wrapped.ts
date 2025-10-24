@@ -1,6 +1,6 @@
 import { Converter } from '.'
+import { RequestBodyOrParams, ResponseBody } from '../../http'
 import { Key } from '@module'
-import { RequestBodyOrParams, ResponseBody } from '@module/backend'
 import { Mapper } from '@module/mappers'
 import { type EagerReferenceLoader } from '@module/mappers/serialized'
 import { ObjectMapper, RefDataResult } from '@module/mappers/serialized/object'

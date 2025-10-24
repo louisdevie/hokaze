@@ -24,7 +24,7 @@ class GlobalConfig implements Config {
 
 const __glob__ = new GlobalConfig()
 
-export function globalConfig(options: ConfigOverride): void {
+export function config(options: ConfigOverride): void {
   __glob__.set(options)
 }
 

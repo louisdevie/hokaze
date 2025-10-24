@@ -1,39 +1,21 @@
-import type { CreationResult, HttpClient, RequestBodyOrParams, ResponseBody } from '.'
+import type { HttpClient, HttpRequest, HttpResponse } from '.'
 import { AuthScheme } from '@module/auth'
-import { Config } from '@module/config'
-import { Err, internal } from '@module/errors'
+import { Config, Hooks } from '@module/config'
+import { throwInternal } from '@module/errors'
 
 /**
  * @internal
  */
-export class FetchHttpClient implements HttpClient {
-  private _config: Config
-
-  public constructor(config: Config) {
-    this._config = config
-  }
-
-  private _globalAuth?: AuthScheme
-
-  private async fetch(input: string | URL | globalThis.Request, init?: RequestInit): Promise<Response> {
+export class BrowserHttpClient implements HttpClient {
+  public async send(request: HttpRequest, hooks: Hooks): Promise<HttpResponse> {
     let response
     try {
-      response = await fetch(input, init)
+      response = await fetch(request)
     } catch (error) {
-      const errorResponse = this._config.failedRequestHandler.onFailedRequest(error)
-      if (errorResponse instanceof Promise) {
-        response = await errorResponse
-      } else {
-        response = errorResponse
-      }
+      response = await hooks.onFailedRequest(error)
     }
     if (!response.ok) {
-      const processedResponse = this._config.badResponseHandler.onBadResponse(response)
-      if (processedResponse instanceof Promise) {
-        response = await processedResponse
-      } else {
-        response = processedResponse
-      }
+      response = hooks.onBadResponse(response)
     }
     return response
   }
@@ -112,8 +94,8 @@ export class BadResponse extends Error implements Response {
   private _originalResponse: Response
 
   public constructor(response: Response) {
-    super('Bad response')
-    if (response.ok) internal(Err.triedToThrowOkResponse)
+    super(`${response.status} ${response.statusText}`)
+    if (response.ok) throwInternal('BadResponse constructor called with ok response')
     this._originalResponse = response
   }
 

@@ -1,5 +1,5 @@
 import { Mapper } from '.'
-import { RequestBodyOrParams, ResponseBody } from '@module/backend'
+import { RequestBodyOrParams, ResponseBody } from '../http'
 
 export class PlainTextMapper implements Mapper<string> {
   public pack(value: string): RequestBodyOrParams {

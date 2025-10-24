@@ -1,5 +1,5 @@
-import { FetchHttpClient } from '@module/backend/fetch'
 import { defaultConfig } from '@module/config/default'
+import { FetchHttpClient } from '@module/http/fetch'
 import { NoRequestBody } from '@module/mappers/noRequestBody'
 import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
 

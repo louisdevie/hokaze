@@ -1,4 +1,4 @@
-import type { CreationResult } from '@module/backend'
+import type { CreationResult } from '../../http'
 import { KeyKind } from '@module/data/serialized'
 import { ObjectMapper } from '@module/mappers/serialized/object'
 import type { Key } from '@module/resources'

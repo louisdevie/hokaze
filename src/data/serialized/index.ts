@@ -5,14 +5,6 @@ import { StringValue } from '@module/data/serialized/string'
 import { Likelihood } from '@module/inference'
 import { ValueMapper } from '@module/mappers/serialized'
 
-/**
- * Hints used to determine the role of a field in an object.
- */
-export interface FieldRoleHints {
-  fieldName: string
-  resourceName: string
-}
-
 export type KeyKind =
   | 'literal' // treat the key as it is
   | 'integer' // treat the key as an integer

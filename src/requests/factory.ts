@@ -1,6 +1,6 @@
 import { CustomRequest, CustomRequestInit } from '.'
+import { HttpClient } from '../http'
 import { GenericDeleteRequest, GenericGetRequest, GenericPostRequest, GenericPutRequest } from './generic'
-import { HttpClient } from '@module/backend'
 import { Mapper } from '@module/mappers'
 import { UrlTemplate } from '@module/url'
 

@@ -20,42 +20,6 @@ export interface ResourceRequestPath {
 }
 
 /**
- * Represents a REST resource as a single value.
- */
-export interface SingleResource<T> {
-  readonly asPath: RequestPath
-
-  readonly descriptor: DataDescriptor<T>
-
-  /**
-   * Reads the value of resource.
-   */
-  get(): Promise<T>
-
-  /**
-   * Creates a new blank value of the resource.
-   */
-  create(): T
-
-  /**
-   * Sends a value to the resource.
-   * @param value The item to send.
-   */
-  send(value: T): Promise<void>
-
-  /**
-   * Updates the value of the resource.
-   * @param value The object obtained using the {@link get} or {@link create} methods.
-   */
-  save(value: T): Promise<void>
-
-  /**
-   * Clears the value of the resource.
-   */
-  delete(): Promise<void>
-}
-
-/**
  * Represents a REST resource that is a collection of objects.
  */
 export interface CollectionResource<T> {

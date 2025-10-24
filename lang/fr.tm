@@ -39,3 +39,5 @@ minGreaterThanMax = "La limite inférieure ne peut pas être égale à ou plus g
 emptyConverter = "Un convertisseur doit posséder au moins une méthode 'unpack' ou 'pack'."
 
 refIsUnloaded = "Impossible de sérialiser une référence comme un objet complet si elle n'est pas chargée."
+failedToLoadRef = 'Échec du chargement de la ressource référencée'
+keyIsDifferent = 'La resource chargée depuis la clé {requested:json} possède une clé différente ({received:json})'

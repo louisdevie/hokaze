@@ -3,14 +3,14 @@ import { number, object, string } from '@module'
 import { NoRequestBody } from '@module/mappers/noRequestBody'
 import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
 
-const abcObject = object({ a: number, b: number, c: number })
+const abcObject = json.object({ a: json.number, b: json.number, c: json.number })
 const xyObject = object({ x: string, y: number })
 
-describe('creating a GET request from a service', () => {
+describe('creating a service with a GET request', () => {
   const http = fakeHttpClient()
-  const ws = fakeService('https://some-api.com/', http)
 
-  test('without arguments', async () => {
+  test('without URL parameters', async () => {
+    const ws = fakeService('https://some-api.com/', http)
     const req = ws.getRequest({ path: '/foo/bar', response: abcObject })
 
     http.get.mockResolvedValueOnce(Response.json({ a: 1, b: 2, c: 3, d: 4 }))
@@ -25,7 +25,7 @@ describe('creating a GET request from a service', () => {
   })
 
   // NOT YET SUPPORTED
-  /*test('with arguments', async () => {
+  /*test('with URL parameters', async () => {
     const req = ws.getRequest({
       path: '/foo/baz',
       request: xyObject,
@@ -38,7 +38,7 @@ describe('creating a GET request from a service', () => {
 
     expect(http.getJson).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/baz?x=a&y=7'))
     expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
-  })*/
+    })*/
 })
 
 describe('creating a POST request from a service', () => {

@@ -1,5 +1,6 @@
-import type { Config, BadResponseHandler, FailedRequestHandler } from '.'
-import { BadResponse } from '@module/backend/fetch'
+import type { HooksConfig } from './hooks'
+import type { HttpClient } from '@module/http'
+
 
 const defaultErrorHandler: BadResponseHandler & FailedRequestHandler = {
   onBadResponse(response: Response): never {

@@ -1,4 +1,4 @@
-import { CreationResult, HttpClient, RequestBodyOrParams, ResponseBody } from '@module/backend'
+import { CreationResult, HttpClient, RequestBodyOrParams, ResponseBody } from '../http'
 import { DefaultRequestPath, RequestPath } from '@module/requestPath'
 import { Key, ResourceRequestPath } from '@module/resources/index'
 import { UrlSearchArgs, UrlTemplate } from '@module/url'

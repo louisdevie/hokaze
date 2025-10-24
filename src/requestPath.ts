@@ -1,4 +1,3 @@
-import type { HttpClient } from '@module/backend'
 import { DataDescriptor } from '@module/data'
 import { ObjectDescriptor } from '@module/data/serialized/object'
 import type {
@@ -11,6 +10,7 @@ import { makeDeleteRequest, makeGetRequest, makePostRequest, makePutRequest } fr
 import { CollectionResource, SingleResource, TypeOfData } from '@module/resources'
 import { makeCollectionResource, makeSingleResource } from '@module/resources/factory'
 import type { UrlTemplate } from '@module/url'
+import type { HttpClient } from 'http'
 
 export interface RequestPathInit {
   baseUrl: UrlTemplate

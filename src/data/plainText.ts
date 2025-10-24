@@ -3,7 +3,7 @@ import { Mapper } from '@module/mappers'
 import { PlainTextMapper } from '@module/mappers/plainText'
 
 /**
- * Describes a field with values of type `string`.
+ * Describes a string value transferred as-is.
  * @template N Additional values the field can hold.
  */
 export class PlainText<N> extends AnyData<string | N, PlainText<N>> {
