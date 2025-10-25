@@ -1,3 +1,5 @@
+import { HttpResponse } from '@module/http'
+
 export interface OnBeforePacking {
   onBeforePacking(): void
 }
@@ -7,11 +9,11 @@ export interface OnBeforeRequest {
 }
 
 export interface OnBadResponse {
-  onBadResponse(response: Response): Response | Promise<Response>
+  onBadResponse(response: HttpResponse): HttpResponse | Promise<HttpResponse>
 }
 
 export interface OnFailedRequest {
-  onFailedRequest(error: unknown): Response | Promise<Response>
+  onFailedRequest(error: unknown): HttpResponse | Promise<HttpResponse>
 }
 
 export interface OnAfterResponse {

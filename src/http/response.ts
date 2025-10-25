@@ -1,3 +1,4 @@
+import { throwInternal } from '@module/errors'
 import { ContentType } from '@module/mappers'
 
 export interface HttpResponseHeaders {
@@ -10,6 +11,7 @@ interface HttpResponseBase {
   readonly body: unknown
   readonly status: number
   readonly statusText: string
+  readonly ok: boolean
   readonly headers: HttpResponseHeaders
 }
 
@@ -34,3 +36,37 @@ export interface XmlHttpResponse extends HttpResponseBase {
 }
 
 export type HttpResponse = TextHttpResponse | BlobHttpResponse | JsonHttpResponse | XmlHttpResponse
+
+export class BadResponse extends Error implements HttpResponseBase {
+  private _originalResponse: HttpResponseBase
+
+  public constructor(response: HttpResponseBase) {
+    super(`${response.status} ${response.statusText}`)
+    if (response.ok) throwInternal('BadResponse constructor called with ok response')
+    this._originalResponse = response
+  }
+
+  public get type(): ContentType {
+    return this._originalResponse.type
+  }
+
+  public get body(): unknown {
+    return this._originalResponse.body
+  }
+
+  public get headers(): HttpResponseHeaders {
+    return this._originalResponse.headers
+  }
+
+  public get status(): number {
+    return this._originalResponse.status
+  }
+
+  public get statusText(): string {
+    return this._originalResponse.statusText
+  }
+
+  public get ok(): boolean {
+    return false
+  }
+}

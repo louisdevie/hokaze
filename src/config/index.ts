@@ -1,4 +1,6 @@
-export { config, getGlobalConfig } from './global'
+import { DefaultHooksConfig, HooksConfig, mergeHooksConfig, PartialHooksConfig } from './hooks'
+import { DefaultHttpConfig, HttpConfig, mergeHttpConfig, PartialHttpConfig } from './http'
+import { DefaultValidationConfig, mergeValidationConfig, PartialValidationConfig, ValidationConfig } from './validation'
 
 export interface Config {
   http: HttpConfig
@@ -6,39 +8,30 @@ export interface Config {
   validation: ValidationConfig
 }
 
-export type PartialConfig = {
-  http: HttpClient | 'default'
-  hooks: HooksConfig
-  validation: ValidationConfig
+let __glob__: Config = {
+  http: DefaultHttpConfig,
+  hooks: DefaultHooksConfig,
+  validation: DefaultValidationConfig,
 }
 
-export class DecoratorConfig implements Config {
-  private readonly _wrapped: Config
-  private readonly _overrides: ConfigOverride
+export interface PartialConfig {
+  http?: PartialHttpConfig
+  hooks?: PartialHooksConfig
+  validation?: PartialValidationConfig
+}
 
-  public constructor(wrapped: Config, overrides: ConfigOverride) {
-    this._wrapped = wrapped
-    this._overrides = overrides
+export function mergeConfig(base: Config, override: PartialConfig): Config {
+  return {
+    http: mergeHttpConfig(base.http, override.http),
+    hooks: mergeHooksConfig(base.hooks, override.hooks),
+    validation: mergeValidationConfig(base.validation, override.validation),
   }
+}
 
-  public get badResponseHandler(): BadResponseHandler {
-    return this.overrideConfigProperty('badResponseHandler')
-  }
+export function config(options: PartialConfig): void {
+  __glob__ = mergeConfig(__glob__, options)
+}
 
-  public get failedRequestHandler(): FailedRequestHandler {
-    return this.overrideConfigProperty('failedRequestHandler')
-  }
-
-  private overrideConfigProperty<P extends keyof Config>(p: P): Config[P] {
-    let finalValue: Config[P] = this._wrapped[p]
-
-    const option: Config[P] | ResetValue | undefined = this._overrides[p]
-    if (option === 'default') {
-      finalValue = defaultConfig[p]
-    } else if (option !== undefined) {
-      finalValue = option
-    }
-
-    return finalValue
-  }
+export function getGlobalConfig(): Config {
+  return __glob__
 }
