@@ -1,30 +1,33 @@
 import { AuthScheme } from '@module/auth'
 import { DataDescriptor } from '@module/data'
 
-export interface EmptyCustomRequestInit {
-  /**
-   * The name of the resource as it appears in the URL.
-   */
-  path: string
-}
-
-export interface TxOnlyCustomRequestInit<Q> extends EmptyCustomRequestInit {
+export interface TxOnlyPreparedRequestInit<Q> {
   /**
    * Describes the values sent.
    */
   request: DataDescriptor<Q>
 }
 
-export interface RxOnlyCustomRequestInit<R> extends EmptyCustomRequestInit {
+export interface RxOnlyPreparedRequestInit<R> {
   /**
    * Describes the values received.
    */
   response: DataDescriptor<R>
 }
 
-export interface AsymmetricCustomRequestInit<Q, R> extends TxOnlyCustomRequestInit<Q>, RxOnlyCustomRequestInit<R> {}
+export interface AsymmetricPreparedRequestInit<Q, R> {
+  /**
+   * Describes the values sent.
+   */
+  request: DataDescriptor<Q>
 
-export interface SymmetricCustomRequestInit<T> extends EmptyCustomRequestInit {
+  /**
+   * Describes the values received.
+   */
+  response: DataDescriptor<R>
+}
+
+export interface SymmetricPreparedRequestInit<T> {
   /**
    * Describes both the values sent and received.
    */
@@ -32,19 +35,19 @@ export interface SymmetricCustomRequestInit<T> extends EmptyCustomRequestInit {
 }
 
 /**
- * Describes a custom request.
+ * Describes a custom HTTP request.
  */
-export type CustomRequestInit<Q, R> =
-  | EmptyCustomRequestInit
-  | TxOnlyCustomRequestInit<Q>
-  | RxOnlyCustomRequestInit<R>
-  | AsymmetricCustomRequestInit<Q, R>
-  | SymmetricCustomRequestInit<Q & R>
+export type PreparedRequestInit<Q = any, R = any> =
+  | object
+  | TxOnlyPreparedRequestInit<Q>
+  | RxOnlyPreparedRequestInit<R>
+  | AsymmetricPreparedRequestInit<Q, R>
+  | SymmetricPreparedRequestInit<Q & R>
 
 /**
  * A custom HTTP request.
  */
-export interface CustomRequest<Q, R> {
+export interface PreparedRequest<Q, R> {
   /**
    * Sends the request.
    * @param request The value to put in the request body.
@@ -57,62 +60,62 @@ export interface CustomRequest<Q, R> {
    * any value already present will be replaced.
    * @param init The headers to add.
    */
-  withHeaders(init: HeadersInit): CustomRequest<Q, R>
+  withHeaders(init: HeadersInit): PreparedRequest<Q, R>
 
   /**
    * Appends authorization headers to the request.
    * @param auth An {@link AuthScheme} to use for this request, or a string to put in the `Authorization` header.
    */
-  withAuth(auth: AuthScheme | string): CustomRequest<Q, R>
+  withAuth(auth: AuthScheme | string): PreparedRequest<Q, R>
 
   /**
    * Sets the headers to send alongside the request, replacing all the existing headers.
    * @param init The headers to set for the request.
    */
-  withExactHeaders(init: HeadersInit): CustomRequest<Q, R>
+  withExactHeaders(init: HeadersInit): PreparedRequest<Q, R>
 
   /**
    * Removes existing headers.
    * @param keys The name of the headers to remove.
    */
-  withoutHeaders(...keys: string[]): CustomRequest<Q, R>
+  withoutHeaders(...keys: string[]): PreparedRequest<Q, R>
 }
 
 /**
  * A custom HTTP request without request and response bodies.
  */
-export interface EmptyCustomRequest extends CustomRequest<undefined, void> {
+export interface EmptyPreparedRequest extends PreparedRequest<undefined, void> {
   send(): Promise<void>
-  withHeaders(init: HeadersInit): EmptyCustomRequest
-  withAuth(auth: AuthScheme | string): EmptyCustomRequest
-  withExactHeaders(init: HeadersInit): EmptyCustomRequest
-  withoutHeaders(...keys: string[]): EmptyCustomRequest
+  withHeaders(init: HeadersInit): EmptyPreparedRequest
+  withAuth(auth: AuthScheme | string): EmptyPreparedRequest
+  withExactHeaders(init: HeadersInit): EmptyPreparedRequest
+  withoutHeaders(...keys: string[]): EmptyPreparedRequest
 }
 
 /**
  * A custom HTTP request with only a request body.
  */
-export interface TxOnlyCustomRequest<Q> extends CustomRequest<Q, void> {
-  withHeaders(init: HeadersInit): TxOnlyCustomRequest<Q>
-  withAuth(auth: AuthScheme | string): TxOnlyCustomRequest<Q>
-  withExactHeaders(init: HeadersInit): TxOnlyCustomRequest<Q>
-  withoutHeaders(...keys: string[]): TxOnlyCustomRequest<Q>
+export interface TxOnlyPreparedRequest<Q> extends PreparedRequest<Q, void> {
+  withHeaders(init: HeadersInit): TxOnlyPreparedRequest<Q>
+  withAuth(auth: AuthScheme | string): TxOnlyPreparedRequest<Q>
+  withExactHeaders(init: HeadersInit): TxOnlyPreparedRequest<Q>
+  withoutHeaders(...keys: string[]): TxOnlyPreparedRequest<Q>
 }
 
 /**
  * A custom HTTP request with only a response body.
  */
-export interface RxOnlyCustomRequest<R> extends CustomRequest<undefined, R> {
+export interface RxOnlyPreparedRequest<R> extends PreparedRequest<undefined, R> {
   send(): Promise<R>
-  withHeaders(init: HeadersInit): RxOnlyCustomRequest<R>
-  withAuth(auth: AuthScheme | string): RxOnlyCustomRequest<R>
-  withExactHeaders(init: HeadersInit): RxOnlyCustomRequest<R>
-  withoutHeaders(...keys: string[]): RxOnlyCustomRequest<R>
+  withHeaders(init: HeadersInit): RxOnlyPreparedRequest<R>
+  withAuth(auth: AuthScheme | string): RxOnlyPreparedRequest<R>
+  withExactHeaders(init: HeadersInit): RxOnlyPreparedRequest<R>
+  withoutHeaders(...keys: string[]): RxOnlyPreparedRequest<R>
 }
 
-export type SpecificRequestType<Init extends CustomRequestInit<unknown, unknown>> =
-  Init extends SymmetricCustomRequestInit<infer T> ? CustomRequest<T, T>
-  : Init extends AsymmetricCustomRequestInit<infer Q, infer R> ? CustomRequest<Q, R>
-  : Init extends RxOnlyCustomRequestInit<infer Q> ? RxOnlyCustomRequest<Q>
-  : Init extends TxOnlyCustomRequestInit<infer R> ? TxOnlyCustomRequest<R>
-  : EmptyCustomRequest
+export type SpecificRequestType<Init extends PreparedRequestInit<unknown, unknown>> =
+  Init extends SymmetricPreparedRequestInit<infer T> ? PreparedRequest<T, T>
+  : Init extends AsymmetricPreparedRequestInit<infer Q, infer R> ? PreparedRequest<Q, R>
+  : Init extends RxOnlyPreparedRequestInit<infer Q> ? RxOnlyPreparedRequest<Q>
+  : Init extends TxOnlyPreparedRequestInit<infer R> ? TxOnlyPreparedRequest<R>
+  : EmptyPreparedRequest

@@ -1,20 +1,70 @@
-import { fakeHttpClient, fakeService } from '@fake'
-import { number, object, string } from '@module'
-import { NoRequestBody } from '@module/mappers/noRequestBody'
-import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
+import { fakeHttpClient } from '@fake'
+import { createWebService, json } from '@module'
+import { createRequest } from '@module/requests/factory'
 
 const abcObject = json.object({ a: json.number, b: json.number, c: json.number })
-const xyObject = object({ x: string, y: number })
+const xyObject = json.object({ x: json.string, y: json.number })
 
-describe('creating a service with a GET request', () => {
-  const http = fakeHttpClient()
+describe('creating a stand-alone request', () => {
+  describe('creating a GET request', () => {
+    test('without URL parameters', async () => {
+      const http = fakeHttpClient()
+      const request = createRequest({
+        method: 'GET',
+        path: '/foo/bar',
+        response: abcObject,
+      })
+      const request2 = createRequest({
+        GET: '/foo/bar',
+        response: abcObject,
+      })
 
+      http.get.mockResolvedValueOnce(Response.json({ a: 1, b: 2, c: 3, d: 4 }))
+      const res = await ws.request.send()
+
+      expect(http.get).toHaveBeenCalledExactlyOnceWith(
+        new URL('https://some-api.com/foo/bar'),
+        'application/json',
+        new Headers(),
+      )
+      expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
+    })
+
+    // NOT YET SUPPORTED
+    /*test('with URL parameters', async () => {
+    const req = ws.getRequest({
+      path: '/foo/baz',
+      request: xyObject,
+      response: abcObject,
+    })
+
+    http.getJson.mockClear()
+    http.getconfig: string | URL | WebServiceConfig, p0: { request: { method: string; path: string; response: import("/home/louis/Web/hokaze/src/data/json/object").ObjectValue<{ a: number; b: number; c: number }, never> } }, p0: { request: { method: string; path: string; response: import("/home/louis/Web/hokaze/src/data/json/object").ObjectValue<{ a: number; b: number; c: number }, never> } }, c: 3, d: 4 })
+    const res = await req.send({ x: 'a', y: 7 })
+
+    expect(http.getJson).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/baz?x=a&y=7'))
+    expect(res).toStrictEqual({ a: 1, b: 2, c: 3 })
+    })*/
+  })
+})
+
+describe('creating a GET request', () => {
+  describe('inside a web service', () => {})
   test('without URL parameters', async () => {
-    const ws = fakeService('https://some-api.com/', http)
-    const req = ws.getRequest({ path: '/foo/bar', response: abcObject })
+    const http = fakeHttpClient()
+    const ws = createWebService(
+      { baseUrl: 'https://some-api.com/', http },
+      {
+        request: {
+          method: 'GET',
+          path: '/foo/bar',
+          response: abcObject,
+        },
+      },
+    )
 
     http.get.mockResolvedValueOnce(Response.json({ a: 1, b: 2, c: 3, d: 4 }))
-    const res = await req.send()
+    const res = await ws.request.send()
 
     expect(http.get).toHaveBeenCalledExactlyOnceWith(
       new URL('https://some-api.com/foo/bar'),
@@ -33,7 +83,7 @@ describe('creating a service with a GET request', () => {
     })
 
     http.getJson.mockClear()
-    http.getJson.mockResolvedValueOnce({ a: 1, b: 2, c: 3, d: 4 })
+    http.getconfig: string | URL | WebServiceConfig, p0: { request: { method: string; path: string; response: import("/home/louis/Web/hokaze/src/data/json/object").ObjectValue<{ a: number; b: number; c: number }, never> } }, p0: { request: { method: string; path: string; response: import("/home/louis/Web/hokaze/src/data/json/object").ObjectValue<{ a: number; b: number; c: number }, never> } }, c: 3, d: 4 })
     const res = await req.send({ x: 'a', y: 7 })
 
     expect(http.getJson).toHaveBeenCalledExactlyOnceWith(new URL('https://some-api.com/foo/baz?x=a&y=7'))

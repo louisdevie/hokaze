@@ -1,0 +1,13 @@
+import { ValueMapper } from './base'
+
+export class JsonBooleanMapper<N> extends ValueMapper<boolean | N> {
+  public packValue(value: boolean): unknown {
+    return value
+  }
+
+  public unpackValue(response: unknown): boolean | N {
+    if (response === undefined) return undefined as N
+    if (response === null) return null as N
+    return Boolean(response)
+  }
+}

@@ -1,83 +1,77 @@
-import type { CustomRequest } from '.'
-import { AuthScheme } from '@module/auth'
-import { HttpClient, HttpRequest } from '../http'
-import { Mapper } from '@module/mappers'
-import { NoRequestBody } from '@module/mappers/noRequestBody'
-import { UrlTemplate } from '@module/url'
+import type { PreparedRequest } from '.'
+import { Config, getGlobalConfig, mergeConfig, PartialConfig } from '@module/config'
+import type { Mapper } from '@module/mappers'
 
-interface RequestParams<Q, R> {
-  client: HttpClient
-  baseUrl: UrlTemplate
-  path: string
+/**
+ * @internal
+ */
+export interface GenericPreparedRequestInit<Q, R> {
+  method: string
+  url: URL
   requestMapper: Mapper<Q> | null
   responseMapper: Mapper<R> | null
 }
 
-export type GenericRequestInit<Q, R> = GenericCustomRequest<Q, R> | RequestParams<Q, R>
+/**
+ * @internal
+ */
+export interface GenericPreparedRequestOptions {}
 
-export interface RequestOptions {
-  headers?: Headers
-}
-
-class GenericCustomRequest<Q, R> implements CustomRequest<Q, R> {
-  private readonly _client: HttpClient
-  private readonly _baseUrl: UrlTemplate
-  private readonly _path: string
-  private readonly _headers: Headers
+/**
+ * @internal
+ */
+export class GenericPreparedRequest<Q, R> implements PreparedRequest<Q, R> {
+  private readonly _config: Config
+  private readonly _method: string
+  private readonly _url: URL
   private readonly _requestMapper: Mapper<Q> | null
   private readonly _responseMapper: Mapper<R> | null
 
-  public constructor(init: GenericRequestInit<Q, R>, options?: RequestOptions) {
-    if (init instanceof GenericCustomRequest) {
-      this._client = init._client
-      this._baseUrl = init._baseUrl
-      this._path = init._path
-      this._headers = options?.headers ?? init._headers
+  public constructor(
+    init: GenericPreparedRequest<Q, R> | GenericPreparedRequestInit<Q, R>,
+    options?: GenericPreparedRequestOptions,
+  ) {
+    if (init instanceof GenericPreparedRequest) {
+      this._config = init._config
+      this._method = init._method
+      this._url = init._url
       this._requestMapper = init._requestMapper
       this._responseMapper = init._responseMapper
     } else {
-      this._client = init.client
-      this._baseUrl = init.baseUrl
-      this._path = init.path
-      this._headers = new Headers()
+      this._config = mergeConfig(getGlobalConfig(), init.config)
+      this._method = init.method
+      this._url = init.url
       this._requestMapper = init.requestMapper
       this._responseMapper = init.responseMapper
     }
   }
 
-  protected get client(): HttpClient {
-    return this._client
+  public get method(): string {
+    return this._method
   }
 
-  protected get headers(): Headers {
-    return this._headers
-  }
-
-  protected get expectedResponseType(): string {
-    return this._responseMapper?.expectedResponseType ?? AnyResponseType
-  }
-
-  protected buildUrl(): URL {
-    return this._baseUrl.getUrlForResource(this._path, {})
+  public get url(): URL {
+    return this._url
   }
 
   public async send(request: Q): Promise<R> {
-    let mappedRequest: HttpRequest = new NoRequestBody()
     if (this._requestMapper !== null) {
-      mappedRequest = this._requestMapper.pack(request)
+      request = this._config.hooks.onBeforePacking(request)
+      hrb.withContent(this._requestMapper.pack(request))
+    }
+    if (this._responseMapper !== null) {
+      hrb.withExpectedResponseType(this._responseMapper.expectedResponseType)
     }
 
-    const response = await this._client.send(mappedRequest)
+    const response = await this._config.http.request(hrb.build())
 
     let mappedResponse = undefined
     if (this._responseMapper !== null) {
       mappedResponse = this._responseMapper.unpack(response)
-    }>
+    }
 
     return mappedResponse as R
   }
-
-  protected abstract cloneWithOptions(options: RequestOptions): CustomRequest<Q, R>
 
   public withHeaders(init: HeadersInit): CustomRequest<Q, R> {
     const newHeaders = new Headers(this._headers)

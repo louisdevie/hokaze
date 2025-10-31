@@ -1,4 +1,4 @@
-import __ from '@module/locale'
+import L from '@module/locale'
 import type { Key } from '@module/resources'
 
 export interface Referenceable<T> {
@@ -84,7 +84,7 @@ export class Ref<T> {
    */
   public async get(): Promise<T> {
     if (!this._state.loaded) await this.reload()
-    if (!this._state.loaded) throw new Error(__.failedToLoadRef)
+    if (!this._state.loaded) throw new Error(L.failedToLoadRef)
     return this._state.value
   }
 
@@ -107,7 +107,7 @@ export class Ref<T> {
     const received = this.value[this._resource.keyProperty]
     // the loose equality here is on purpose. see the set(...) method above.
     if (received != requested) {
-      console.warn(__.keyIsDifferent(requested, received))
+      console.warn(L.keyIsDifferent(requested, received))
     }
   }
 }

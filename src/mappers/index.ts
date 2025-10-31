@@ -1,11 +1,10 @@
-import { RequestBodyOrParams, ResponseBody } from '../http'
-
-export type ContentType = 'text' | 'blob' | 'json' | 'xml'
+import { HttpResponseBody, RequestBodyOrParams } from '@module/http'
+import { MediaType } from '@module/mediaTypes'
 
 export interface Mapper<T> {
   pack(value: T): RequestBodyOrParams
 
-  readonly responseType: string
+  readonly expectedResponseType: MediaType
 
-  unpack(response: ResponseBody): Promise<T>
+  unpack(response: HttpResponseBody): Promise<T>
 }

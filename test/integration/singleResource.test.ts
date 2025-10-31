@@ -1,6 +1,6 @@
 import { fakeHttpClient, fakeService } from '@fake'
 import { number, Service } from '@module'
-import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
+import { JsonRequestBody } from '@module/mappers/json/json/jsonRequestBody'
 
 describe('creating a single resource', () => {
   describe('by extending the SingleResource class', () => {

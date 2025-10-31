@@ -1,9 +1,9 @@
 import { Converter } from '.'
 import { RequestBodyOrParams, ResponseBody } from '../../http'
+import { type EagerReferenceLoader } from '../json'
 import { Key } from '@module'
 import { Mapper } from '@module/mappers'
-import { type EagerReferenceLoader } from '@module/mappers/serialized'
-import { ObjectMapper, RefDataResult } from '@module/mappers/serialized/object'
+import { ObjectMapper, RefDataResult } from '@module/mappers/json/object'
 
 export class WrappedMapper<V, T> implements Mapper<V> {
   private _converter: Converter<V, T>

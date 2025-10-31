@@ -1,13 +1,13 @@
 import { HttpClient } from '../http'
 import { DataDescriptor } from '@module/data'
-import { ObjectDescriptor } from '@module/data/serialized/object'
+import { ObjectDescriptor } from '@module/data/json/object'
 import { throwError } from '@module/errors'
 import L from '@module/locale'
 import {
   ExtractFromKeyBody,
   ExtractFromLocationUrl,
   ExtractFromObjectBody,
-} from '@module/mappers/serialized/keyExtraction'
+} from '@module/mappers/json/keyExtraction'
 import { CollectionResource } from '@module/resources'
 import { AllowedOperations, GenericCollectionResource, GenericSingleResource } from '@module/resources/generic'
 import { ResourceRequestBuilder } from '@module/resources/requestBuilder'

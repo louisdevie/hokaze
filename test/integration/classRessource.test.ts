@@ -1,6 +1,6 @@
 import { fakeHttpClient, fakeService } from '@fake'
 import { number, object, string } from '@module'
-import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
+import { JsonRequestBody } from '@module/mappers/json/json/jsonRequestBody'
 
 class Weapon {
   public id!: number

@@ -41,3 +41,7 @@ emptyConverter = "Un convertisseur doit posséder au moins une méthode 'unpack'
 refIsUnloaded = "Impossible de sérialiser une référence comme un objet complet si elle n'est pas chargée."
 failedToLoadRef = 'Échec du chargement de la ressource référencée'
 keyIsDifferent = 'La resource chargée depuis la clé {requested:json} possède une clé différente ({received:json})'
+
+colonNotAllowedInUsername = "Les deux-points ':' ne sont pas autorisés dans les noms d'utilisateur."
+
+baseKeywordCanAppearOnlyOnce = 'Le mot-clé "base" ne peut apparaître qu'une seule fois dans le tableau de configuration."

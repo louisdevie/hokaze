@@ -43,3 +43,7 @@ emptyConverter = "A converter must defined at least an 'unpack' or a 'pack' oper
 refIsUnloaded = 'Cannot serialize ref as a full object if it is not loaded.'
 failedToLoadRef = 'Failed to load the referenced resource.'
 keyIsDifferent = 'Resource loaded from key {requested:json} has a different key ({received:json}).'
+
+colonNotAllowedInUsername = "Colons ':' are not allowed in usernames."
+
+baseKeywordCanAppearOnlyOnce = 'The "base" keyword can appear only once in the hooks configuration array."

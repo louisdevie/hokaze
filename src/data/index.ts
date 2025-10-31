@@ -16,14 +16,9 @@ export interface DataDescriptor<T> {
   readonly isWritable: boolean
 
   /**
-   * Indicates whether that field may be omitted when sending/receiving it from the API.
+   * Indicates whether that data may be omitted when sending/receiving it from the API.
    */
   readonly isOptional: boolean
-
-  /**
-   * Creates a "blank" value to create new model objects.
-   */
-  makeBlankValue(): T
 
   /**
    * Check if a value meets the different requirements of the field before being sent.
@@ -32,7 +27,11 @@ export interface DataDescriptor<T> {
   validate(value: T): ValidationResult
 
   /**
-   * Creates a mapping for this field.
+   * Creates a mapper for this data.
    */
   makeMapper(): Mapper<T>
 }
+
+export { json } from './json'
+export { text } from './text'
+export { blob } from './blob'

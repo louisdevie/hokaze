@@ -1,8 +1,17 @@
-import { CustomRequest, CustomRequestInit } from '.'
+import { PreparedRequestInit, SpecificRequestType } from '.'
 import { HttpClient } from '../http'
-import { GenericDeleteRequest, GenericGetRequest, GenericPostRequest, GenericPutRequest } from './generic'
 import { Mapper } from '@module/mappers'
 import { UrlTemplate } from '@module/url'
+import { PartialConfig } from '@module/config'
+
+export interface PreparedRequestConfig extends PartialConfig {
+  baseUrl: string | URL
+}
+export function createRequest<Init extends PreparedRequestConfig>(init: Init): SpecificRequestType<Init> {
+  if ('GET' in init) {
+    return new GenericPre
+  }
+}
 
 export function makeGetRequest<Q, R>(
   baseUrl: UrlTemplate,

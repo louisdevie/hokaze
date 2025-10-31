@@ -1,5 +1,5 @@
 import type { DataDescriptor } from '@module/data'
-import { ReferencableValue } from '@module/data/serialized/ref'
+import { ReferencableValue } from '@module/data/json/ref'
 import type { RequestPath } from '@module/requestPath'
 import { UrlSearchArgs } from '@module/url'
 

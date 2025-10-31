@@ -1,6 +1,6 @@
 import { fakeHttpClient, fakeService } from '@fake'
 import { number, object, string, ref, Ref } from '@module'
-import { JsonRequestBody } from '@module/mappers/serialized/json/jsonRequestBody'
+import { JsonRequestBody } from '@module/mappers/json/json/jsonRequestBody'
 
 const http = fakeHttpClient()
 const ws = fakeService('https://musicbrainz.org/ws', http)

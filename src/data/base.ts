@@ -1,5 +1,4 @@
 import { DataDescriptor } from '.'
-import { Check } from '@module/checks'
 import { ConvertedData } from '@module/data/converted'
 import L from '@module/locale'
 import { Mapper } from '@module/mappers'
@@ -12,13 +11,12 @@ import {
   OutputSelfConverter,
 } from '@module/mappers/converters'
 import { resolveConverter, resolveSelfConverter } from '@module/mappers/converters/factory'
-import { ValidationResult } from '@module/validation'
+import { Check, ValidationResult } from '@module/validation'
 
 /**
  * Options shared by all descriptors.
  */
 export interface AnyDataOptions<T> {
-  blankValueFactory?: () => T
   isReadable?: boolean
   isWritable?: boolean
   isOptional?: boolean
@@ -31,7 +29,6 @@ export interface AnyDataOptions<T> {
  * @template Self The concrete type of the class extending this.
  */
 export abstract class AnyData<T, Self> implements DataDescriptor<T> {
-  private readonly _blankValueFactory: (() => T) | null
   private readonly _isReadable: boolean
   private readonly _isWritable: boolean
   private readonly _isOptional: boolean
@@ -44,7 +41,6 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
    * @protected
    */
   protected constructor(copyFrom?: AnyData<T, unknown>, options?: AnyDataOptions<T>) {
-    this._blankValueFactory = options?.blankValueFactory ?? copyFrom?._blankValueFactory ?? null
     this._isReadable = options?.isReadable ?? copyFrom?._isReadable ?? true
     this._isWritable = options?.isWritable ?? copyFrom?._isWritable ?? true
     this._isOptional = options?.isOptional ?? copyFrom?._isOptional ?? false
@@ -52,21 +48,11 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
   }
 
   /**
-   * The default "blank" value.
-   * @protected
-   */
-  protected abstract makeDefaultBlankValue(): T
-
-  /**
    * Clones this object and return it as the Self type.
    * @param options Options to pass to the parent constructor.
    * @protected
    */
   protected abstract cloneAsSelf(options: AnyDataOptions<T>): Self
-
-  public makeBlankValue(): T {
-    return this._blankValueFactory !== null ? this._blankValueFactory() : this.makeDefaultBlankValue()
-  }
 
   public validate(value: T): ValidationResult {
     let result
@@ -97,27 +83,6 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
   public abstract makeMapper(): Mapper<T>
 
   /**
-   * Change the "blank" value used when creating new objects. If the value is *mutable* (e.g. if it is an object),
-   * consider using the other overload instead.
-   * @param value The new value to use.
-   */
-  public withBlankValue(value: T): Self
-  /**
-   * Change the "blank" value used when creating new objects.
-   * @param factory A function that will create a new value each time it is called.
-   */
-  public withBlankValue(factory: () => T): Self
-  public withBlankValue(factoryOrValue: (() => T) | T): Self {
-    let blankValueFactory
-    if (factoryOrValue instanceof Function) {
-      blankValueFactory = factoryOrValue
-    } else {
-      blankValueFactory = (): T => factoryOrValue
-    }
-    return this.cloneAsSelf({ blankValueFactory })
-  }
-
-  /**
    * Makes this model read-only (i.e. it will never be sent, only received). This and {@link writeOnly} are mutually
    * exclusive.
    */
@@ -145,7 +110,7 @@ export abstract class AnyData<T, Self> implements DataDescriptor<T> {
    * Adds one or more validators to be run on the data before it is sent.
    * @param checks The checks to add to the descriptor.
    */
-  public and(...checks: Check<NonNullable<T>>[]): Self {
+  public check(...checks: Check<NonNullable<T>>[]): Self {
     return this.cloneAsSelf({ checks: [...this._checks, ...checks] })
   }
 

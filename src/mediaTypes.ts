@@ -122,10 +122,12 @@ export class MediaType {
   }
 }
 
+/**
+ * @internal
+ */
 export const MediaTypes = {
   Any: new MediaType('*/*'),
   Text: { Preferred: new MediaType('text/plain;charset=utf-8') },
   Blob: { Preferred: new MediaType('application/octet-stream') },
   Json: { Preferred: new MediaType('application/json') },
-  Xml: { Preferred: new MediaType('text/xml') },
-} as const
+}

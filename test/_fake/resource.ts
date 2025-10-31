@@ -1,6 +1,6 @@
 import { fakeRequestPath } from './requestPath'
 import { number, object, string } from '@module'
-import { ReferencableValue } from '@module/data/serialized/ref'
+import { ReferencableValue } from '@module/data/json/ref'
 import { RequestPath } from '@module/requestPath'
 import type { CollectionResource, Key } from '@module/resources'
 
