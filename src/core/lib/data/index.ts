@@ -1,6 +1,5 @@
-import { Mapper } from '@module/mappers'
-import { ValidationResult } from '@module/validation'
-import { ValidationPolicies } from '@module/validation'
+import {Check} from '~/abstractions/validation'
+import {Mapper} from "~/abstractions/mappers";
 
 /**
  * An object describing a value mapped to the JavaScript type `T`.
@@ -22,18 +21,21 @@ export interface DataDescriptor<T> {
   readonly isOptional: boolean
 
   /**
-   * Check if a value meets the different requirements of the field before being sent.
-   * @param value The value to check.
-   * @param policies
+   * Other requirements the data must meet.
    */
-  validate(value: T, policies: ValidationPolicies): ValidationResult
+  readonly checks: CheckCollection<T>
 
   /**
-   * Creates a mapper for this data.
+   * Creates a mapper for this type of data.
    */
-  makeMapper(): Mapper<T>
+  createMapper(): Mapper<T>
 }
 
-export { json } from './json'
-export { text } from './text'
-export { blob } from './blob'
+/**
+ * A read-only list of checks.
+ */
+export type CheckCollection<T> = Iterable<Check<NonNullable<T>>>
+
+export {json} from './json'
+export {text} from './text'
+export {blob} from './blob'

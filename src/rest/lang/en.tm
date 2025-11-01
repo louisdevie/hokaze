@@ -38,7 +38,7 @@ objectInUrlNotAllowed = "An object can't be used in URL query parameters."
 
 minGreaterThanMax = "The lower bound cannot be equal to or greater than the upper bound."
 
-emptyConverter = "A converter must defined at least an 'unpack' or a 'pack' operation."
+emptyConverter = ""
 
 refIsUnloaded = 'Cannot serialize ref as a full object if it is not loaded.'
 failedToLoadRef = 'Failed to load the referenced resource.'

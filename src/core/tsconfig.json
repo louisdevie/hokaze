@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "~/shared": [
+        "../core/shared.ts"
+      ],
+      "~/*": [
+        "./lib/*"
+      ]
+    }
+  }
+}

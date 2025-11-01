@@ -1,0 +1,21 @@
+{
+  "name": "@hokaze/core",
+  "version": "0.4.0",
+  "description": "Core package of the hokaze framework",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --config ../../eslint-typed.config.js index.ts src/** test/**",
+    "test": "jest",
+    "format": "prettier --write index.ts lib/** test/**",
+    "build": "tsup"
+  },
+  "author": "Louis Devie",
+  "license": "MIT"
+}

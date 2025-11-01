@@ -17,7 +17,3 @@ export {
 
 export type AutoFixResult<T> = { success: false } | { success: true; value: T }
 
-export interface Check<T> {
-  validate(value: T): ValidationResult
-  fix(value: T): AutoFixResult<T>
-}

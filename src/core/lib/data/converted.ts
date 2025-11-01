@@ -1,8 +1,6 @@
-import { DataDescriptor } from '@module/data'
-import { AnyData } from '@module/data/base'
-import { Mapper } from '@module/mappers'
-import { Converter, WrappedMapper } from '@module/mappers/converters'
-import { ValidationResult } from '@module/validation'
+import {DataDescriptor} from "~/data/index";
+import {AnyData} from "~/data/base";
+import {Converter} from "~/converters";
 
 /**
  * A descriptor that has been wrapped with a converter.
@@ -12,29 +10,16 @@ import { ValidationResult } from '@module/validation'
 export class ConvertedData<V, T> implements DataDescriptor<V> {
   private readonly _baseData: AnyData<T, unknown>
   private readonly _converter: Converter<V, T>
-  private readonly _blankValueFactory: (() => V) | null
 
   /**
    * Decorates a base descriptor with a custom mapper.
    * @param baseData The descriptor to wrap.
    * @param converter The converter.
-   * @param blankValueFactory A blank value factory that directly produces values of the mapped type.
    * @protected
    */
-  public constructor(baseData: AnyData<T, unknown>, converter: Converter<V, T>, blankValueFactory: (() => V) | null) {
+  public constructor(baseData: AnyData<T, unknown>, converter: Converter<V, T>) {
     this._baseData = baseData
     this._converter = converter
-    this._blankValueFactory = blankValueFactory
-  }
-
-  public makeBlankValue(): V {
-    return this._blankValueFactory !== null ?
-        this._blankValueFactory()
-      : this._converter.unpack(this._baseData.makeBlankValue())
-  }
-
-  public validate(value: V): ValidationResult {
-    return this._baseData.validate(this._converter.pack(value))
   }
 
   public get isReadable(): boolean {

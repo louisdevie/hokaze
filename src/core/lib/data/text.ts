@@ -1,7 +1,3 @@
-import { AnyData, AnyDataOptions } from '@module/data/base'
-import { Mapper } from '@module/mappers'
-import { TextMapper } from '@module/mappers/text'
-
 /**
  * Describes a string value transferred as-is.
  * @template N Additional values the field can hold.
