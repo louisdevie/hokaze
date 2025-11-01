@@ -1,0 +1,45 @@
+{
+  "name": "@hokaze/core",
+  "version": "0.4.0",
+  "description": "An object-to-REST mapper",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build-translations": "elzii release",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --config eslint-typed.config.js src/** test/**",
+    "test": "jest",
+    "format": "prettier --write src/** test/**",
+    "build": "tsup",
+    "all": "npm run build-translations && npm run type-check && npm run lint && npm run test && npm run format && npm run build"
+  },
+  "keywords": [],
+  "author": "Louis DEVIE",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.2.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.0",
+    "@types/jest": "^29.5.11",
+    "@typescript-eslint/types": "^7.9.0",
+    "elzii-tools": "^0.2.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.32.0",
+    "fake-indexeddb": "^5.0.2",
+    "jest": "^29.7.0",
+    "jest-extended": "^4.0.2",
+    "prettier": "^3.2.3",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.1",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.9.0"
+  },
+  "dependencies": {
+    "elzii": "^0.2.1"
+  }
+}
