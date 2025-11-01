@@ -8,7 +8,7 @@ const Reject: MixedNullishPolicy = {}
 
 export type MixedNullishPolicyName = 'ignore' | 'convert' | 'reject'
 
-export function mixedNullishPolicy(name: MixedNullishPolicyName): MixedNullishPolicy {
+export function getMixedNullishPolicy(name: MixedNullishPolicyName): MixedNullishPolicy {
   switch (name) {
     case 'ignore':
       return Ignore

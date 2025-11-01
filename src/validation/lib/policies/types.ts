@@ -10,7 +10,7 @@ const Reject: TypesPolicy = {}
 
 export type TypesPolicyName = 'ignore' | 'convertOrIgnore' | 'convertOrReject' | 'reject'
 
-export function typesPolicy(name: TypesPolicyName): TypesPolicy {
+export function getTypesPolicy(name: TypesPolicyName): TypesPolicy {
   switch (name) {
     case 'ignore':
       return Ignore

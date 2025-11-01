@@ -1,4 +1,4 @@
-import type { Check } from '@module/checks'
+import type { AutoFixResult, Check } from '.'
 import { throwError } from '@module/errors'
 import L from '@module/locale'
 import { ValidationResult } from '@module/validation'
@@ -30,6 +30,10 @@ class LengthCheck implements Check<Length> {
     }
 
     return result
+  }
+
+  public fix(value: Length): AutoFixResult<Length> {
+    return { success: false }
   }
 }
 

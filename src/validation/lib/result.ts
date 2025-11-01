@@ -1,5 +1,5 @@
 /**
- * The result of a check.
+ * The result of a validation operation.
  */
 export class ValidationResult {
   private readonly _errors: Map<string, string> | null

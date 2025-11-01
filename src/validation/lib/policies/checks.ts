@@ -10,7 +10,7 @@ const Reject: ChecksPolicy = {}
 
 export type ChecksPolicyName = 'ignore' | 'fixOrIgnore' | 'fixOrReject' | 'reject'
 
-export function checksPolicy(name: ChecksPolicyName): ChecksPolicy {
+export function getChecksPolicy(name: ChecksPolicyName): ChecksPolicy {
   switch (name) {
     case 'ignore':
       return Ignore

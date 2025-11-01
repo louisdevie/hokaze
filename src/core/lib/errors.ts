@@ -12,3 +12,9 @@ export function throwInternal(error: string): never {
   unwrappedError: 'unwrap() called on an error',
   unwrappedValue: 'unwrap_error() called on a value',
 */
+
+const __ = (str: TemplateStringsArray, ...args: unknown[]) => 5
+
+__`lol ${5} `
+
+lol =

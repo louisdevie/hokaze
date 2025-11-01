@@ -44,4 +44,4 @@ keyIsDifferent = 'La resource chargée depuis la clé {requested:json} possède 
 
 colonNotAllowedInUsername = "Les deux-points ':' ne sont pas autorisés dans les noms d'utilisateur."
 
-baseKeywordCanAppearOnlyOnce = 'Le mot-clé "base" ne peut apparaître qu'une seule fois dans le tableau de configuration."
+baseKeywordCanAppearOnlyOnce = 'Le mot-clé "base" ne peut apparaître qu\'une seule fois dans le tableau de configuration.'

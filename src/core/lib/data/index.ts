@@ -1,5 +1,6 @@
 import { Mapper } from '@module/mappers'
 import { ValidationResult } from '@module/validation'
+import { ValidationPolicies } from '@module/validation'
 
 /**
  * An object describing a value mapped to the JavaScript type `T`.
@@ -23,8 +24,9 @@ export interface DataDescriptor<T> {
   /**
    * Check if a value meets the different requirements of the field before being sent.
    * @param value The value to check.
+   * @param policies
    */
-  validate(value: T): ValidationResult
+  validate(value: T, policies: ValidationPolicies): ValidationResult
 
   /**
    * Creates a mapper for this data.

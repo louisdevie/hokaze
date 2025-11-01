@@ -1,4 +1,5 @@
-translations: lang
-output:
-  ts: src/locale/gen
-static: true
+rest:
+  translations: src/rest/lang
+  output:
+    ts: src/rest/lib/locale/gen
+  static: true
