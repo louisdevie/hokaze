@@ -53,7 +53,7 @@ export class EnumValue<E, N> extends AnyValue<E | N, EnumValue<E, N>> {
    * a plain list of values (e.g. `enum(1, 2, 3)`), this has no effect.
    */
   public get useNames(): EnumValue<E, N> {
-    if (!this._adapter.hasNamedValues) console.warn('useNames modifier used on an unnamed enumeration')
+    if (!this._adapter.hasNamedValues) XXXwarn('useNames modifier used on an unnamed enumeration')
     return this.cloneAsSelf({ useNames: true })
   }
 

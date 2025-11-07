@@ -49,7 +49,7 @@ export class NumberValue<N> extends AnyValue<number | N, NumberValue<N>> {
    * Always floor the number to the nearest integer before sending it.
    */
   public get integer(): NumberValue<N> {
-    if (this._integer) console.warn('integer modifier used twice on the same field')
+    if (this._integer) XXXwarn('integer modifier used twice on the same field')
     return this.cloneAsSelf({ integer: true })
   }
 

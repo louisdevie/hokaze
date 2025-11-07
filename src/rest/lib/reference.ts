@@ -107,7 +107,7 @@ export class Ref<T> {
     const received = this.value[this._resource.keyProperty]
     // the loose equality here is on purpose. see the set(...) method above.
     if (received != requested) {
-      console.warn(L.keyIsDifferent(requested, received))
+      XXXwarn(L.keyIsDifferent(requested, received))
     }
   }
 }

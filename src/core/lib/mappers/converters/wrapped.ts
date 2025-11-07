@@ -1,9 +1,5 @@
-import { Converter } from '.'
-import { RequestBodyOrParams, ResponseBody } from '../../http'
-import { type EagerReferenceLoader } from '../json'
-import { Key } from '@module'
-import { Mapper } from '@module/mappers'
-import { ObjectMapper, RefDataResult } from '@module/mappers/json/object'
+import { Converter } from '~/converters'
+import type { Mapper, RequestData, ResponseData } from '~/mappers'
 
 export class WrappedMapper<V, T> implements Mapper<V> {
   private _converter: Converter<V, T>
@@ -14,21 +10,22 @@ export class WrappedMapper<V, T> implements Mapper<V> {
     this._mapper = mapper
   }
 
-  public pack(value: V): RequestBodyOrParams {
+  public pack(value: V): RequestData {
     const dto = this._converter.pack(value)
     return this._mapper.pack(dto)
   }
 
-  public async unpack(response: ResponseBody): Promise<V> {
+  public async unpack(response: ResponseData): Promise<V> {
     const dto = await this._mapper.unpack(response)
     return this._converter.unpack(dto)
   }
 
-  public get expectedResponseType(): string {
-    return this._mapper.expectedResponseType
+  public get expectedMediaType(): string | undefined {
+    return this._mapper.expectedMediaType
   }
 }
 
+/*
 export class WrappedObjectMapper<V, T> implements ObjectMapper<V> {
   private _converter: Converter<V, T>
   private _mapper: ObjectMapper<T>
@@ -80,4 +77,4 @@ export class WrappedObjectMapper<V, T> implements ObjectMapper<V> {
 
     return convertedResult
   }
-}
+}*/

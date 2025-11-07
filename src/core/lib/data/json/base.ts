@@ -114,7 +114,7 @@ export abstract class AnyValue<T, Self> extends AnyData<T, Self> implements Valu
    * do anything.
    */
   public get asKey(): Self {
-    if (this._useAsKey) console.warn('asKey modifier used twice on the same field')
+    if (this._useAsKey) XXXwarn('asKey modifier used twice on the same field')
     return this.cloneAsSelf({ useAsKey: true })
   }
 

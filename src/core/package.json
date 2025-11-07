@@ -1,7 +1,12 @@
 {
-  "name": "@hokaze/core",
+  "name": "hokaze",
   "version": "0.4.0",
   "description": "Core package of the hokaze framework",
+  "author": "Louis Devie",
+  "homepage": "https://github.com/louisdevie/hokaze",
+  "repository": "https://github.com/louisdevie/hokaze",
+  "issues": "https://github.com/louisdevie/hokaze/issues",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -10,12 +15,11 @@
     "dist"
   ],
   "scripts": {
+    "sync-package-json": "sync-json -v -i sync --source ../../package.json package.json",
     "type-check": "tsc --noEmit",
     "lint": "eslint --config ../../eslint-typed.config.js index.ts src/** test/**",
     "test": "jest",
     "format": "prettier --write index.ts lib/** test/**",
     "build": "tsup"
-  },
-  "author": "Louis Devie",
-  "license": "MIT"
+  }
 }

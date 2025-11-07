@@ -6,5 +6,11 @@ export interface Check<T> {
   validate(value: T): ValidationResult
 }
 
-export interface ValidationResult {
+/**
+ * A read-only list of checks.
+ */
+export interface CheckCollection<T> extends Iterable<Check<T>> {
+  map<U>(callback: (check: Check<T>) => U): U[]
 }
+
+export interface ValidationResult {}

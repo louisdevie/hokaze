@@ -6,6 +6,6 @@ elz.useStaticDefaultLocale()
 
 export function setLocale(locale: string): void {
   elz.useLocale(locale).catch((reason: unknown) => {
-    console.error(`Error while setting the Hokaze locale to '${locale}'`, reason)
+    XXXerror(`Error while setting the Hokaze locale to '${locale}'`, reason)
   })
 }

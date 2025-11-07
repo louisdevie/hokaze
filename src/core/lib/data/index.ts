@@ -1,5 +1,5 @@
-import {Check} from '~/abstractions/validation'
-import {Mapper} from "~/abstractions/mappers";
+import { Mapper } from '~/mappers'
+import { CheckCollection } from '~/validation'
 
 /**
  * An object describing a value mapped to the JavaScript type `T`.
@@ -23,7 +23,12 @@ export interface DataDescriptor<T> {
   /**
    * Other requirements the data must meet.
    */
-  readonly checks: CheckCollection<T>
+  readonly checks: CheckCollection<NonNullable<T>>
+
+  /**
+   * Creates a default value to initialise new model objects.
+   */
+  createBlankValue(): T
 
   /**
    * Creates a mapper for this type of data.
@@ -31,11 +36,6 @@ export interface DataDescriptor<T> {
   createMapper(): Mapper<T>
 }
 
-/**
- * A read-only list of checks.
- */
-export type CheckCollection<T> = Iterable<Check<NonNullable<T>>>
-
-export {json} from './json'
-export {text} from './text'
-export {blob} from './blob'
+export { json } from './json'
+export { text } from './text'
+export { blob } from './blob'

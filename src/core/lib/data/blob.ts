@@ -1,6 +1,6 @@
-import { AnyData, AnyDataOptions } from '@module/data/base'
-import { Mapper } from '@module/mappers'
-import { BlobMapper } from '@module/mappers/blob'
+import { AnyData, AnyDataOptions } from './base'
+import { Mapper } from '~/mappers'
+import { BlobMapper } from '~/mappers/blob'
 
 /**
  * Describes a Blob value.
@@ -11,11 +11,15 @@ export class BlobData<N> extends AnyData<Blob | N, BlobData<N>> {
     super(copyFrom, options)
   }
 
+  protected createDefaultBlankValue(): Blob | N {
+    return new Blob()
+  }
+
   protected cloneAsSelf(options: AnyDataOptions<N>): BlobData<N> {
     return new BlobData<N>(this, options)
   }
 
-  public makeMapper(): Mapper<Blob | N> {
+  public createMapper(): Mapper<Blob | N> {
     return new BlobMapper()
   }
 

@@ -2,11 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "~/shared": [
-        "../core/shared.ts"
-      ],
       "~/*": [
         "./lib/*"
+      ],
+      "__mocks__": [
+        "./test/__mocks__"
       ]
     }
   }

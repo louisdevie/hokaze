@@ -1,25 +1,56 @@
-import {DataDescriptor} from "~/data/index";
-import {AnyData} from "~/data/base";
-import {Converter} from "~/converters";
+import { DataDescriptor } from '.'
+import { AnyData, AnyDataChecks } from './base'
+import { Converter, PartialConverter, resolveConverter } from '~/converters'
+import { Mapper } from '~/mappers'
+import { WrappedMapper } from '~/mappers/converters'
+import { Check, ValidationResult } from '~/validation'
 
 /**
- * A descriptor that has been wrapped with a converter.
+ * Options to initialise a {@link ConvertedData} descriptor.
+ */
+export interface ConvertedDataInit<V, T> {
+  baseData: AnyData<T, unknown>
+  converter: Converter<V, T>
+  checks: Check<NonNullable<V>>[]
+  blankValueFactory: (() => V) | null
+}
+
+export function applyConverter<V, T>(
+  baseData: AnyData<T, unknown>,
+  partialConverter: PartialConverter<V, T>,
+): ConvertedDataInit<V, T> {
+  const converter = resolveConverter(partialConverter)
+  return {
+    baseData,
+    converter,
+    checks: baseData.checks.map((check) => new ConvertedCheck(check, converter)),
+    blankValueFactory: null,
+  }
+}
+
+/**
+ * A descriptor that has been wrapped with a converter. This descriptor doesn't inherit from {@link AnyData} and do not
+ * provide the same configuration options.
  * @template V The type of the data described by this object.
  * @template T The underlying type of the data being transferred.
  */
 export class ConvertedData<V, T> implements DataDescriptor<V> {
   private readonly _baseData: AnyData<T, unknown>
   private readonly _converter: Converter<V, T>
+  private readonly _checks: AnyDataChecks<NonNullable<V>>
+  private readonly _blankValueFactory: (() => V) | null
 
   /**
-   * Decorates a base descriptor with a custom mapper.
-   * @param baseData The descriptor to wrap.
-   * @param converter The converter.
-   * @protected
+   * Decorates a base descriptor with a custom mapper. Unlike the constructors of {@link AnyData} and the classes
+   * derived from it, this constructor doesn't have a "copyFrom" argument and can't reuse the configuration from another
+   * {@link ConvertedData}.
+   * @param init Initialisation parameters for the descriptors.
    */
-  public constructor(baseData: AnyData<T, unknown>, converter: Converter<V, T>) {
-    this._baseData = baseData
-    this._converter = converter
+  public constructor(init: ConvertedDataInit<V, T>) {
+    this._baseData = init.baseData
+    this._converter = init.converter
+    this._checks = new AnyDataChecks(init.checks)
+    this._blankValueFactory = init.blankValueFactory
   }
 
   public get isReadable(): boolean {
@@ -34,8 +65,31 @@ export class ConvertedData<V, T> implements DataDescriptor<V> {
     return this._baseData.isOptional
   }
 
-  public makeMapper(): Mapper<V> {
-    return new WrappedMapper(this._converter, this._baseData.makeMapper())
+  public get checks(): AnyDataChecks<NonNullable<V>> {
+    return this._checks
+  }
+
+  public createBlankValue(): V {
+    return this._blankValueFactory !== null ?
+        this._blankValueFactory()
+      : this._converter.unpack(this._baseData.createBlankValue())
+  }
+
+  public createMapper(): Mapper<V> {
+    return new WrappedMapper(this._converter, this._baseData.createMapper())
+  }
+
+  /**
+   * Adds one or more validators for the converted data.
+   * @param checks The validators to add to the descriptor.
+   */
+  public check(...checks: Check<NonNullable<V>>[]): ConvertedData<V, T> {
+    return new ConvertedData({
+      baseData: this._baseData,
+      converter: this._converter,
+      checks: [...this._checks, ...checks],
+      blankValueFactory: this._blankValueFactory,
+    })
   }
 
   /**
@@ -56,6 +110,25 @@ export class ConvertedData<V, T> implements DataDescriptor<V> {
     } else {
       blankValueFactory = (): V => factoryOrValue
     }
-    return new ConvertedData(this._baseData, this._converter, blankValueFactory)
+    return new ConvertedData({
+      baseData: this._baseData,
+      converter: this._converter,
+      checks: [...this._checks],
+      blankValueFactory,
+    })
+  }
+}
+
+class ConvertedCheck<V, T> implements Check<V> {
+  private readonly _baseCheck: Check<T>
+  private readonly _converter: Converter<V, T>
+
+  public constructor(baseCheck: Check<T>, converter: Converter<V, T>) {
+    this._baseCheck = baseCheck
+    this._converter = converter
+  }
+
+  public validate(value: V): ValidationResult {
+    return this._baseCheck.validate(this._converter.pack(value))
   }
 }

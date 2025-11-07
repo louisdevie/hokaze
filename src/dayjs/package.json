@@ -1,6 +1,6 @@
 {
-  "name": "@hokaze/dayjs",
-  "version": "0.3.0",
+  "name": "hokaze",
+  "version": "0.4.0",
   "description": "Dayjs extension for Hokaze",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -10,17 +10,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "format": "prettier --write ./*.ts",
-    "type-check": "tsc --noEmit"
+    "sync-package-json": "sync-json -v -i sync --source package.json src/*/package.json"
   },
   "keywords": [],
   "author": "Louis DEVIE",
   "license": "MIT",
   "devDependencies": {
-    "prettier": "^3.2.3",
-    "tsup": "^8.4.0",
-    "typescript": "^5.4.5"
+    "sync-json": "^1.0.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "dayjs": "^1.11.10"
@@ -29,11 +27,20 @@
     "@hokaze/core": "^0.3.0"
   },
   "tsup": {
-    "entry": ["./index.ts"],
-    "format": ["esm", "cjs"],
+    "entry": [
+      "./index.ts"
+    ],
+    "format": [
+      "esm",
+      "cjs"
+    ],
     "dts": true,
     "sourcemap": true,
     "clean": true,
     "minify": true
-  }
+  },
+  "private": true,
+  "workspaces": [
+    "src/core"
+  ]
 }

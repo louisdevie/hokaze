@@ -1,3 +1,7 @@
+import { AnyData, AnyDataOptions } from './base'
+import { Mapper } from '~/mappers'
+import { TextMapper } from '~/mappers/text'
+
 /**
  * Describes a string value transferred as-is.
  * @template N Additional values the field can hold.
@@ -7,11 +11,15 @@ export class TextData<N> extends AnyData<string | N, TextData<N>> {
     super(copyFrom, options)
   }
 
+  protected createDefaultBlankValue(): string | N {
+    return ''
+  }
+
   protected cloneAsSelf(options: AnyDataOptions<N>): TextData<N> {
     return new TextData<N>(this, options)
   }
 
-  public makeMapper(): Mapper<string | N> {
+  public createMapper(): Mapper<string | N> {
     return new TextMapper()
   }
 
