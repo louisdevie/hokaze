@@ -1,7 +1,7 @@
 {
-  "name": "hokaze",
+  "name": "@hokaze/dayjs",
   "version": "0.4.0",
-  "description": "An object-to-REST mapper",
+  "description": "Dayjs extension for Hokaze",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -21,7 +21,23 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "elzii": "^0.2.1"
+    "dayjs": "^1.11.10"
+  },
+  "peerDependencies": {
+    "@hokaze/core": "^0.3.0"
+  },
+  "tsup": {
+    "entry": [
+      "./index.ts"
+    ],
+    "format": [
+      "esm",
+      "cjs"
+    ],
+    "dts": true,
+    "sourcemap": true,
+    "clean": true,
+    "minify": true
   },
   "private": true,
   "workspaces": [

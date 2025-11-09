@@ -1,5 +1,0 @@
-rest:
-  translations: src/rest/lang
-  output:
-    ts: src/rest/lib/locale/gen
-  static: true
